@@ -1,0 +1,130 @@
+/* Minimal RTL placeholder styles — will be refined when building front pages */
+
+:root {
+  --color-text: #1a1a1a;
+  --color-muted: #666;
+  --color-accent: #2563eb;
+  --color-bg: #fafafa;
+  --font-fa: system-ui, "Vazirmatn", "Tahoma", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-fa);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.7;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 1rem 0;
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+nav a {
+  margin-right: 1rem;
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: var(--color-accent);
+}
+
+main {
+  padding: 2rem 0 4rem;
+}
+
+.site-footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 1.5rem 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  color: var(--color-muted);
+}
+
+.cta-links {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  background: var(--color-accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+.placeholder {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.meta {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.book-list {
+  list-style: none;
+  padding: 0;
+}
+
+.book-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+  color: var(--color-accent);
+  text-decoration: none;
+}

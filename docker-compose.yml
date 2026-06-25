@@ -1,0 +1,29 @@
+# Local development only. Hamravesh runs the app container + managed PostgreSQL separately.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: petfeature
+      POSTGRES_PASSWORD: petfeature
+      POSTGRES_DB: petfeature
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://petfeature:petfeature@db:5432/petfeature
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --proxy-headers
+
+volumes:
+  postgres_data:

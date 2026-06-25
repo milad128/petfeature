@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <h1>پت فیچر</h1>
+  <p class="tagline">دانشنامه یک مدیر محصول</p>
+  <p>یادداشت‌های کتاب‌های مدیریت محصول — با رویکرد کارآگاهی در خواندن.</p>
+  <div class="cta-links">
+    <a href="{{ url_for('library') }}" class="btn">کتابخانه</a>
+    <a href="{{ url_for('about') }}" class="btn btn-outline">درباره من</a>
+  </div>
+</section>
+{% endblock %}

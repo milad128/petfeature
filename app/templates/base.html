@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }} | پت فیچر | دانشنامه یک مدیر محصول</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="{{ url_for('home') }}" class="brand">پت فیچر</a>
+      <nav>
+        <a href="{{ url_for('library') }}">کتابخانه</a>
+        <a href="{{ url_for('about') }}">درباره من</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>پت فیچر — دانشنامه یک مدیر محصول</p>
+    </div>
+  </footer>
+</body>
+</html>

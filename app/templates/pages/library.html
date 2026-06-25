@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>کتابخانه</h1>
+<p>لیست کتاب‌های مدیریت محصول با یادداشت‌های کامل.</p>
+
+{% if books %}
+<ul class="book-list">
+  {% for book in books %}
+  <li>
+    <a href="{{ url_for('book_detail', slug=book.slug) }}">{{ book.title }}</a>
+    <span class="meta">{{ book.author }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="placeholder">هنوز کتابی اضافه نشده — محتوا از طریق پنل ادمین اضافه خواهد شد.</p>
+{% endif %}
+{% endblock %}
