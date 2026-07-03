@@ -1,0 +1,90 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_book_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> کتاب جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<form method="get" action="{{ url_for('admin_books') }}" class="toolbar">
+  <input class="form-control toolbar-search" type="search" name="q" placeholder="جستجوی کتاب..." value="{{ search_query or '' }}">
+  <span class="form-hint">{{ books | length }} کتاب</span>
+</form>
+
+<div class="card">
+  {% if books %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>کتاب</th>
+        <th>دسته‌بندی‌ها</th>
+        <th>وضعیت</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+      <tr>
+        <td>
+          <div class="row-book">
+            <div class="row-book-cover">
+              {% if book.cover %}
+              <img src="{{ book.cover }}" alt="">
+              {% else %}
+              <span aria-hidden="true">📖</span>
+              {% endif %}
+            </div>
+            <div>
+              <div class="row-book-title">{{ book.title }}</div>
+              <div class="row-book-author">{{ book.authors_display }}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="row-tags">
+            {% for cat in book.categories %}
+            <span class="tag-chip">{{ cat.name }}</span>
+            {% endfor %}
+          </div>
+        </td>
+        <td>
+          <div class="badge-stack">
+            {% if book.status == 'published' %}
+            <span class="badge badge-published">منتشرشده</span>
+            {% else %}
+            <span class="badge badge-draft">پیش‌نویس</span>
+            {% endif %}
+            {% if book.show_in_library %}
+            <span class="badge badge-library">نمایش در کتابخانه</span>
+            {% else %}
+            <span class="badge badge-hidden">پنهان از کتابخانه</span>
+            {% endif %}
+          </div>
+        </td>
+        <td>
+          <div class="row-actions">
+            <a href="{{ url_for('admin_book_edit', slug=book.slug) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+            <form method="post" action="{{ url_for('admin_book_delete', slug=book.slug) }}" data-delete-form data-confirm="این کتاب حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">📚</div>
+    <h3>هنوز کتابی اضافه نشده</h3>
+    <p>اولین کتاب کتابخانه را اضافه کنید تا در سایت نمایش داده شود.</p>
+    <a href="{{ url_for('admin_book_new') }}" class="btn btn-primary">+ کتاب جدید</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

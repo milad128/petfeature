@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<button type="submit" form="about-form" class="btn btn-primary">ذخیره</button>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+<form id="about-form" method="post" action="{{ url_for('admin_about_update') }}" data-admin-form>
+  <input type="hidden" id="links-hidden" name="links" value='{{ (about.links if about else []) | tojson }}'>
+
+  <div class="card">
+    <div class="card-section">
+      <div class="card-section-title">نویسنده</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="author_name">نام نویسنده</label>
+          <input class="form-control" type="text" id="author_name" name="author_name" value="{{ about.author_name if about else 'میلاد میرزایی' }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="author_photo">آدرس تصویر (URL)</label>
+          <input class="form-control" type="text" id="author_photo" name="author_photo" dir="ltr" placeholder="https://..." value="{{ about.author_photo if about else '' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="author_bio">بیوگرافی نویسنده</label>
+        <textarea class="form-control" id="author_bio" name="author_bio" placeholder="چند خط درباره‌ی خودتان...">{{ about.author_bio if about else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">پت فیچر چیست؟</div>
+      <div class="form-group">
+        <label class="form-label" for="pet_feature_body">متن این بخش</label>
+        <textarea class="form-control tall" id="pet_feature_body" name="pet_feature_body">{{ about.pet_feature_body if about else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">درباره‌ی سایت</div>
+      <div class="form-group">
+        <label class="form-label" for="site_story_body">متن این بخش</label>
+        <textarea class="form-control tall" id="site_story_body" name="site_story_body">{{ about.site_story_body if about else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">لینک‌ها</div>
+
+      <div id="link-rows">
+        {% for link in (about.links if about else []) %}
+        <div class="resource-row" style="grid-template-columns: 1fr 1fr auto;">
+          <input class="form-control" type="text" placeholder="عنوان (مثلاً لینکدین)" value="{{ link.title }}">
+          <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr" value="{{ link.url }}">
+          <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف لینک">🗑</button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-link-btn">+ افزودن لینک</button>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <div class="form-actions-left">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+    </div>
+    {% if about and about.updated_at %}
+    <span class="form-hint">آخرین ذخیره: {{ about.updated_at.strftime('%Y/%m/%d') }}</span>
+    {% else %}
+    <span class="form-hint">آخرین ذخیره: —</span>
+    {% endif %}
+  </div>
+
+</form>
+{% endblock %}

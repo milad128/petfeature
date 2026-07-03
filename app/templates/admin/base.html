@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }} | مدیریت | پت فیچر</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/admin.css') }}">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <span class="brand-icon" aria-hidden="true">پ</span>
+        <span>
+          پت فیچر
+          <small>پنل مدیریت</small>
+        </span>
+      </div>
+
+      <nav class="admin-nav" aria-label="ناوبری مدیریت">
+        <a href="{{ url_for('admin_books') }}" class="{% if active_nav == 'books' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">📚</span> کتاب‌ها
+        </a>
+        <a href="{{ url_for('admin_categories') }}" class="{% if active_nav == 'categories' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">🏷️</span> دسته‌بندی‌ها
+        </a>
+        <a href="{{ url_for('admin_about') }}" class="{% if active_nav == 'about' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">👤</span> درباره من
+        </a>
+      </nav>
+
+      <div class="admin-nav-footer">
+        <a href="{{ url_for('home') }}" class="admin-view-site" target="_blank">مشاهده‌ی سایت ↗</a>
+        <a href="{{ url_for('admin_logout') }}">
+          <span class="nav-icon" aria-hidden="true">⏻</span> خروج
+        </a>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <h1>{{ page_title }}</h1>
+        <div class="admin-topbar-actions">
+          {% block topbar_actions %}{% endblock %}
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="admin-content-inner {% block content_width %}{% endblock %}">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', path='js/admin.js') }}"></script>
+</body>
+</html>

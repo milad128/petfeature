@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_categories') }}" class="btn btn-ghost">انصراف</a>
+<button type="submit" form="category-form" class="btn btn-primary">ذخیره</button>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+<form id="category-form" method="post" action="{% if category %}{{ url_for('admin_category_update', category_id=category.id) }}{% else %}{{ url_for('admin_category_create') }}{% endif %}">
+  <div class="card">
+    <div class="card-section">
+      <div class="form-group">
+        <label class="form-label" for="name">نام دسته‌بندی</label>
+        <input class="form-control" type="text" id="name" name="name" value="{{ category.name if category else '' }}" placeholder="مثلاً استراتژی" required>
+        <span class="form-hint">این نام همان چیزی است که در فیلتر کتابخانه نمایش داده می‌شود.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <div class="form-actions-left">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <a href="{{ url_for('admin_categories') }}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+</form>
+
+{% if category %}
+<form method="post" action="{{ url_for('admin_category_delete', category_id=category.id) }}" data-delete-form data-confirm="این دسته‌بندی حذف شود؟ از همه‌ی کتاب‌ها هم حذف می‌شود." class="form-actions form-actions-danger">
+  <button type="submit" class="btn btn-danger">حذف دسته‌بندی</button>
+</form>
+{% endif %}
+{% endblock %}

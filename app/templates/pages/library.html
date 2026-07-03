@@ -1,19 +1,117 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>کتابخانه</h1>
-<p>لیست کتاب‌های مدیریت محصول با یادداشت‌های کامل.</p>
 
-{% if books %}
-<ul class="book-list">
-  {% for book in books %}
-  <li>
-    <a href="{{ url_for('book_detail', slug=book.slug) }}">{{ book.title }}</a>
-    <span class="meta">{{ book.author }}</span>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p class="placeholder">هنوز کتابی اضافه نشده — محتوا از طریق پنل ادمین اضافه خواهد شد.</p>
-{% endif %}
+{# ── Library hero band ───────────────────────── #}
+<section class="library-hero">
+  <div class="container">
+    <div class="lib-hero-grid">
+      <div>
+        <h1>کتابخانه</h1>
+        <p class="library-hero-desc">
+          سبک کتاب خوندن مورد علاقه من شبیه به <span class="hero-title-accent">کاراگاه‌های جنایی</span> هست!
+          که مفاهیم یک کتاب رو با نخِ موضوعات به سایر منابع مثل ویدیو، پادکست، مقاله و کتاب‌های مرتبط
+          وصل می‌کنم. این‌جا هم همین سبک رو برای جزییات هر کتاب پیش می‌گیرم، پس لیست کتاب‌ها و همچنین
+          جزییات هر کتاب به مرور تکمیل می‌شود.
+        </p>
+        <div class="lib-tip-callout">
+          <span class="lib-tip-icon">🧵</span>
+          <span>اگه سرنخی دارید که به کتابی وصل می‌شه، <a href="{{ url_for('about') }}">به من خبر بدین</a>.</span>
+        </div>
+      </div>
+      <div class="lib-thread-visual">
+        <div class="lib-thread-node lib-thread-node-main">
+          <span class="lib-thread-icon lib-thread-icon-main">📕</span>
+          <span class="lib-thread-label lib-thread-label-main">یک کتاب</span>
+        </div>
+        <div class="lib-thread-line"></div>
+        <div class="lib-thread-node">
+          <span class="lib-thread-icon">🎬</span>
+          <span class="lib-thread-label">ویدیوی مرتبط</span>
+        </div>
+        <div class="lib-thread-line lib-thread-line-sm"></div>
+        <div class="lib-thread-node">
+          <span class="lib-thread-icon">🎧</span>
+          <span class="lib-thread-label">پادکست</span>
+        </div>
+        <div class="lib-thread-line lib-thread-line-sm"></div>
+        <div class="lib-thread-node">
+          <span class="lib-thread-icon">📄</span>
+          <span class="lib-thread-label">مقاله و کتاب دیگر</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lib-filter-row">
+      {% if books %}
+      <span class="library-stat">
+        <span>📚</span>
+        <span>{{ books | length }} کتاب</span>
+      </span>
+      <span class="lib-filter-divider"></span>
+      {% endif %}
+      {% if categories %}
+      {# Category filter pills — client-side filter by book category #}
+      <div class="filter-strip" id="library-filter" role="list" aria-label="دسته‌بندی‌ها">
+        <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
+        {% for cat in categories %}
+        <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{# ── Grid body ───────────────────────────────── #}
+<div class="library-body">
+  <div class="container">
+
+    <div class="book-grid" id="library-book-grid">
+      {% if books %}
+        {% for book in books %}
+        <a href="{{ url_for('book_detail', slug=book.slug) }}" class="lib-book-card" aria-label="{{ book.title }}" data-categories="{{ book.category_names | join('|') }}">
+          <div class="lib-book-cover">
+            {% if book.cover %}
+              <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy">
+            {% else %}
+              <span class="book-cover-icon" aria-hidden="true">📖</span>
+            {% endif %}
+          </div>
+          <div class="lib-book-info">
+            <h2 class="lib-book-title">{{ book.title }}</h2>
+            <p class="lib-book-author">{{ book.authors_display }}</p>
+            {% if book.categories %}
+            <div class="book-tags" aria-label="دسته‌بندی‌ها">
+              {% for cat in book.categories %}
+              <span class="tag">{{ cat.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+
+        <div class="empty-state" id="library-filter-empty" hidden>
+          <span class="empty-icon" aria-hidden="true">📚</span>
+          <h3>کتابی در این دسته نیست</h3>
+          <p>دسته‌ی دیگری را امتحان کنید یا به «همه» برگردید.</p>
+        </div>
+
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-icon" aria-hidden="true">📚</span>
+          <h3>کتابخانه در حال ساخت است</h3>
+          <p>کتاب‌های مدیریت محصول به‌زودی اینجا خواهند بود.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', path='js/library.js') }}"></script>
 {% endblock %}

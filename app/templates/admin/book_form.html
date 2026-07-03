@@ -1,0 +1,263 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_books') }}" class="btn btn-ghost">انصراف</a>
+<button type="submit" form="book-form" class="btn btn-primary">ذخیره</button>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+<form id="book-form" method="post" enctype="multipart/form-data" action="{% if book and book.slug %}{{ url_for('admin_book_update', slug=book.slug) }}{% else %}{{ url_for('admin_book_create') }}{% endif %}" data-admin-form>
+  <input type="hidden" name="cover" id="cover-hidden" value="{{ book.cover if book else '' }}">
+  <input type="hidden" name="download" id="download-hidden" value="{{ book.download_file or '' if book else '' }}">
+  <input type="hidden" id="authors-hidden" name="authors" value='{{ (book.authors if book else []) | tojson }}'>
+  <input type="hidden" id="category-ids-hidden" name="category_ids" value='{{ (book.category_ids if book else []) | tojson }}'>
+  <input type="hidden" id="quotes-hidden" name="quotes" value='{{ (book.quotes if book else []) | tojson }}'>
+  <input type="hidden" id="media-links-hidden" name="media_links" value='{{ (book.media_links_data if book else []) | tojson }}'>
+  <input type="hidden" id="referred-books-hidden" name="referred_book_ids" value='{{ (book.referred_book_ids if book else []) | tojson }}'>
+  <input type="hidden" id="status-hidden" name="status" value="{{ book.status if book else 'draft' }}">
+  <input type="hidden" id="show-in-library-hidden" name="show_in_library" value="{{ 'true' if (book.show_in_library if book else True) else 'false' }}">
+
+  <div class="card">
+    <div class="card-section">
+      <div class="card-section-title">اطلاعات کتاب</div>
+
+      <div class="form-group">
+        <label class="form-label" for="cover-file">جلد</label>
+        <div class="cover-upload">
+          <div class="cover-preview-wrap {% if not book or not book.cover %}is-empty{% endif %}" id="cover-preview-wrap">
+            {% if book and book.cover %}
+            <img id="cover-preview" src="{{ book.cover }}" alt="پیش‌نمایش جلد">
+            {% else %}
+            <img id="cover-preview" alt="" hidden>
+            <span class="cover-preview-placeholder" id="cover-preview-placeholder">بدون تصویر</span>
+            {% endif %}
+          </div>
+          <input class="form-control" type="file" id="cover-file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <span class="form-hint">JPG، PNG، WebP یا GIF — حداکثر ۵ مگابایت</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="title">عنوان</label>
+          <input class="form-control" type="text" id="title" name="title" value="{{ book.title if book else '' }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="subtitle">زیرعنوان</label>
+          <input class="form-control" type="text" id="subtitle" name="subtitle" value="{{ book.subtitle if book else '' }}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="authors-input">نویسنده</label>
+          <div class="tag-input-box" id="authors-input" data-hidden="authors-hidden">
+            {% for author in (book.authors if book else []) %}
+            <span class="tag-chip">{{ author }} <button type="button" aria-label="حذف">×</button></span>
+            {% endfor %}
+            <input type="text" placeholder="نام نویسنده و اینتر...">
+          </div>
+          <span class="form-hint">می‌توانید چند نویسنده اضافه کنید</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="published_year">سال انتشار</label>
+          <input class="form-control" type="number" id="published_year" name="published_year" min="1000" max="2100" value="{{ book.published_year if book and book.published_year else '' }}" placeholder="مثلاً ۲۰۱۹">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="slug">نامک (Slug)</label>
+          <input class="form-control" type="text" id="slug" name="slug" value="{{ book.slug if book else '' }}" dir="ltr" required pattern="[a-z0-9-]+">
+          <span class="form-hint">آدرس صفحه: /library/{{ book.slug if book else '...' }}/</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">وضعیت انتشار</label>
+          <div class="status-switch">
+            <span class="switch {% if book and book.status == 'published' %}on{% endif %}" id="status-switch" role="switch" aria-checked="{{ 'true' if book and book.status == 'published' else 'false' }}"></span>
+            <span class="form-hint" id="status-hint">{{ 'منتشرشده — روی سایت قابل مشاهده است' if book and book.status == 'published' else 'پیش‌نویس — فقط برای شما قابل مشاهده است' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">نمایش در کتابخانه</label>
+          <div class="status-switch">
+            <span class="switch {% if (book.show_in_library if book else True) %}on{% endif %}" id="show-in-library-switch" role="switch" aria-checked="{{ 'true' if (book.show_in_library if book else True) else 'false' }}"></span>
+            <span class="form-hint" id="show-in-library-hint">{{ 'در لیست کتابخانه نمایش داده می‌شود' if (book.show_in_library if book else True) else 'در لیست کتابخانه پنهان است — فقط با لینک مستقیم یا ارجاع قابل مشاهده است' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">دسته‌بندی‌ها</label>
+        {% if all_categories %}
+        <div class="category-picker" id="category-picker">
+          {% for cat in all_categories %}
+          <label class="category-option">
+            <input type="checkbox" value="{{ cat.id }}" {% if book and cat.id in book.category_ids %}checked{% endif %}>
+            <span>{{ cat.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <span class="form-hint">یک یا چند دسته‌بندی انتخاب کنید — <a href="{{ url_for('admin_categories') }}" target="_blank">مدیریت دسته‌بندی‌ها</a></span>
+        {% else %}
+        <p class="form-hint">هنوز دسته‌بندی‌ای اضافه نشده — <a href="{{ url_for('admin_category_new') }}" target="_blank">یک دسته‌بندی جدید بسازید</a>.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">محتوا</div>
+
+      <div class="form-group">
+        <label class="form-label" for="note-editor">یادداشت پت فیچر</label>
+        <div class="richtext" data-richtext data-target="note-hidden">
+          <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
+            <button type="button" class="richtext-btn" data-command="bold" title="ضخیم"><b>B</b></button>
+            <button type="button" class="richtext-btn" data-command="italic" title="مورب"><i>I</i></button>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="formatBlock" data-value="blockquote" title="نقل‌قول">”</button>
+            <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">☰</button>
+            <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">☷</button>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
+            <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
+          </div>
+          <div class="richtext-editor" id="note-editor" contenteditable="true" data-placeholder="یادداشت شخصی شما درباره این کتاب..."></div>
+        </div>
+        <textarea id="note-hidden" name="note" hidden>{{ book.note if book else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="quotes-input">نقل‌قول</label>
+        <div class="tag-input-box" id="quotes-input" data-hidden="quotes-hidden">
+          {% for quote in (book.quotes if book else []) %}
+          <span class="tag-chip quote-chip">{{ quote }} <button type="button" aria-label="حذف">×</button></span>
+          {% endfor %}
+          <input type="text" placeholder="نقل‌قول و اینتر...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">لینک خرید</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="buy_link_title">عنوان لینک</label>
+          <input class="form-control" type="text" id="buy_link_title" name="buy_link_title" value="{{ book.buy_link_title or '' if book else '' }}" placeholder="مثلاً خرید از طاقچه">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="buy_link_url">آدرس URL</label>
+          <input class="form-control" type="url" id="buy_link_url" name="buy_link_url" value="{{ book.buy_link_url or '' if book else '' }}" dir="ltr" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">فایل دانلود</div>
+      <div class="form-group">
+        <label class="form-label" for="download-file">PDF کتاب</label>
+        <div class="download-upload">
+          {% if book and book.download_file %}
+          <p class="download-current" id="download-current">
+            <a href="{{ book.download_file }}" target="_blank" rel="noopener" dir="ltr">{{ book.download_file.split('/')[-1] }}</a>
+          </p>
+          {% else %}
+          <p class="download-current is-empty" id="download-current" hidden></p>
+          {% endif %}
+          <input class="form-control" type="file" id="download-file" name="download_file" accept="application/pdf,.pdf">
+          <span class="form-hint">فقط PDF — حداکثر ۲۵ مگابایت</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">ویدیو و پادکست</div>
+      <div id="media-link-rows">
+        {% for link in (book.media_links_data if book else []) %}
+        <div class="resource-row media-link-row">
+          <select class="form-control" aria-label="نوع">
+            <option value="video" {% if link.type == 'video' %}selected{% endif %}>ویدیو</option>
+            <option value="podcast" {% if link.type == 'podcast' %}selected{% endif %}>پادکست</option>
+          </select>
+          <input class="form-control" type="text" placeholder="عنوان" value="{{ link.title }}">
+          <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr" value="{{ link.url }}">
+          <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-media-link-btn">+ افزودن لینک</button>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">کتاب‌های ارجاع‌شده</div>
+      {% if all_books %}
+      <div class="referred-books-selected" id="referred-books-selected">
+        {% for candidate in all_books %}
+        {% if book and candidate.id in book.referred_book_ids %}
+        <div class="referred-book-chip" data-book-id="{{ candidate.id }}">
+          <span>
+            <span class="referred-book-chip-title">{{ candidate.title }}</span>
+            {% if candidate.authors_display %}
+            <small>{{ candidate.authors_display }}</small>
+            {% endif %}
+          </span>
+          <button type="button" class="remove-referred-book" aria-label="حذف">×</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-referred-book-btn">+ افزودن کتاب مرتبط</button>
+
+      <div class="modal-overlay" id="referred-books-modal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="referred-books-modal-title">
+          <div class="modal-header">
+            <h3 id="referred-books-modal-title">افزودن کتاب مرتبط</h3>
+            <button type="button" class="modal-close" id="referred-books-modal-close" aria-label="بستن">×</button>
+          </div>
+          <input type="text" class="form-control" id="referred-books-search" placeholder="جستجوی کتاب...">
+          <div class="modal-list" id="referred-books-modal-list">
+            {% for candidate in all_books %}
+            <button type="button" class="modal-list-item" data-book-id="{{ candidate.id }}" data-book-title="{{ candidate.title }}" data-book-author="{{ candidate.authors_display }}">
+              <span class="modal-list-item-title">{{ candidate.title }}</span>
+              {% if candidate.authors_display %}
+              <span class="modal-list-item-author">{{ candidate.authors_display }}</span>
+              {% endif %}
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p class="form-hint">هنوز کتاب دیگری برای ارجاع وجود ندارد.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <div class="form-actions-left">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <a href="{{ url_for('admin_books') }}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+
+</form>
+
+{% if book and book.slug %}
+<form method="post" action="{{ url_for('admin_book_delete', slug=book.slug) }}" data-delete-form data-confirm="این کتاب حذف شود؟" class="form-actions form-actions-danger">
+  <button type="submit" class="btn btn-danger">حذف کتاب</button>
+</form>
+{% endif %}
+{% endblock %}

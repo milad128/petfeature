@@ -5,6 +5,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin.routes import router as admin_router
 from app.api.v1.router import router as api_v1_router
@@ -16,7 +17,17 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # DB init / migrations run separately via Alembic on deploy.
+    from app.services.uploads import ensure_upload_dirs
+
+    ensure_upload_dirs()
+    if settings.database_url.startswith("sqlite"):
+        from app.core.sqlite_migrations import migrate_books_schema
+        from app.core.database import Base, engine
+        from app.models import AboutPage, Book, BookMediaLink, Category  # noqa: F401
+
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            await conn.run_sync(migrate_books_schema)
     yield
 
 
@@ -25,6 +36,8 @@ app = FastAPI(
     debug=settings.debug,
     lifespan=lifespan,
 )
+
+app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

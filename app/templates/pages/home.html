@@ -1,13 +1,89 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
-  <h1>پت فیچر</h1>
-  <p class="tagline">دانشنامه یک مدیر محصول</p>
-  <p>یادداشت‌های کتاب‌های مدیریت محصول — با رویکرد کارآگاهی در خواندن.</p>
-  <div class="cta-links">
-    <a href="{{ url_for('library') }}" class="btn">کتابخانه</a>
-    <a href="{{ url_for('about') }}" class="btn btn-outline">درباره من</a>
+
+{# ── Hero ─────────────────────────────────────── #}
+<section class="home-hero-grid">
+  <div>
+    <h1 class="hero-title">کتاب‌های مدیریت محصول،<br>خوانده‌شده با دقتِ یک <span class="hero-title-accent">کارآگاه</span>.</h1>
+    <p class="hero-desc">
+      یادداشت‌های کامل و به‌هم‌پیوسته از کتاب‌های مرجع — نه خلاصه‌های ناقص، بلکه پرونده‌هایی
+      که سرنخ‌ها را به هم وصل می‌کنند.
+    </p>
+    <div class="cta-row">
+      <a href="{{ url_for('library') }}" class="btn btn-primary">ورود به کتابخانه <span>←</span></a>
+      <a href="{{ url_for('about') }}" class="btn btn-text">داستان سایت</a>
+    </div>
+  </div>
+  <div class="home-featured-book">
+    <div class="featured-book-cover">
+      <div class="featured-book-icon">📕</div>
+      <div class="featured-book-title">الهام‌گرفته</div>
+      <div class="featured-book-author">مارتی کیگان</div>
+    </div>
+    <div class="featured-book-badge">۱۲ کتاب در کتابخانه</div>
   </div>
 </section>
+
+{# ── Library preview ──────────────────────────── #}
+<section class="preview-section">
+  <div class="preview-header">
+    <div>
+      <h2>از کتابخانه</h2>
+      <p>گزیده‌ای از کتاب‌های مرجع، همراه با یادداشت کامل.</p>
+    </div>
+    <a href="{{ url_for('library') }}">مشاهده‌ی همه ←</a>
+  </div>
+  <div class="preview-grid home-preview-grid">
+    <a href="{{ url_for('library') }}" class="book-card">
+      <div class="book-cover"><span class="book-cover-icon">📕</span></div>
+      <div class="book-info">
+        <div class="book-title">الهام‌گرفته</div>
+        <div class="book-author">مارتی کیگان</div>
+        <div class="book-tags">
+          <span class="tag">کشف محصول</span>
+          <span class="tag">تیم محصول</span>
+        </div>
+      </div>
+    </a>
+    <a href="{{ url_for('library') }}" class="book-card">
+      <div class="book-cover"><span class="book-cover-icon">📗</span></div>
+      <div class="book-info">
+        <div class="book-title">قلاب</div>
+        <div class="book-author">نیر ایال</div>
+        <div class="book-tags">
+          <span class="tag">رفتار کاربر</span>
+          <span class="tag">عادت‌سازی</span>
+        </div>
+      </div>
+    </a>
+    <a href="{{ url_for('library') }}" class="book-card">
+      <div class="book-cover"><span class="book-cover-icon">📘</span></div>
+      <div class="book-info">
+        <div class="book-title">اندازه‌گیری آنچه مهم است</div>
+        <div class="book-author">جان دوئر</div>
+        <div class="book-tags">
+          <span class="tag">OKR</span>
+          <span class="tag">استراتژی</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+{# ── Pet feature definition ───────────────────── #}
+<section class="pf-definition-section">
+  <div class="container">
+    <div class="pf-definition-inner">
+      <h2>درباره پت فیچر</h2>
+      <p>
+        به فیچری گفته می شود که مدیر محصول یا سایر ذینفعان به‌طور خاص و شخصی به آن علاقه
+        دارند یا روی آن سرمایه‌گذاری می‌کنند، اما ممکن است لزوماً با نیازها یا خواسته‌های بازار
+        هدف یا استراتژی کلی محصول همسو نباشد.
+      </p>
+      <a href="{{ url_for('about') }}" class="pf-definition-link">داستان سایت و نویسنده <span>←</span></a>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

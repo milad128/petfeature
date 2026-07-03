@@ -1,18 +1,131 @@
 {% extends "base.html" %}
 
 {% block content %}
-<nav class="breadcrumb">
-  <a href="{{ url_for('library') }}">کتابخانه</a>
-  <span>/</span>
-  <span>{{ slug }}</span>
-</nav>
+<div class="container book-detail-page">
+  <nav class="breadcrumb" aria-label="مسیر">
+    <a href="{{ url_for('library') }}">کتابخانه</a>
+    <span aria-hidden="true">‹</span>
+    <span>{{ book.title if book else slug }}</span>
+  </nav>
 
-{% if book %}
-<h1>{{ book.title }}</h1>
-<p class="meta">نویسنده: {{ book.author }}</p>
-<div class="book-body">{{ book.body | safe }}</div>
-{% else %}
-<h1>جزئیات کتاب</h1>
-<p class="placeholder">صفحه کتاب «{{ slug }}» — محتوا بعداً از دیتابیس بارگذاری می‌شود.</p>
-{% endif %}
+  {% if book %}
+  <div class="book-detail-layout">
+    <aside class="book-detail-aside">
+      <div class="book-cover-lg">
+        {% if book.cover %}
+          <img src="{{ book.cover }}" alt="{{ book.title }}">
+        {% else %}
+          📖
+        {% endif %}
+      </div>
+      {% if book.published_year %}
+      <p class="book-meta-item">سال انتشار: {{ book.published_year }}</p>
+      {% endif %}
+    </aside>
+
+    <div class="book-detail-body">
+      <header class="book-detail-header">
+        <h1>{{ book.title }}</h1>
+        {% if book.subtitle %}
+        <p class="book-detail-subtitle">{{ book.subtitle }}</p>
+        {% endif %}
+        {% if book.authors %}
+        <p class="book-detail-author">نویسنده: <strong>{{ book.authors_display }}</strong></p>
+        {% endif %}
+        {% if book.categories %}
+        <div class="book-detail-tags">
+          {% for cat in book.categories %}
+          <span class="tag">{{ cat.name }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </header>
+
+      {% if book.buy_link_title or book.buy_link_url or book.download_file %}
+      <div class="book-actions">
+        {% if book.buy_link_url %}
+        <a href="{{ book.buy_link_url }}" class="btn btn-primary" target="_blank" rel="noopener">{{ book.buy_link_title or "خرید کتاب" }} <span>↗</span></a>
+        {% endif %}
+        {% if book.download_file %}
+        <a href="{{ book.download_file }}" class="btn btn-ghost" target="_blank" rel="noopener" download>دانلود PDF <span>↓</span></a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if book.note %}
+      <section class="book-section">
+        <div class="book-section-label">یادداشت پت فیچر</div>
+        {% if '<' in book.note %}
+        <div class="book-note richtext-content">{{ book.note | safe }}</div>
+        {% else %}
+        <div class="book-note richtext-content">{{ book.note | replace('\n', '<br>') | safe }}</div>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% if book.quotes %}
+      <section class="book-section">
+        <div class="book-section-label">نقل‌قول</div>
+        <ul class="quote-list">
+          {% for quote in book.quotes %}
+          <li class="quote-item">«{{ quote }}»</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if book.media_links %}
+      <section class="book-section">
+        <div class="book-section-label">ویدیو و پادکست</div>
+        <ul class="resource-list">
+          {% for link in book.media_links %}
+          <li class="resource-item">
+            <span class="resource-icon" aria-hidden="true">
+              {% if link.type == 'video' %}🎬{% else %}🎙{% endif %}
+            </span>
+            <span class="resource-title">{{ link.title or ('ویدیو' if link.type == 'video' else 'پادکست') }}</span>
+            <a href="{{ link.url }}" class="resource-link" target="_blank" rel="noopener">مشاهده ←</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if book.referred_books %}
+      <section class="referred-section">
+        <div class="referred-section-label">
+          <span>🧵</span>
+          <span>کتاب‌های ارجاع‌شده — دنبال سرنخ بگرد</span>
+        </div>
+        <div class="referred-books-grid">
+          {% for ref in book.referred_books %}
+          <a href="{{ url_for('book_detail', slug=ref.slug) }}" class="referred-book-card">
+            <div class="referred-book-cover">
+              {% if ref.cover %}
+                <img src="{{ ref.cover }}" alt="{{ ref.title }}">
+              {% else %}
+                <span>📖</span>
+              {% endif %}
+            </div>
+            <span>
+              <span class="referred-book-title">{{ ref.title }}</span>
+              {% if ref.authors_display %}
+              <span class="referred-book-author">{{ ref.authors_display }}</span>
+              {% endif %}
+            </span>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+  </div>
+
+  {% else %}
+  <div class="empty-state" style="padding: 3rem 0;">
+    <p>محتوای این کتاب هنوز بارگذاری نشده است.</p>
+    <a href="{{ url_for('library') }}" class="btn btn-ghost" style="margin-top: 1rem;">بازگشت به کتابخانه</a>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

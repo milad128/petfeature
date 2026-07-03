@@ -12,7 +12,14 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_async_engine(settings.database_url, echo=settings.debug)
+_connect_args = (
+    {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+)
+engine = create_async_engine(
+    settings.database_url,
+    echo=settings.debug,
+    connect_args=_connect_args,
+)
 async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 

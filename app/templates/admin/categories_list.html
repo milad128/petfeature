@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_category_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> دسته‌بندی جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  {% if categories %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>نام</th>
+        <th>تعداد کتاب</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td>{{ category.name }}</td>
+        <td>{{ category.books | length }}</td>
+        <td>
+          <div class="row-actions">
+            <a href="{{ url_for('admin_category_edit', category_id=category.id) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+            <form method="post" action="{{ url_for('admin_category_delete', category_id=category.id) }}" data-delete-form data-confirm="این دسته‌بندی حذف شود؟ از همه‌ی کتاب‌ها هم حذف می‌شود." style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">🏷️</div>
+    <h3>هنوز دسته‌بندی‌ای اضافه نشده</h3>
+    <p>دسته‌بندی‌ها همان برچسب‌هایی هستند که هنگام ساخت کتاب انتخاب می‌کنید و در فیلتر کتابخانه نمایش داده می‌شوند.</p>
+    <a href="{{ url_for('admin_category_new') }}" class="btn btn-primary">+ دسته‌بندی جدید</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

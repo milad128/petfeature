@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود | مدیریت | پت فیچر</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/admin.css') }}">
+</head>
+<body>
+  <div class="admin-login-page">
+    <div class="admin-login-card">
+      <div class="admin-login-brand">
+        <span class="brand-icon" aria-hidden="true">پ</span>
+        <span>پت فیچر</span>
+      </div>
+      <div class="admin-login-sub">ورود به پنل مدیریت</div>
+
+      {% if error %}
+      <p class="form-error" role="alert">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('admin_login_post') }}">
+        <div class="form-group">
+          <label class="form-label" for="username">نام کاربری</label>
+          <input class="form-control" type="text" id="username" name="username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">رمز عبور</label>
+          <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">ورود</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

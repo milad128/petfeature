@@ -4,27 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page_title }} | پت فیچر | دانشنامه یک مدیر محصول</title>
+  <meta name="description" content="پت فیچر — دانشنامه یک مدیر محصول. یادداشت‌های کتاب‌های مدیریت محصول با رویکرد کارآگاهی در خواندن.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
 </head>
 <body>
   <header class="site-header">
     <div class="container">
-      <a href="{{ url_for('home') }}" class="brand">پت فیچر</a>
-      <nav>
-        <a href="{{ url_for('library') }}">کتابخانه</a>
-        <a href="{{ url_for('about') }}">درباره من</a>
+      <a href="{{ url_for('home') }}" class="brand">
+        <span class="brand-icon" aria-hidden="true">پ</span>
+        <span class="brand-text">
+          <span class="brand-name">پت فیچر</span>
+          <span class="brand-tagline">دانشنامه‌ی یک مدیر محصول</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="ناوبری اصلی">
+        <a href="{{ url_for('library') }}"
+           class="{% if request.url.path.startswith('/library') %}active{% endif %}">کتابخانه</a>
+        <a href="{{ url_for('about') }}"
+           class="{% if request.url.path == '/about/' %}active{% endif %}">درباره من</a>
       </nav>
     </div>
   </header>
 
-  <main class="container">
+  <main>
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>پت فیچر — دانشنامه یک مدیر محصول</p>
+      <span class="footer-brand">پت فیچر — دانشنامه‌ی یک مدیر محصول</span>
+      <div class="footer-links">
+        <a href="{{ url_for('library') }}">کتابخانه</a>
+        <a href="{{ url_for('about') }}">درباره من</a>
+      </div>
     </div>
   </footer>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>
