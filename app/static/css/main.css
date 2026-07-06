@@ -597,6 +597,7 @@ main { padding: 0; }
   padding: 5rem 1rem;
   text-align: center;
 }
+.empty-state[hidden] { display: none; }
 .empty-icon { font-size: 3.5rem; opacity: 0.35; line-height: 1; }
 .empty-state h3 { font-size: 1.1rem; font-weight: 600; color: var(--text); }
 .empty-state p  { color: var(--muted); font-size: 0.95rem; max-width: 340px; margin: 0; }

@@ -113,5 +113,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', path='js/library.js') }}"></script>
+<script src="{{ asset_url(request, 'js/library.js') }}"></script>
 {% endblock %}
