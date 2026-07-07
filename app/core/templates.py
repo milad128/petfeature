@@ -19,14 +19,16 @@ def asset_url(request, path: str) -> str:
 
     Without this, browsers can keep serving a stale cached copy of main.css/
     admin.js/library.js after a deploy since the URL never changes.
+
+    Uses a root-relative path to avoid http/https mixed-content issues behind
+    a TLS-terminating reverse proxy (e.g. Hamravesh Darkube ingress).
     """
-    url = request.url_for("static", path=path)
     file_path = STATIC_DIR / path
     try:
         version = int(file_path.stat().st_mtime)
     except OSError:
         version = 0
-    return f"{url}?v={version}"
+    return f"/static/{path}?v={version}"
 
 
 templates.env.globals["asset_url"] = asset_url
