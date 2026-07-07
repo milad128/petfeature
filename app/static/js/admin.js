@@ -4,10 +4,30 @@ document.addEventListener("DOMContentLoaded", () => {
   initDownloadUpload();
   initStatusSwitch();
   initShowInLibrarySwitch();
+  initFeaturedSwitch();
   initCategoryPicker();
   initMediaLinkRows();
   initReferredBooks();
   initLinkRows();
+  initToolFileRows();
+  initItemPicker({
+    selectedId: "related-books-selected",
+    hiddenId: "related-books-hidden",
+    addBtnId: "add-related-book-btn",
+    modalId: "related-books-modal",
+    modalCloseId: "related-books-modal-close",
+    modalListId: "related-books-modal-list",
+    searchId: "related-books-search",
+  });
+  initItemPicker({
+    selectedId: "related-posts-selected",
+    hiddenId: "related-posts-hidden",
+    addBtnId: "add-related-post-btn",
+    modalId: "related-posts-modal",
+    modalCloseId: "related-posts-modal-close",
+    modalListId: "related-posts-modal-list",
+    searchId: "related-posts-search",
+  });
   initRichTextEditors();
   initDeleteForms();
   syncFormsBeforeSubmit();
@@ -124,6 +144,24 @@ function initShowInLibrarySwitch() {
       hint.textContent = on
         ? "در لیست کتابخانه نمایش داده می‌شود"
         : "در لیست کتابخانه پنهان است — فقط با لینک مستقیم یا ارجاع قابل مشاهده است";
+    }
+  });
+}
+
+function initFeaturedSwitch() {
+  const toggle = document.getElementById("is-featured-switch");
+  const hidden = document.getElementById("is-featured-hidden");
+  const hint = document.getElementById("is-featured-hint");
+  if (!toggle || !hidden) return;
+
+  toggle.addEventListener("click", () => {
+    const on = toggle.classList.toggle("on");
+    hidden.value = on ? "true" : "false";
+    toggle.setAttribute("aria-checked", on ? "true" : "false");
+    if (hint) {
+      hint.textContent = on
+        ? "در کارت بزرگ بالای بلاگ نمایش داده می‌شود"
+        : "در لیست عادی نمایش داده می‌شود";
     }
   });
 }
@@ -290,6 +328,149 @@ function syncReferredBooksHidden(container, hidden) {
   hidden.value = JSON.stringify(ids);
 }
 
+function initToolFileRows() {
+  const container = document.getElementById("tool-file-rows");
+  const addBtn = document.getElementById("add-tool-file-btn");
+  const hidden = document.getElementById("tool-files-hidden");
+  if (!container || !hidden) return;
+
+  container.querySelectorAll(".tool-file-row").forEach((row) => bindToolFileRow(row, container, hidden));
+
+  addBtn?.addEventListener("click", () => {
+    const row = createToolFileRow();
+    container.appendChild(row);
+    bindToolFileRow(row, container, hidden);
+    syncToolFilesHidden(container, hidden);
+  });
+
+  syncToolFilesHidden(container, hidden);
+}
+
+function createToolFileRow() {
+  const row = document.createElement("div");
+  row.className = "resource-row tool-file-row";
+  row.innerHTML = `
+    <input class="form-control" type="text" placeholder="نام نسخه (مثلاً نسخه‌ی PDF)">
+    <input class="form-control" type="text" placeholder="توضیح کوتاه">
+    <input class="form-control" type="file" name="tool_file_uploads" accept=".pdf,.xlsx,.docx,.pptx,.csv">
+    <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
+  `;
+  return row;
+}
+
+function bindToolFileRow(row, container, hidden) {
+  row.querySelectorAll('input[type="text"]').forEach((el) => {
+    el.addEventListener("input", () => syncToolFilesHidden(container, hidden));
+  });
+  row.querySelector(".remove-row")?.addEventListener("click", () => {
+    row.remove();
+    syncToolFilesHidden(container, hidden);
+  });
+}
+
+function syncToolFilesHidden(container, hidden) {
+  const files = [...container.querySelectorAll(".tool-file-row")]
+    .map((row) => {
+      const textInputs = row.querySelectorAll('input[type="text"]');
+      return {
+        name: textInputs[0]?.value.trim() || "",
+        description: textInputs[1]?.value.trim() || "",
+        file: row.dataset.existingFile || "",
+      };
+    })
+    .filter((file) => file.name);
+  hidden.value = JSON.stringify(files);
+}
+
+function initItemPicker({ selectedId, hiddenId, addBtnId, modalId, modalCloseId, modalListId, searchId }) {
+  const selected = document.getElementById(selectedId);
+  const hidden = document.getElementById(hiddenId);
+  const addBtn = document.getElementById(addBtnId);
+  const modal = document.getElementById(modalId);
+  const modalClose = document.getElementById(modalCloseId);
+  const modalList = document.getElementById(modalListId);
+  const searchInput = document.getElementById(searchId);
+  if (!selected || !hidden || !addBtn || !modal || !modalList) return;
+
+  const updateModalVisibility = () => {
+    const selectedIds = new Set(
+      [...selected.querySelectorAll(".referred-book-chip")].map((chip) => chip.dataset.itemId)
+    );
+    const query = (searchInput?.value || "").trim().toLowerCase();
+    modalList.querySelectorAll(".modal-list-item").forEach((item) => {
+      const isSelected = selectedIds.has(item.dataset.itemId);
+      const matchesQuery =
+        !query ||
+        item.dataset.itemTitle.toLowerCase().includes(query) ||
+        (item.dataset.itemSubtitle || "").toLowerCase().includes(query);
+      item.hidden = isSelected || !matchesQuery;
+    });
+  };
+
+  const syncHidden = () => {
+    const ids = [...selected.querySelectorAll(".referred-book-chip")]
+      .map((chip) => parseInt(chip.dataset.itemId, 10))
+      .filter((id) => !Number.isNaN(id));
+    hidden.value = JSON.stringify(ids);
+  };
+
+  const bindRemove = (btn) => {
+    btn.addEventListener("click", () => {
+      btn.closest(".referred-book-chip")?.remove();
+      syncHidden();
+      updateModalVisibility();
+    });
+  };
+
+  const addChip = (id, title, subtitle) => {
+    const chip = document.createElement("div");
+    chip.className = "referred-book-chip";
+    chip.dataset.itemId = id;
+    chip.innerHTML = `
+      <span>
+        <span class="referred-book-chip-title">${escapeHtml(title)}</span>
+        ${subtitle ? `<small>${escapeHtml(subtitle)}</small>` : ""}
+      </span>
+      <button type="button" class="remove-referred-book" aria-label="حذف">×</button>
+    `;
+    selected.appendChild(chip);
+    bindRemove(chip.querySelector(".remove-referred-book"));
+  };
+
+  const openModal = () => {
+    modal.hidden = false;
+    updateModalVisibility();
+    searchInput?.focus();
+  };
+  const closeModal = () => {
+    modal.hidden = true;
+    if (searchInput) searchInput.value = "";
+  };
+
+  addBtn.addEventListener("click", openModal);
+  modalClose?.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hidden) closeModal();
+  });
+
+  searchInput?.addEventListener("input", updateModalVisibility);
+
+  modalList.querySelectorAll(".modal-list-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      addChip(item.dataset.itemId, item.dataset.itemTitle, item.dataset.itemSubtitle || "");
+      syncHidden();
+      updateModalVisibility();
+    });
+  });
+
+  selected.querySelectorAll(".remove-referred-book").forEach(bindRemove);
+
+  syncHidden();
+}
+
 function initLinkRows() {
   const container = document.getElementById("link-rows");
   const addBtn = document.getElementById("add-link-btn");
@@ -371,6 +552,27 @@ function initRichTextEditors() {
         hidden.value = editor.innerHTML;
       });
     });
+
+    const fontSelect = wrap.querySelector(".richtext-font-select");
+    if (fontSelect) {
+      fontSelect.addEventListener("change", () => {
+        editor.focus();
+        if (fontSelect.value) {
+          document.execCommand("fontName", false, fontSelect.value);
+        }
+        hidden.value = editor.innerHTML;
+        fontSelect.value = "";
+      });
+    }
+
+    const colorInput = wrap.querySelector(".richtext-color-input");
+    if (colorInput) {
+      colorInput.addEventListener("input", () => {
+        editor.focus();
+        document.execCommand("foreColor", false, colorInput.value);
+        hidden.value = editor.innerHTML;
+      });
+    }
   });
 }
 
@@ -416,6 +618,10 @@ function syncFormsBeforeSubmit() {
       const linkContainer = document.getElementById("link-rows");
       const linksHidden = document.getElementById("links-hidden");
       if (linkContainer && linksHidden) syncAboutLinksHidden(linkContainer, linksHidden);
+
+      const toolFileContainer = document.getElementById("tool-file-rows");
+      const toolFilesHidden = document.getElementById("tool-files-hidden");
+      if (toolFileContainer && toolFilesHidden) syncToolFilesHidden(toolFileContainer, toolFilesHidden);
 
       syncRichTextEditors();
     });

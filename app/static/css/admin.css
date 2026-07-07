@@ -88,6 +88,12 @@ button { font-family: var(--font); }
   font-size: 1.05rem;
   margin-bottom: 6px;
 }
+.brand-logo {
+  height: 28px;
+  width: auto;
+  flex-shrink: 0;
+}
+
 .admin-login-brand .brand-icon {
   width: 28px; height: 28px; border-radius: 7px;
   background: var(--accent); color: #fff;
@@ -332,6 +338,31 @@ textarea.form-control.tall { min-height: 260px; }
   flex-shrink: 0;
 }
 
+.richtext-font-select {
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  cursor: pointer;
+  max-width: 130px;
+}
+
+.richtext-color-input {
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.richtext-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+.richtext-color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+
 .richtext-editor {
   min-height: 260px;
   max-height: 520px;
@@ -399,6 +430,24 @@ textarea.form-control.tall { min-height: 260px; }
   flex: 1;
   max-width: 320px;
 }
+
+.filter-strip { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.filter-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-block;
+}
+.filter-pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); text-decoration: none; }
+.filter-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table th {
@@ -468,6 +517,8 @@ textarea.form-control.tall { min-height: 260px; }
 }
 .media-link-row { grid-template-columns: 140px 1fr 1fr auto; }
 .buy-link-row { grid-template-columns: 1fr 1fr auto; }
+.tool-file-row { grid-template-columns: 1fr 1fr 1fr auto auto; }
+@media (max-width: 720px) { .tool-file-row { grid-template-columns: 1fr; } }
 
 .referred-books-selected {
   display: flex;

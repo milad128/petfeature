@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root, [data-theme="light"] {
+    --bg:#faf9f7; --surface:#ffffff; --surface-2:#fbfaf8; --border:#e8e2db;
+    --text:#1c1917; --muted:#78716c; --accent:#c2410c; --accent-bg:#fff7ed; --accent-bd:#fde0c8;
+    --shadow:0 8px 32px rgba(0,0,0,0.08); --shadow-lg:0 24px 60px rgba(0,0,0,0.12);
+  }
+  [data-theme="dark"] {
+    --bg:#0d0f12; --surface:#15181e; --surface-2:#11141a; --border:rgba(255,255,255,.09);
+    --text:#eceef1; --muted:#9aa1aa; --accent:#f0834e; --accent-bg:rgba(240,131,78,.12); --accent-bd:rgba(240,131,78,.28);
+    --shadow:0 18px 48px rgba(0,0,0,0.45); --shadow-lg:0 30px 70px rgba(0,0,0,0.55);
+  }
+  body { margin:0; font-family:'Vazirmatn',system-ui,Tahoma,sans-serif; background:var(--bg); color:var(--text); direction:rtl; line-height:1.8; -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--accent-bd); }
+  @media (max-width:900px) {
+    .home-hero-grid { grid-template-columns:1fr !important; padding-top:48px !important; }
+    .home-hero-grid h1 { font-size:2.1rem !important; }
+    .home-featured-book { justify-content:flex-start !important; margin-top:8px; }
+    .home-preview-grid { grid-template-columns:repeat(2,1fr) !important; }
+  }
+  @media (max-width:600px) {
+    .home-preview-grid { grid-template-columns:1fr !important; }
+    .home-hero-grid { padding-left:16px !important; padding-right:16px !important; }
+  }
+</style>
+</helmet>
+
+<div data-theme="{{ theme }}" data-screen-label="Home v2" style="background:var(--bg); color:var(--text); min-height:100vh; font-family:'Vazirmatn',system-ui,Tahoma,sans-serif; direction:rtl;">
+
+  <!-- HEADER -->
+  <header style="position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);">
+    <div style="max-width:1080px; margin:0 auto; padding:0 24px; height:66px; display:flex; align-items:center; justify-content:space-between;">
+      <a href="#" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);">
+        <svg width="30" height="30" viewBox="0 0 96 96" fill="none" style="display:block; flex-shrink:0;"><g stroke="var(--accent)" stroke-width="4" opacity=".55"><line x1="48" y1="46" x2="22" y2="24"/><line x1="48" y1="46" x2="74" y2="20"/><line x1="48" y1="46" x2="26" y2="74"/><line x1="48" y1="46" x2="76" y2="70"/></g><circle cx="48" cy="46" r="11" fill="var(--accent)"/><circle cx="22" cy="24" r="6" fill="var(--accent)"/><circle cx="74" cy="20" r="6" fill="var(--accent)"/><circle cx="26" cy="74" r="6" fill="var(--accent)"/><circle cx="76" cy="70" r="6" fill="var(--accent)"/></svg>
+        <b style="font-size:18px; letter-spacing:-.01em;">پت فیچر</b>
+      </a>
+      <nav style="display:flex; gap:6px; align-items:center;">
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:600; color:var(--accent); background:var(--accent-bg); text-decoration:none;">کتابخانه</a>
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none;" style-hover="color:var(--text);">بلاگ</a>
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none;" style-hover="color:var(--text);">درباره من</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO (editorial, asymmetric) -->
+  <section class="home-hero-grid" style="max-width:1080px; margin:0 auto; padding:72px 24px 60px; display:grid; grid-template-columns:1.25fr .75fr; gap:48px; align-items:center;">
+    <div>
+      <div style="display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:13px; font-weight:600; margin-bottom:22px;">
+        <span style="width:22px; height:1.5px; background:var(--accent);"></span>
+        دانشنامه‌ی یک مدیر محصول
+      </div>
+      <h1 style="font-size:clamp(2.4rem,5vw,3.4rem); font-weight:700; letter-spacing:-.02em; line-height:1.28; margin-bottom:20px;">کتاب‌های مدیریت محصول،<br>خوانده‌شده با دقتِ یک <span style="color:var(--accent);">کارآگاه</span>.</h1>
+      <p style="font-size:1.1rem; color:var(--muted); max-width:480px; margin-bottom:30px;">یادداشت‌های کامل و به‌هم‌پیوسته از کتاب‌های مرجع — نه خلاصه‌های ناقص، بلکه پرونده‌هایی که سرنخ‌ها را به هم وصل می‌کنند.</p>
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <a href="#" style="display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#fff; font-weight:600; font-size:15px; padding:13px 26px; border-radius:9px; text-decoration:none;" style-hover="transform:translateY(-1px);">ورود به کتابخانه <span style="font-size:13px;">←</span></a>
+        <a href="#" style="display:inline-flex; align-items:center; color:var(--text); font-weight:500; font-size:15px; padding:13px 10px; text-decoration:none;" style-hover="color:var(--accent);">داستان سایت</a>
+      </div>
+    </div>
+    <!-- featured book -->
+    <div class="home-featured-book" style="position:relative; display:flex; justify-content:center;">
+      <div style="width:200px; aspect-ratio:3/4; border-radius:12px; background:linear-gradient(145deg,#f5ddd3,#e8b5a2); box-shadow:var(--shadow-lg); display:flex; flex-direction:column; justify-content:flex-end; padding:22px; transform:rotate(-3deg); position:relative;">
+        <div style="position:absolute; top:16px; right:18px; font-size:1.8rem;">📕</div>
+        <div style="font-weight:700; font-size:1.15rem; color:#3a2318; line-height:1.5;">الهام‌گرفته</div>
+        <div style="font-size:.85rem; color:#7a5140; margin-top:4px;">مارتی کیگان</div>
+      </div>
+      <div style="position:absolute; bottom:-14px; left:8px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); font-size:.8rem; font-weight:600; color:var(--accent);">۱۲ کتاب در کتابخانه</div>
+    </div>
+  </section>
+
+  <!-- LIBRARY PREVIEW -->
+  <sc-if value="{{ showLibraryPreview }}" hint-placeholder-val="{{ true }}">
+  <section style="max-width:1080px; margin:0 auto; padding:32px 24px 68px;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border);">
+      <div>
+        <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:3px;">از کتابخانه</h2>
+        <p style="color:var(--muted); font-size:.95rem; margin:0;">گزیده‌ای از کتاب‌های مرجع، همراه با یادداشت کامل.</p>
+      </div>
+      <a href="#" style="flex-shrink:0; color:var(--accent); font-weight:600; font-size:.92rem; text-decoration:none;">مشاهده‌ی همه ←</a>
+    </div>
+    <div class="home-preview-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+      <a href="#" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; text-decoration:none; color:inherit; display:flex; flex-direction:column; box-shadow:var(--shadow);" style-hover="transform:translateY(-4px);">
+        <div style="height:150px; background:linear-gradient(145deg,#f5ddd3,#e8b5a2); display:flex; align-items:center; justify-content:center; font-size:2.6rem; opacity:.95;">📕</div>
+        <div style="padding:16px 18px 18px; display:flex; flex-direction:column; flex:1;">
+          <div style="font-size:1rem; font-weight:600; margin-bottom:4px;">الهام‌گرفته</div>
+          <div style="font-size:.84rem; color:var(--muted); margin-bottom:14px;">مارتی کیگان</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:auto;">
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">کشف محصول</span>
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">تیم محصول</span>
+          </div>
+        </div>
+      </a>
+      <a href="#" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; text-decoration:none; color:inherit; display:flex; flex-direction:column; box-shadow:var(--shadow);" style-hover="transform:translateY(-4px);">
+        <div style="height:150px; background:linear-gradient(145deg,#d6e8d4,#a8c9a4); display:flex; align-items:center; justify-content:center; font-size:2.6rem; opacity:.95;">📗</div>
+        <div style="padding:16px 18px 18px; display:flex; flex-direction:column; flex:1;">
+          <div style="font-size:1rem; font-weight:600; margin-bottom:4px;">قلاب</div>
+          <div style="font-size:.84rem; color:var(--muted); margin-bottom:14px;">نیر ایال</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:auto;">
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">رفتار کاربر</span>
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">عادت‌سازی</span>
+          </div>
+        </div>
+      </a>
+      <a href="#" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; text-decoration:none; color:inherit; display:flex; flex-direction:column; box-shadow:var(--shadow);" style-hover="transform:translateY(-4px);">
+        <div style="height:150px; background:linear-gradient(145deg,#d3ddf5,#a2b5e8); display:flex; align-items:center; justify-content:center; font-size:2.6rem; opacity:.95;">📘</div>
+        <div style="padding:16px 18px 18px; display:flex; flex-direction:column; flex:1;">
+          <div style="font-size:1rem; font-weight:600; margin-bottom:4px;">اندازه‌گیری آنچه مهم است</div>
+          <div style="font-size:.84rem; color:var(--muted); margin-bottom:14px;">جان دوئر</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:auto;">
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">OKR</span>
+            <span style="font-size:.72rem; font-weight:500; padding:3px 10px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">استراتژی</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid var(--border); background:var(--surface);">
+    <div style="max-width:1080px; margin:0 auto; padding:28px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <span style="color:var(--muted); font-size:.85rem;">پت فیچر — دانشنامه‌ی یک مدیر محصول</span>
+      <div style="display:flex; gap:20px;">
+        <a href="#" style="color:var(--muted); font-size:.85rem; text-decoration:none;" style-hover="color:var(--accent);">کتابخانه</a>
+        <a href="#" style="color:var(--muted); font-size:.85rem; text-decoration:none;" style-hover="color:var(--accent);">درباره من</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:1500},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;},&quot;showLibraryPreview&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showApproach&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'dark',
+      showLibraryPreview: this.props.showLibraryPreview ?? true,
+      showApproach: this.props.showApproach ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

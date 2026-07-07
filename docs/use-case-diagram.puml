@@ -9,56 +9,41 @@ skinparam actor {
   BorderColor #333333
 }
 
-title petfeature.ir — Use Case Diagram (v1 Library + v2)
+title petfeature.ir — Use Case Diagram (v1 Library · v2 Blog · v3 Tools)
 
 actor "بازدیدکننده\n(Visitor)" as Visitor
 actor "مدیر\n(Milad Mirzaei)" as Admin
-actor "سرویس ایمیل\n(Email Service)" as Email <<system>> <<v2>>
 actor "شبکه‌های اجتماعی\n(Social Networks)" as Social <<system>> <<v2>>
 
 rectangle "petfeature.ir" {
 
-  ' --- v1: Visitor ---
+  ' --- v1: Library ---
   usecase "مرور کتابخانه\n(Browse Book Library)" as UC_Library
   usecase "مشاهده جزئیات کتاب\n(View Book Details)" as UC_BookDetail
   usecase "بازدید از درباره من\n(Visit About Me)" as UC_About
 
-  ' --- v2: Visitor account & engagement ---
-  usecase "ثبت‌نام\n(Register)" as UC_Register <<v2>>
-  usecase "عضویت در خبرنامه\n(Subscribe to Newsletter)" as UC_Newsletter <<v2>>
-  usecase "تماس\n(Contact)" as UC_Contact <<v2>>
-
-  ' --- v2: Visitor browse ---
-  usecase "مرور مسیر یادگیری\n(Browse Learning Path)" as UC_Path <<v2>>
+  ' --- v2: Blog ---
   usecase "مرور بلاگ\n(Browse Blog)" as UC_Blog <<v2>>
+  usecase "خواندن پست\n(Read Post)" as UC_ReadPost <<v2>>
+  usecase "امتیازدهی به پست\n(Rate Post)" as UC_RatePost <<v2>>
+  usecase "ثبت نظر روی پست\n(Comment on Post)" as UC_CommentPost <<v2>>
+  usecase "اشتراک‌گذاری\n(Share to Social Networks)" as UC_Share <<v2>>
+  usecase "کپی لینک\n(Copy Link)" as UC_CopyLink <<v2>>
 
-  ' --- v2: Included library ---
-  usecase "خواندن نظرات کتاب\n(Read Book Comments)" as UC_BookComments <<v2>>
-
-  ' --- v2: Included learning path ---
-  usecase "مشاهده محتوای مسیر\n(View Path Content)" as UC_PathContent <<v2>>
-
-  ' --- v2: Included blog ---
-  usecase "خواندن پست‌ها\n(Read Blog Posts)" as UC_ReadPost <<v2>>
-  usecase "ثبت واکنش\n(Make Reaction)" as UC_Reaction <<v2>>
-  usecase "ثبت نظر روی پست\n(Comment on Post)" as UC_Comment <<v2>>
-  usecase "اشتراک‌گذاری در شبکه‌های اجتماعی\n(Share to Social Networks)" as UC_Share <<v2>>
-
-  ' --- Shared form / auth ---
-  usecase "اعتبارسنجی فرم\n(Validate Form)" as UC_Validate <<v2>>
-  usecase "نمایش پیام موفقیت\n(Show Success Message)" as UC_Success <<v2>>
-  usecase "احراز هویت\n(Authenticate)" as UC_Auth <<v2>>
+  ' --- v3: Tools ---
+  usecase "مرور ابزارها\n(Browse Tools)" as UC_Tools <<v3>>
+  usecase "استفاده از ابزار\n(Use a Tool)" as UC_UseTool <<v3>>
 
   ' --- v1: Admin ---
-  usecase "مدیریت محتوای کتاب\n(Manage Library Content)" as UC_ManageBooks
-  usecase "مدیریت محتوای درباره نویسنده\n(Manage About Author Content)" as UC_ManageAbout
+  usecase "مدیریت محتوای کتاب‌ها\n(Manage Library Content)" as UC_ManageBooks
+  usecase "مدیریت درباره نویسنده\n(Manage About Author Content)" as UC_ManageAbout
 
   ' --- v2: Admin ---
-  usecase "مدیریت مسیر یادگیری\n(Manage Learning Path)" as UC_ManagePath <<v2>>
   usecase "مدیریت پست‌های بلاگ\n(Manage Blog Posts)" as UC_ManagePosts <<v2>>
-  usecase "مدیریت نظرات\n(Moderate Comments)" as UC_Moderate <<v2>>
-  usecase "دریافت پیام‌های تماس\n(Receive Contact Messages)" as UC_ReceiveMsg <<v2>>
-  usecase "ارسال خبرنامه\n(Send Newsletter)" as UC_SendNewsletter <<v2>>
+  usecase "مدیریت نظرات پست\n(Moderate Post Comments)" as UC_ModeratePostComments <<v2>>
+
+  ' --- v3: Admin ---
+  usecase "مدیریت ابزارها\n(Manage Tools)" as UC_ManageTools <<v3>>
 }
 
 ' --- Visitor: v1 ---
@@ -66,42 +51,25 @@ Visitor --> UC_Library
 Visitor --> UC_About
 
 ' --- Visitor: v2 ---
-Visitor --> UC_Register
-Visitor --> UC_Newsletter
-Visitor --> UC_Contact
-Visitor --> UC_Path
 Visitor --> UC_Blog
+
+' --- Visitor: v3 ---
+Visitor --> UC_Tools
 
 ' --- Browse library includes ---
 UC_Library ..> UC_BookDetail : <<include>>
-UC_Library ..> UC_BookComments : <<include>>
-
-' --- Browse learning path includes ---
-UC_Path ..> UC_PathContent : <<include>>
 
 ' --- Browse blog includes ---
 UC_Blog ..> UC_ReadPost : <<include>>
-UC_Blog ..> UC_Reaction : <<include>>
-UC_Blog ..> UC_Comment : <<include>>
+UC_Blog ..> UC_RatePost : <<include>>
+UC_Blog ..> UC_CommentPost : <<include>>
 UC_Blog ..> UC_Share : <<include>>
+UC_Blog ..> UC_CopyLink : <<include>>
 
-' --- v2: authenticated actions ---
-UC_Register ..> UC_Auth : <<include>>
-UC_Reaction ..> UC_Auth : <<extend>>
-UC_Comment ..> UC_Auth : <<extend>>
-UC_BookComments ..> UC_Auth : <<extend>>
+' --- Browse tools includes ---
+UC_Tools ..> UC_UseTool : <<include>>
 
-' --- Form flows ---
-UC_Newsletter ..> UC_Validate : <<include>>
-UC_Newsletter ..> UC_Success : <<include>>
-UC_Contact ..> UC_Validate : <<include>>
-UC_Contact ..> UC_Success : <<include>>
-
-' --- External systems (v2) ---
-UC_Newsletter --> Email
-UC_Contact --> Email
-UC_SendNewsletter --> Email
-UC_ReceiveMsg --> Email
+' --- External systems ---
 UC_Share --> Social
 
 ' --- Admin: v1 ---
@@ -109,40 +77,40 @@ Admin --> UC_ManageBooks
 Admin --> UC_ManageAbout
 
 ' --- Admin: v2 ---
-Admin --> UC_ManagePath
 Admin --> UC_ManagePosts
-Admin --> UC_Moderate
-Admin --> UC_ReceiveMsg
-Admin --> UC_SendNewsletter
+Admin --> UC_ModeratePostComments
+
+' --- Admin: v3 ---
+Admin --> UC_ManageTools
 
 note right of UC_Library
-  v1 — core launch:
-  browse books and
-  view full details
+  v1 — shipped:
+  browse + detail,
+  categories, media links,
+  downloads, referred books
 end note
 
-note right of UC_About
-  v1 — about author
-  and site story
+note right of UC_Blog
+  v2 — blog:
+  read posts (یادداشت),
+  star rating, comments,
+  share + copy link,
+  view counts
 end note
 
-note right of UC_Register
-  v2 — user account
-  for reactions, comments,
-  and book discussions
-end note
-
-note bottom of UC_Blog
-  v2 — path, blog,
-  newsletter, contact,
-  share, and community
+note right of UC_Tools
+  v3 — tools:
+  downloadable PM templates,
+  usage guides, cross-linked
+  to books and posts
 end note
 
 legend right
   |= Stereotype |= Meaning |
   | <<v2>> | Planned for version 2 |
+  | <<v3>> | Planned for version 3 |
   | <<include>> | Always part of parent use case |
-  | <<extend>> | Optional; requires condition |
+  | <<system>> | External actor / system |
 endlegend
 
 @enduml

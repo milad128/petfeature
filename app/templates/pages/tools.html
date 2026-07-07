@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="library-hero tools-hero">
+  <div class="container">
+    <div style="display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:12.5px; font-weight:600; margin-bottom:14px;">
+      <span style="width:20px; height:1.5px; background:var(--accent);"></span>مستقیم قابل استفاده
+    </div>
+    <h1>ابزارهای پت فیچر</h1>
+    <p class="library-hero-desc">قالب‌ها و چارچوب‌های آماده‌ی مدیریت محصول — رزومه، PRD، روم‌مپ، ماتریس اولویت‌بندی و متریک — برای استفاده‌ی مستقیم در کارت.</p>
+
+    <div class="lib-filter-row">
+      {% if tools %}
+      <span class="library-stat">
+        <span>🛠</span>
+        <span>{{ tools | length | fa_digits }} ابزار</span>
+      </span>
+      <span class="lib-filter-divider"></span>
+      {% endif %}
+      {% if categories %}
+      <div class="filter-strip" id="tools-filter" role="list" aria-label="دسته‌بندی‌ها">
+        <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
+        {% for cat in categories %}
+        <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="library-body">
+  <div class="container">
+    <div class="tool-grid" id="tools-grid">
+      {% if tools %}
+        {% for tool in tools %}
+        <a href="{{ url_for('tool_detail', slug=tool.slug) }}" class="tool-card" data-categories="{{ tool.category.name }}">
+          <span class="tag">{{ tool.category.name }}</span>
+          <div class="tool-card-title">{{ tool.title }}</div>
+          <div class="tool-card-desc">{{ tool.short_description }}</div>
+        </a>
+        {% endfor %}
+
+        <div class="empty-state" id="tools-filter-empty" hidden>
+          <span class="empty-icon" aria-hidden="true">🛠</span>
+          <h3>ابزاری در این دسته نیست</h3>
+          <p>دسته‌ی دیگری را امتحان کنید یا به «همه» برگردید.</p>
+        </div>
+
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-icon" aria-hidden="true">🛠</span>
+          <h3>هنوز ابزاری اضافه نشده</h3>
+          <p>ابزارهای پت فیچر به‌زودی اینجا خواهند بود.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_url(request, 'js/tools.js') }}"></script>
+{% endblock %}

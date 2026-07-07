@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_posts') }}" class="btn btn-ghost">انصراف</a>
+<button type="submit" form="post-form" class="btn btn-primary">ذخیره</button>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+<form id="post-form" method="post" enctype="multipart/form-data" action="{% if post and post.slug %}{{ url_for('admin_post_update', slug=post.slug) }}{% else %}{{ url_for('admin_post_create') }}{% endif %}" data-admin-form>
+  <input type="hidden" name="cover" id="cover-hidden" value="{{ post.cover if post else '' }}">
+  <input type="hidden" id="status-hidden" name="status" value="{{ post.status if post else 'draft' }}">
+  <input type="hidden" id="is-featured-hidden" name="is_featured" value="{{ 'true' if (post.is_featured if post else False) else 'false' }}">
+
+  <div class="card">
+    <div class="card-section">
+      <div class="card-section-title">اطلاعات یادداشت</div>
+
+      <div class="form-group">
+        <label class="form-label" for="cover-file">تصویر کاور</label>
+        <div class="cover-upload">
+          <div class="cover-preview-wrap {% if not post or not post.cover %}is-empty{% endif %}" id="cover-preview-wrap">
+            {% if post and post.cover %}
+            <img id="cover-preview" src="{{ post.cover }}" alt="پیش‌نمایش کاور">
+            {% else %}
+            <img id="cover-preview" alt="" hidden>
+            <span class="cover-preview-placeholder" id="cover-preview-placeholder">بدون تصویر</span>
+            {% endif %}
+          </div>
+          <input class="form-control" type="file" id="cover-file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <span class="form-hint">JPG، PNG، WebP یا GIF — حداکثر ۵ مگابایت. برای انتشار الزامی است.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="title">عنوان</label>
+        <input class="form-control" type="text" id="title" name="title" value="{{ post.title if post else '' }}" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="slug">نامک (Slug)</label>
+          <input class="form-control" type="text" id="slug" name="slug" value="{{ post.slug if post else '' }}" dir="ltr" required pattern="[a-z0-9-]+">
+          <span class="form-hint">آدرس صفحه: /blog/{{ post.slug if post else '...' }}/</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="published_date">تاریخ انتشار</label>
+          <input class="form-control" type="date" id="published_date" name="published_date" value="{{ post.published_date.strftime('%Y-%m-%d') if post and post.published_date else '' }}">
+          <span class="form-hint">خالی بگذارید تا هنگام انتشار، امروز ثبت شود</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">وضعیت انتشار</label>
+          <div class="status-switch">
+            <span class="switch {% if post and post.status == 'published' %}on{% endif %}" id="status-switch" role="switch" aria-checked="{{ 'true' if post and post.status == 'published' else 'false' }}"></span>
+            <span class="form-hint" id="status-hint">{{ 'منتشرشده — روی سایت قابل مشاهده است' if post and post.status == 'published' else 'پیش‌نویس — فقط برای شما قابل مشاهده است' }}</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">مطلب ویژه</label>
+          <div class="status-switch">
+            <span class="switch {% if post and post.is_featured %}on{% endif %}" id="is-featured-switch" role="switch" aria-checked="{{ 'true' if post and post.is_featured else 'false' }}"></span>
+            <span class="form-hint" id="is-featured-hint">{{ 'در کارت بزرگ بالای بلاگ نمایش داده می‌شود' if post and post.is_featured else 'در لیست عادی نمایش داده می‌شود' }}</span>
+          </div>
+        </div>
+      </div>
+
+      {% if post and post.read_time_minutes %}
+      <p class="form-hint">زمان مطالعه (محاسبه‌شده): {{ post.read_time_minutes | fa_digits }} دقیقه</p>
+      {% endif %}
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">محتوا</div>
+
+      <div class="form-group">
+        <label class="form-label" for="excerpt">خلاصه</label>
+        <textarea class="form-control" id="excerpt" name="excerpt" rows="2" placeholder="اگر خالی بماند، از ۲۰۰ حرف اول متن ساخته می‌شود">{{ post.excerpt if post else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="body-editor">متن یادداشت</label>
+        <div class="richtext" data-richtext data-target="body-hidden">
+          <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
+            <select class="richtext-font-select" data-command="fontName" title="فونت">
+              <option value="">فونت پیش‌فرض</option>
+              <option value="Vazirmatn">وزیرمتن</option>
+              <option value="Vazir">وزیر</option>
+              <option value="Sahel">ساحل</option>
+              <option value="Samim">صمیم</option>
+              <option value="Shabnam">شبنم</option>
+              <option value="Tanha">تنها</option>
+              <option value="Gandom">گندم</option>
+              <option value="Nahid">ناهید</option>
+              <option value="Parastoo">پرستو</option>
+            </select>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="bold" title="ضخیم"><b>B</b></button>
+            <button type="button" class="richtext-btn" data-command="italic" title="مورب"><i>I</i></button>
+            <button type="button" class="richtext-btn" data-command="underline" title="زیرخط‌دار"><u>U</u></button>
+            <input type="color" class="richtext-color-input" data-command="foreColor" title="رنگ متن" value="#c2410c">
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="formatBlock" data-value="blockquote" title="نقل‌قول">”</button>
+            <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">☰</button>
+            <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">☷</button>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
+            <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
+          </div>
+          <div class="richtext-editor" id="body-editor" contenteditable="true" data-placeholder="متن یادداشت..."></div>
+        </div>
+        <textarea id="body-hidden" name="body" hidden>{{ post.body if post else '' }}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <div class="form-actions-left">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <a href="{{ url_for('admin_posts') }}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+
+</form>
+
+{% if post and post.slug %}
+<form method="post" action="{{ url_for('admin_post_delete', slug=post.slug) }}" data-delete-form data-confirm="این یادداشت حذف شود؟" class="form-actions form-actions-danger">
+  <button type="submit" class="btn btn-danger">حذف یادداشت</button>
+</form>
+{% endif %}
+{% endblock %}

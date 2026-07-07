@@ -23,7 +23,17 @@ async def lifespan(app: FastAPI):
     if settings.database_url.startswith("sqlite"):
         from app.core.sqlite_migrations import migrate_books_schema
         from app.core.database import Base, engine
-        from app.models import AboutPage, Book, BookMediaLink, Category  # noqa: F401
+        from app.models import (  # noqa: F401
+            AboutPage,
+            Book,
+            BookMediaLink,
+            Category,
+            Post,
+            PostComment,
+            PostRating,
+            Tool,
+            ToolFile,
+        )
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

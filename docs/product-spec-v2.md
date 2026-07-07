@@ -1,354 +1,285 @@
-# Product Spec v2 — پت فیچر (Full Site + Community)
+# Product Spec v2 — پت فیچر (Blog)
 
-> **Prerequisite:** [Product Spec v1](./product-spec-v1.md) must be shipped first · **Parent:** [Product overview](./product-spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Prerequisite:** [Product Spec v1](./product-spec-v1.md) must be shipped first · **Parent:** [Product overview](./product-spec.md) · **Next:** [Product Spec v3](./product-spec-v3.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 
 ## 1. Summary
 
 | Field | Value |
 |--------|--------|
-| **Version** | v2 — Full site + community release |
-| **Goal** | Add learning path, blog, newsletter, contact, social sharing, and authenticated engagement on top of the v1 library |
+| **Version** | v2 — Blog |
+| **Status** | Planned |
+| **Goal** | Publish personal PM essays with clean URLs, social sharing, view counts, star ratings, and a comment section |
 | **Builds on** | [Product Spec v1](./product-spec-v1.md) |
-| **New in v2** | Path, blog, newsletter, contact, share, register, auth, reactions, comments, moderation |
+| **Design files** | `petfeature redesign/project/Petfeature Blog.dc.html`, `Petfeature Post.dc.html` |
+| **New in v2** | Blog list page, post detail page, featured posts, view counts, star rating on posts, post comments, admin post management |
 
-**Scope in one sentence:** Complete the remake (path, blog, newsletter, contact, sharing) and let registered users react and comment while the admin moderates discussion.
+**Scope in one sentence:** Add a full blog (یادداشت) with star ratings, comments, view counts, and social sharing — post reactions and comments are independent of the book system.
 
 ---
 
 ## 2. Problem & Goals
 
-**Problem:** v1 ships only the library and about page. Readers still need the learning path, essays, newsletter, and contact — and cannot participate in discussions.
+**Problem:** v1 ships only the library. The author has personal PM essays with no clean home in the new codebase — no proper URLs, no Jalali dates, no view counts, no way for readers to rate or comment.
 
 **v2 goals**
 
-- **Browse Learning Path** with **View Path Content**
-- **Browse Blog** with **Read Blog Posts** and **Share to Social Networks**
-- Reliable **Subscribe to Newsletter** and **Contact** flows
-- **Register** and **Authenticate** users
-- **Make Reaction** and **Comment on Post** when browsing blog
-- **Read Book Comments** (and post when logged in) when browsing library
-- **Moderate Comments** for the admin
-- Admin CMS extensions for path, blog, newsletter, and contact
+- **Browse Blog** — read PM essays with cover images, Jalali dates, read time, and view counts
+- **Featured posts** — highlighted section on the blog list for admin-picked posts
+- **Share to Social Networks** — share posts to LinkedIn, X, Telegram with correct OG previews
+- **Copy link** — one-click copy of the post URL
+- **Star rating on posts** — visitors rate how useful a post was (1–5 stars)
+- **Post comments** — visitors leave comments; admin moderates them
+- **View count** — every page load increments the post's view counter
+- **Admin CMS** — full post management (CRUD, featured toggle, comment moderation)
 
 ---
 
 ## 3. Actors
 
-| Actor | Role in v2 |
-|-------|------------|
-| **Visitor** | All v1 capabilities plus path, blog, newsletter, contact, share; may register to unlock engagement |
-| **Registered user** | Authenticated visitor; can react, comment on posts, comment on books |
-| **Admin (Milad Mirzaei)** | All v1 admin capabilities plus path, blog, newsletter, contact; moderates comments |
-| **Email service** | Newsletter signup, contact delivery, outbound newsletter |
-| **Social networks** | External share targets (LinkedIn, X, Telegram, etc.) |
+| Actor | Role |
+|-------|------|
+| **Visitor** | All v1 capabilities + reads posts, rates posts, comments, copies link, shares |
+| **Admin (Milad Mirzaei)** | All v1 admin + creates/edits/deletes posts, marks featured, moderates comments |
+| **Social networks** | External share targets (LinkedIn, X, Telegram) |
 
 ---
 
-## 4. Target Users
-
-| Persona | Need |
-|---------|------|
-| **Junior / aspiring PM** | Reading lists, learning path, practical essays |
-| **Mid-level PM** | Book deep-dives, cross-linked resources |
-| **Returning reader** | Newsletter updates, shareable posts |
-| **Engaged reader** | React to posts, join discussions |
-| **Book learner** | Read and contribute book comments |
-| **PM community in Iran** | Persian content, curated sources |
-| **Admin** | Publish notes, grow library, collect emails, moderate community |
-
----
-
-## 5. Core Value (v2)
-
-1. **Learning path (مسیر)** — structured steps linking books and posts
-2. **Personal essays (بلاگ)** — stories and lessons from real PM work
-3. **Newsletter** — free updates when new resources are added
-4. **Social sharing** — share posts to external networks
-5. **Community** — reactions and comments on blog posts
-6. **Book discussions** — comments on library pages
-7. **Registered identity** — one account for all engagement actions
-8. **Moderated quality** — admin controls visible discussion
-
----
-
-## 6. Information Architecture (additions)
+## 4. Information Architecture (additions)
 
 Extends [v1 IA](./product-spec-v1.md#6-information-architecture):
 
 ```
 Home (/)
-├── مسیر          → /path/          (new in v2)
-├── بلاگ          → /blog/          (new in v2)
-├── کتابخانه     → /library/       (from v1)
-├── درباره من    → /about/          (from v1)
-├── خبرنامه       → /newsletter/    (new in v2)
-└── تماس          → /contact/       (new in v2)
-
-/register/     → Create account
-/login/        → Sign in
-/logout/       → End session
-/account/      → Profile (optional v2.1)
+├── بلاگ              → /blog/          (new in v2)
+│   └── {slug}/        → /blog/{slug}/   (new in v2)
+├── کتابخانه          → /library/       (from v1)
+│   └── {slug}/        → /library/{slug}/
+└── درباره من         → /about/          (from v1)
 ```
 
 **Global additions**
 
-- Expanded nav: مسیر، بلاگ، خبرنامه، تماس
-- Footer newsletter CTA (single strong CTA; avoid repeating on every section)
-- Auth entry in header: login / register
-- Reaction and comment UI on blog post pages
-- Comment section on book detail pages
+- **بلاگ** added to main nav (nav: کتابخانه | بلاگ | درباره من)
 
 ---
 
-## 7. Feature Requirements
+## 5. Feature Requirements
 
-Aligned with [use case diagram](./use-case-diagram.md) — v2 use cases only.
+### 5.1 Browse Blog — `/blog/`
 
-### 7.1 Subscribe to Newsletter
+**Hero section**
+- Page title: یادداشت‌های پت فیچر
+- Description: "یادداشت‌ها و برداشت‌های شخصی درباره‌ی مدیریت محصول — چیزهایی که بین خواندن کتاب‌ها و کار روزمره کشف می‌کنم."
+- Post count badge: ✍️ N یادداشت
 
-| Item | Detail |
-|------|--------|
-| **Route** | `/newsletter/` + footer CTA |
-| **Fields** | نام و نام‌خانوادگی، ایمیل |
-| **Includes** | Validate form, show success message |
-| **Integration** | Email service (provider TBD) |
-| **Success copy** | «با موفقیت در خبرنامه عضو شدید» |
+**Featured posts section (مطلب ویژه)**
+- Admin can mark any number of posts as featured
+- Only the single most-recently-published featured post is shown in the large highlighted card at the top; other posts marked featured simply appear in their normal chronological position in the list
+- Featured card shows: title, excerpt, Jalali date, read time, view count (👁)
 
-### 7.2 Contact
-
-| Item | Detail |
-|------|--------|
-| **Route** | `/contact/` |
-| **Fields** | نام، ایمیل، پیام |
-| **Includes** | Validate form, show success message |
-| **Extras** | LinkedIn link to author; optional book-tip messages |
-| **Admin** | Receive via email/admin |
-
-### 7.3 Browse Learning Path
-
-**Route:** `/path/`
-
-| Included use case | Requirements |
-|-------------------|--------------|
-| **View Path Content** | Ordered steps, descriptions, links to books and posts |
-
-**Page requirements**
-
-- Dedicated route (replaces unclear current nav destination)
-- Admin-managed steps via CMS
-- Links into library and blog content
-
-### 7.4 Browse Blog
-
-**Route:** `/blog/`
-
-| Included use case | Requirements |
-|-------------------|--------------|
-| **Read Blog Posts** | List + full post; Jalali dates |
-| **Share to Social Networks** | Share buttons; Open Graph metadata |
-
-**Page requirements**
-
-- Reverse-chronological list: title, date, excerpt
-- Post page: full essay, clean slug URLs
-- Share to LinkedIn, X, Telegram, etc.
-
-**Sample posts to migrate:**
-
-- تارگت 10X رو دیدی، کدو رو ندیدی؟
-- کتابی که داشت جون منو نجات میداد
-- فرمول تبدیل شدن به بدترین مدیر محصول!
-- با این تکنیک کتاب بعدی را برای خواندن انتخاب کنید
-
-### 7.5 Home (v2 expansion)
-
-- Entry points: مسیر، بلاگ، کتابخانه، درباره من
-- Pet feature definition
-- Newsletter CTA
-
-### 7.6 Register
-
-| Item | Detail |
-|------|--------|
-| **Route** | `/register/` |
-| **Includes** | Authenticate (session created on success) |
-| **Fields** | TBD: email + password, magic link, or OAuth |
-| **Acceptance** | User can sign up and land logged in |
-
-### 7.7 Authenticate
-
-| Item | Detail |
-|------|--------|
-| **Routes** | `/login/`, `/logout/` |
-| **Required for** | Make Reaction, Comment on Post, post Book Comments |
-| **Extend behavior** | Unauthenticated users prompted to login when attempting these actions |
-| **Acceptance** | Secure session; persisted across visits |
-
-### 7.8 Browse Book Library — v2 additions
-
-Extends v1 **Browse Book Library**:
-
-| Included use case | Requirements |
-|-------------------|--------------|
-| **Read Book Comments** | Display comments on book detail pages |
-| **Post book comment** | Logged-in users can add comments (extends Authenticate) |
-
-**Rules**
-
-- Reading comments: public (or public when approved only — TBD)
-- Posting comments: requires auth
-- New comments: pre-moderation or post-moderation (TBD)
-
-### 7.9 Browse Blog — v2 additions
-
-Extends **Browse Blog** (Read Posts + Share):
-
-| Included use case | Requirements |
-|-------------------|--------------|
-| **Make Reaction** | Lightweight reaction on post (like / helpful — type TBD) |
-| **Comment on Post** | User comment on essay |
-
-**Rules**
-
-- Both require auth (extend Authenticate)
-- One reaction per user per post (TBD)
-- Comments subject to moderation policy
-
-### 7.10 Moderate Comments (Admin)
-
-| Item | Detail |
-|------|--------|
-| **Access** | Admin-only |
-| **Actions** | Approve, reject, delete comments |
-| **Targets** | Book comments and post comments |
-| **Queue** | Pending comments if pre-moderation |
-
-### 7.11 Admin (backend / CMS) — v2 additions
-
-Extends v1 admin capabilities:
-
-| Feature | Description |
-|---------|-------------|
-| **Manage Learning Path** | CRUD path steps and links |
-| **Manage Blog Posts** | CRUD posts |
-| **Receive Contact Messages** | Inbound contact via email/admin |
-| **Send Newsletter** | Email subscribers when content is added |
+**Post list**
+- Reverse-chronological order (featured post excluded from the list since it's shown above)
+- Each post card: cover image, title, excerpt, Jalali date, read time, view count (👁)
+- Empty state (no published posts yet): "✍️ هنوز یادداشتی منتشر نشده"
 
 ---
 
-## 8. Content Model (v2 additions)
+### 5.2 Read Blog Post — `/blog/{slug}/`
+
+**Header area**
+
+| Element | Detail |
+|---------|--------|
+| Breadcrumb | بلاگ ‹ {post title} |
+| Title | Post title (large) |
+| Author | میلاد میرزایی (fixed — always the author) |
+| Date | Jalali (Shamsi) formatted published date |
+| Read time | Auto-calculated (word count ÷ 200 wpm); displayed as "N دقیقه مطالعه" |
+| View count | 👁 N بازدید — incremented on every page load (server-side) |
+| Copy link | 🔗 button — copies post URL to clipboard via JS; label toggles to confirm |
+
+**Body**
+
+| Element | Detail |
+|---------|--------|
+| Cover image | Large featured image at top |
+| Body content | Rich-text HTML |
+| Quote highlights | Styled blockquote blocks within the body |
+
+**Star rating widget**
+
+| Element | Detail |
+|---------|--------|
+| Label | "این یادداشت چقدر به‌دردت خورد؟" |
+| Input | 5-star selector (★ ★ ★ ★ ★) |
+| Display | Average score ("میانگین امتیاز: N.N از ۵") + vote count ("بر اساس N رای") |
+| Post-vote | Thank-you state: "ممنون! ✓" |
+| Who | Any visitor — no login required |
+| Dedup | Visitor token (cookie/localStorage) — one rating per visitor per post |
+
+**Comments section**
+
+| Element | Detail |
+|---------|--------|
+| Header | نظرها (N) — shows approved comment count |
+| Comment list | Chronological; each shows: commenter name, date, body |
+| Visible | Approved comments only |
+| Empty state | Graceful if no approved comments yet |
+| Add comment form | نام (required)، ایمیل (optional)، متن نظر (required); submit button: "ارسال نظر ←" |
+| Auth | No login required — open to all visitors |
+| On submit | Success message shown; comment goes to pending queue |
+
+**Share buttons**
+- Appear in **two locations**: directly below the post metadata (top) and again at the bottom of the post body
+- Channels: LinkedIn, X (Twitter), Telegram
+
+**Footer of post**
+- Link back: "همه‌ی یادداشت‌ها"
+
+---
+
+### 5.3 Share to Social Networks
+
+From any post detail page — share buttons appear at **both** the top (below metadata) and the bottom of the post body:
+
+| Channel | Mechanism |
+|---------|-----------|
+| LinkedIn | Share URL |
+| X (Twitter) | Tweet with title + URL |
+| Telegram | Telegram share link |
+| OG tags | `og:title`, `og:description`, `og:image` in `<head>` for correct social previews |
+
+---
+
+### 5.4 Admin CMS — v2 additions
+
+All routes under `/admin/`.
+
+#### Manage Posts — `/admin/posts/`
+
+**Post list**
+
+| Column | Detail |
+|--------|--------|
+| Title | Post title |
+| Status | Draft / Published |
+| Featured | Yes / No |
+| Date | Published date (Jalali) |
+| Views | View count |
+| Rating | Average stars + vote count |
+| Comments | Pending + approved count |
+| Actions | Edit, Delete |
+
+**Create / Edit Post — `/admin/posts/new/` and `/admin/posts/{slug}/edit/`**
+
+| Field | Detail |
+|-------|--------|
+| Title | Text input |
+| Slug | Auto-generated from title; editable; uniqueness validated |
+| Cover image | File upload (JPG/PNG); **required** — post cannot be published without a cover; stored in `static/uploads/post-covers/` |
+| Body | Rich-text editor (HTML) |
+| Excerpt | Text area; auto-generated from first ~200 chars of body if left empty; admin can override |
+| Status | Draft / Published |
+| Published date | Date picker; defaults to today when publishing |
+| Featured | Toggle (yes/no) — marks post for featured section; featured posts sorted by published date descending |
+| Read time | Shown as calculated value (word count ÷ 200); display only, not editable |
+
+**Delete post** — removes post and all its ratings and comments.
+
+#### Manage Post Comments — `/admin/posts/comments/`
+
+| Feature | Detail |
+|---------|--------|
+| List | All comments across all posts; filterable by status (pending/approved/rejected) |
+| Columns | Post title, commenter name, excerpt, date, status |
+| Default view | Pending queue |
+| Approve | Comment becomes visible on post page |
+| Reject | Hidden from post; kept in DB |
+| Delete | Permanently removed |
+
+---
+
+## 6. Content Model (v2 additions)
 
 New entities on top of [v1 content model](./product-spec-v1.md#8-content-model-v1):
 
 | Entity | Key fields |
 |--------|------------|
-| **Post** | title, slug, date, excerpt, body, tags[], related_books[] |
-| **Path step** | title, order, description, linked_books[], linked_posts[] |
-| **Subscriber** | name, email, subscribed_at |
-| **Message** | name, email, body, type (contact/tip), created_at |
-| **User** | name, email, password_hash, created_at |
-| **Comment** | user_id, target_type (book \| post), target_id, body, status (pending \| approved \| rejected), created_at |
-| **Reaction** | user_id, post_id, type, created_at |
+| **Post** | id, title, slug (unique), cover (path), body (text), excerpt (text, nullable), published_date, status (draft/published), is_featured (bool, default false), read_time_minutes (int, auto-calculated), view_count (int, default 0), created_at, updated_at |
+| **PostRating** | id, post_id (FK), visitor_token, stars (1–5), created_at |
+| **PostComment** | id, post_id (FK), author_name, author_email (nullable), body (text), status (pending/approved/rejected), created_at |
 
 **Relationships**
 
-- Books ↔ resources ↔ posts ↔ path steps form a knowledge graph
-- User → many Comments, many Reactions
-- Comment → Book or Post (polymorphic target)
-- Reaction → Post (unique per user per post, TBD)
+- Post → many PostRating (cascade delete)
+- Post → many PostComment (cascade delete)
+- PostRating: unique per (post_id, visitor_token) — update on re-rate
+- PostComment: moderated; only approved ones shown publicly
+
+**Calculated fields (not stored separately)**
+
+- `read_time_minutes` — calculated on save: `ceil(word_count(body) / 200)`
+- `average_rating` — computed from PostRating on read: `avg(stars)` where post_id matches
+- `rating_count` — `count(*)` from PostRating where post_id matches
+- `approved_comment_count` — `count(*)` from PostComment where post_id and status = approved
 
 ---
 
-## 9. Non-Functional Requirements (v2)
+## 7. Non-Functional Requirements (v2)
 
 | Area | Requirement |
 |------|-------------|
-| **SEO** | OG tags for blog share |
-| **Analytics** | Newsletter conversion, share clicks |
-| **Auth security** | Hashed passwords, secure cookies/JWT, CSRF protection |
-| **Rate limiting** | Throttle comment and registration endpoints |
-| **Spam protection** | Honeypot, rate limits; optional CAPTCHA |
-| **Moderation** | Admin queue; audit log for approve/delete |
-| **Privacy** | Minimal PII; clear data retention policy |
+| **OG / SEO** | `og:title`, `og:description`, `og:image` on each post page |
+| **Jalali dates** | All blog dates displayed in Persian calendar (Shamsi) format |
+| **Read time** | Calculated server-side on save: word count ÷ 200 wpm, rounded up |
+| **View count** | Incremented server-side on each `GET /blog/{slug}/`; known crawler User-Agents excluded; fire-and-forget (non-blocking) |
+| **Copy link** | JS Clipboard API; label changes to confirm state on success |
+| **Rating dedup** | Visitor token checked server-side before recording; update existing row on re-rate |
+| **Comment spam** | Honeypot field + rate limiting per IP on comment submit |
+| **Moderation default** | All new comments start as `pending`; none auto-approved |
+| **Mobile** | All sections fully responsive: post cards, rating widget, comment form, share buttons |
 
 ---
 
-## 10. Out of Scope (v2)
+## 8. Out of Scope (v2)
 
 | Item | Notes |
 |------|-------|
-| Full-text search | Post-v2 |
-| Real-time chat | Not planned |
-| User profiles / avatars | Optional v2.1 |
-| Nested comment threads | Flat comments in v2; threading later |
-| Email notifications on reply | Optional v2.1 |
-| English version | Unless requested |
-| Mobile app | Web only |
+| Newsletter subscription | → v4 |
+| Contact form | → v4 |
+| Learning path (مسیر) | → v3 |
+| Book reactions and book comments | → v5 (independent from post system) |
+| Full-text search | Not planned yet |
+| Comment replies / threads | Flat comments only |
+| Email notification on new comment | Not in v2 |
+| User registration / login | Not planned yet |
 
 ---
 
-## 11. Gaps Fixed from Current Site (v2)
-
-| Current gap | v2 fix |
-|-------------|--------|
-| مسیر nav with no clear page | `/path/` with View Path Content |
-| Repeated newsletter forms | Consolidated CTA strategy |
-| Legacy blog URLs | Clean slugs |
-| No share flow | Share to Social Networks on blog |
-
----
-
-## 12. Success Metrics
-
-| Metric | Why it matters |
-|--------|----------------|
-| Newsletter signups | Core growth loop |
-| Return visitors | Useful reference site |
-| Time on book/post pages | Content resonates |
-| Share clicks | Organic reach |
-| Registered users | Community adoption |
-| Comments per post / book | Engagement depth |
-| Reactions per post | Low-friction engagement |
-| Moderation queue clearance time | Healthy community |
-| Spam / abuse rate | Safety |
-
----
-
-## 13. Technical Direction (TBD)
-
-- Email: Buttondown, Mailchimp, Resend, etc.
-- Auth: session cookies or JWT
-- Database tables: users, comments, reactions, subscribers, messages
-- Admin UI: moderation queue in CMS or custom panel
-- API routes: register, login, comment CRUD, reaction toggle, newsletter, contact
-- Migration: posts, path content from current site; no user data (greenfield)
-
----
-
-## 14. Dependency on v1
+## 9. Dependency on v1
 
 v2 assumes v1 provides:
 
-- Book library with full detail pages
-- About-author page and CMS
-- Production deployment and domain
-
-Do not start v2 implementation until v1 is live and stable.
+- Book library with full detail pages and slug-based URLs
+- About-author page and admin CMS
+- Production deployment on Hamravesh Darkube stable
 
 ---
 
-## 15. Open Questions (v2)
+---
 
-1. **Learning path shape** — skill map, reading order, or career timeline?
-2. **Newsletter tool** — which provider?
-3. **Newsletter CTA placement** — footer only vs dedicated page + one inline CTA?
-4. **Auth method** — email/password, magic link, or OAuth (Google/LinkedIn)?
-5. **Comment policy** — pre-moderation vs post-moderation?
-6. **Reaction types** — single like or multiple types?
-7. **Book comments** — public read of pending comments or approved-only?
-8. **User display name** — real name, nickname, or email-derived?
-9. **Account deletion** — self-service or contact admin?
+## 11. Success Metrics
+
+| Metric | Why it matters |
+|--------|----------------|
+| Blog post views | Content reach |
+| Time on post pages | Content resonates |
+| Share clicks | Organic reach |
+| Average star rating per post | Quality signal |
+| Rating participation rate | Reader engagement |
+| Comments per post | Deeper engagement |
+| Moderation queue clearance time | Admin keeps discussion clean |
 
 ---
 
-*v2 spec — June 2026*
+*v2 spec — July 2026 · Updated from design files: Petfeature Blog.dc.html, Petfeature Post.dc.html*

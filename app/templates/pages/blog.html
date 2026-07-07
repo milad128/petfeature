@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="blog-hero">
+  <div class="container">
+    <div class="blog-hero-eyebrow"><span></span>یادداشت‌های پت فیچر</div>
+    <h1>بلاگ</h1>
+    <p class="blog-hero-desc">یادداشت‌ها و برداشت‌های شخصی درباره‌ی مدیریت محصول — چیزهایی که بین خواندن کتاب‌ها و کار روزمره کشف می‌کنم.</p>
+    <span class="library-stat">
+      <span>✍️</span>
+      <span>{{ post_count | fa_digits }} یادداشت</span>
+    </span>
+  </div>
+</section>
+
+<div class="blog-body">
+  <div class="container">
+
+    {% if featured %}
+    <a href="{{ url_for('post_detail', slug=featured.slug) }}" class="blog-featured">
+      <div class="blog-featured-text">
+        <span class="blog-featured-badge">مطلب ویژه</span>
+        <div class="blog-featured-title">{{ featured.title }}</div>
+        <div class="blog-featured-excerpt">{{ featured.excerpt }}</div>
+        <div class="blog-post-meta">
+          <span>{{ featured.published_date | jalali }}</span><span>·</span>
+          <span>{{ featured.read_time_minutes | fa_digits }} دقیقه مطالعه</span><span>·</span>
+          <span>👁 {{ featured.view_count | fa_digits }}</span>
+        </div>
+      </div>
+      <div class="blog-featured-cover">
+        {% if featured.cover %}
+        <img src="{{ featured.cover }}" alt="{{ featured.title }}">
+        {% else %}
+        <span class="book-cover-icon" aria-hidden="true">✍️</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endif %}
+
+    {% if posts %}
+    <div class="blog-list">
+      {% for post in posts %}
+      <a href="{{ url_for('post_detail', slug=post.slug) }}" class="blog-post-card">
+        <div class="blog-post-cover">
+          {% if post.cover %}
+          <img src="{{ post.cover }}" alt="{{ post.title }}" loading="lazy">
+          {% else %}
+          <span class="book-cover-icon" aria-hidden="true">✍️</span>
+          {% endif %}
+        </div>
+        <div class="blog-post-info">
+          <div class="blog-post-title">{{ post.title }}</div>
+          <div class="blog-post-excerpt">{{ post.excerpt }}</div>
+        </div>
+        <div class="blog-post-meta blog-post-meta-side">
+          <span>{{ post.published_date | jalali }}</span>
+          <span>{{ post.read_time_minutes | fa_digits }} دقیقه</span>
+          <span>👁 {{ post.view_count | fa_digits }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% elif not featured %}
+    <div class="empty-state">
+      <span class="empty-icon" aria-hidden="true">✍️</span>
+      <h3>هنوز یادداشتی منتشر نشده</h3>
+      <p>یادداشت‌های پت فیچر به‌زودی اینجا خواهند بود.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

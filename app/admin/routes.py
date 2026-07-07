@@ -20,12 +20,18 @@ from app.core.database import get_db
 from app.core.templates import templates
 from app.models.book import BookStatus
 from app.models.category import Category
+from app.models.post import CommentStatus, PostStatus
+from app.models.tool import ToolStatus
 from app.schemas.about import AboutForm, LinkInput
 from app.schemas.book import BookForm
 from app.schemas.category import CategoryForm
+from app.schemas.post import PostForm
+from app.schemas.tool import ToolFileInput, ToolForm
 from app.services import about as about_service
 from app.services import books as book_service
 from app.services import categories as category_service
+from app.services import posts as post_service
+from app.services import tools as tool_service
 from app.services import uploads as upload_service
 
 router = APIRouter()
@@ -407,6 +413,312 @@ async def admin_book_delete(
     return RedirectResponse(url="/admin/books/", status_code=303)
 
 
+@router.get("/posts/", name="admin_posts")
+async def admin_posts_list(request: Request, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    posts = await post_service.list_posts(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/posts_list.html",
+        _admin_context(request, page_title="یادداشت‌ها", active_nav="posts", posts=posts),
+    )
+
+
+@router.get("/posts/new/", name="admin_post_new")
+async def admin_post_new_get(request: Request):
+    if redirect := _guard_admin(request):
+        return redirect
+    return templates.TemplateResponse(
+        request,
+        "admin/post_form.html",
+        _admin_context(
+            request,
+            page_title="یادداشت جدید",
+            active_nav="posts",
+            post=None,
+            form_error=None,
+        ),
+    )
+
+
+@router.post("/posts/new/", name="admin_post_create")
+async def admin_post_new_post(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    slug: str = Form(""),
+    cover: str = Form(""),
+    body: str = Form(""),
+    excerpt: str = Form(""),
+    status: str = Form(PostStatus.DRAFT.value),
+    is_featured: str = Form("false"),
+    published_date: str = Form(""),
+    cover_file: Optional[UploadFile] = File(None),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    form_data = _parse_post_form(
+        title=title,
+        slug=slug.strip().lower(),
+        cover=cover,
+        body=body,
+        excerpt=excerpt,
+        status=status,
+        is_featured=is_featured,
+        published_date=published_date,
+    )
+    if isinstance(form_data, ValidationError):
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title="یادداشت جدید",
+                active_nav="posts",
+                post=_raw_post_preview(
+                    title, slug, cover, body, excerpt, status, is_featured, published_date
+                ),
+                form_error=_format_validation_error(form_data),
+            ),
+            status_code=422,
+        )
+
+    form_data, upload_error = await _resolve_post_upload(form_data, cover=cover, cover_file=cover_file)
+    if upload_error:
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title="یادداشت جدید",
+                active_nav="posts",
+                post=_form_as_post_preview(form_data),
+                form_error=upload_error,
+            ),
+            status_code=422,
+        )
+
+    existing = await post_service.get_post_by_slug(db, form_data.slug)
+    if existing:
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title="یادداشت جدید",
+                active_nav="posts",
+                post=_form_as_post_preview(form_data),
+                form_error="این نامک (slug) قبلاً استفاده شده است.",
+            ),
+            status_code=422,
+        )
+    if form_data.status == PostStatus.PUBLISHED.value and not form_data.cover:
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title="یادداشت جدید",
+                active_nav="posts",
+                post=_form_as_post_preview(form_data),
+                form_error="برای انتشار یادداشت، تصویر کاور الزامی است.",
+            ),
+            status_code=422,
+        )
+
+    post = await post_service.create_post(db, form_data)
+    return RedirectResponse(url=f"/admin/posts/{post.slug}/edit/?saved=1", status_code=303)
+
+
+@router.get("/posts/{slug}/edit/", name="admin_post_edit")
+async def admin_post_edit_get(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    saved: Optional[int] = None,
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    post = await post_service.get_post_by_slug(db, slug)
+    if post is None:
+        return RedirectResponse(url="/admin/posts/", status_code=303)
+    return templates.TemplateResponse(
+        request,
+        "admin/post_form.html",
+        _admin_context(
+            request,
+            page_title=f"ویرایش: {post.title}",
+            active_nav="posts",
+            post=post,
+            form_error=None,
+            saved=bool(saved),
+        ),
+    )
+
+
+@router.post("/posts/{slug}/edit/", name="admin_post_update")
+async def admin_post_edit_post(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    slug_field: str = Form("", alias="slug"),
+    cover: str = Form(""),
+    body: str = Form(""),
+    excerpt: str = Form(""),
+    status: str = Form(PostStatus.DRAFT.value),
+    is_featured: str = Form("false"),
+    published_date: str = Form(""),
+    cover_file: Optional[UploadFile] = File(None),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    post = await post_service.get_post_by_slug(db, slug)
+    if post is None:
+        return RedirectResponse(url="/admin/posts/", status_code=303)
+
+    form_data = _parse_post_form(
+        title=title,
+        slug=slug_field.strip().lower(),
+        cover=cover,
+        body=body,
+        excerpt=excerpt,
+        status=status,
+        is_featured=is_featured,
+        published_date=published_date,
+        existing_published_date=post.published_date,
+    )
+    if isinstance(form_data, ValidationError):
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {title or slug}",
+                active_nav="posts",
+                post=_raw_post_preview(
+                    title, slug_field, cover, body, excerpt, status, is_featured, published_date
+                ),
+                form_error=_format_validation_error(form_data),
+            ),
+            status_code=422,
+        )
+
+    form_data, upload_error = await _resolve_post_upload(
+        form_data, cover=cover, cover_file=cover_file, old_cover=post.cover
+    )
+    if upload_error:
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {title or slug}",
+                active_nav="posts",
+                post=_form_as_post_preview(form_data, form_data.slug),
+                form_error=upload_error,
+            ),
+            status_code=422,
+        )
+
+    if form_data.slug != slug:
+        existing = await post_service.get_post_by_slug(db, form_data.slug)
+        if existing:
+            return templates.TemplateResponse(
+                request,
+                "admin/post_form.html",
+                _admin_context(
+                    request,
+                    page_title=f"ویرایش: {post.title}",
+                    active_nav="posts",
+                    post=_form_as_post_preview(form_data, form_data.slug),
+                    form_error="این نامک (slug) قبلاً استفاده شده است.",
+                ),
+                status_code=422,
+            )
+    if form_data.status == PostStatus.PUBLISHED.value and not form_data.cover:
+        return templates.TemplateResponse(
+            request,
+            "admin/post_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {post.title}",
+                active_nav="posts",
+                post=_form_as_post_preview(form_data, form_data.slug),
+                form_error="برای انتشار یادداشت، تصویر کاور الزامی است.",
+            ),
+            status_code=422,
+        )
+
+    await post_service.update_post(db, post, form_data)
+    return RedirectResponse(url=f"/admin/posts/{form_data.slug}/edit/?saved=1", status_code=303)
+
+
+@router.post("/posts/{slug}/delete/", name="admin_post_delete")
+async def admin_post_delete(request: Request, slug: str, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    post = await post_service.get_post_by_slug(db, slug)
+    if post:
+        await post_service.delete_post(db, post)
+    return RedirectResponse(url="/admin/posts/", status_code=303)
+
+
+@router.get("/posts/comments/", name="admin_post_comments")
+async def admin_post_comments_list(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    status: str = "pending",
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    valid_statuses = {s.value for s in CommentStatus}
+    status = status if status in valid_statuses else CommentStatus.PENDING.value
+    comments = await post_service.list_comments(db, status=status)
+    return templates.TemplateResponse(
+        request,
+        "admin/post_comments_list.html",
+        _admin_context(
+            request,
+            page_title="نظرهای یادداشت‌ها",
+            active_nav="post_comments",
+            comments=comments,
+            current_status=status,
+        ),
+    )
+
+
+@router.post("/posts/comments/{comment_id}/approve/", name="admin_post_comment_approve")
+async def admin_post_comment_approve(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    comment = await post_service.get_comment(db, comment_id)
+    if comment:
+        await post_service.set_comment_status(db, comment, CommentStatus.APPROVED.value)
+    return RedirectResponse(url="/admin/posts/comments/", status_code=303)
+
+
+@router.post("/posts/comments/{comment_id}/reject/", name="admin_post_comment_reject")
+async def admin_post_comment_reject(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    comment = await post_service.get_comment(db, comment_id)
+    if comment:
+        await post_service.set_comment_status(db, comment, CommentStatus.REJECTED.value)
+    return RedirectResponse(url="/admin/posts/comments/", status_code=303)
+
+
+@router.post("/posts/comments/{comment_id}/delete/", name="admin_post_comment_delete")
+async def admin_post_comment_delete(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    comment = await post_service.get_comment(db, comment_id)
+    if comment:
+        await post_service.delete_comment(db, comment)
+    return RedirectResponse(url="/admin/posts/comments/", status_code=303)
+
+
 @router.get("/categories/", name="admin_categories")
 async def admin_categories_list(request: Request, db: AsyncSession = Depends(get_db)):
     if redirect := _guard_admin(request):
@@ -566,8 +878,8 @@ async def admin_category_delete(
 ):
     if redirect := _guard_admin(request):
         return redirect
-    category = await category_service.get_category(db, category_id)
-    if category:
+    category = await category_service.get_category(db, category_id, with_tool_count=True)
+    if category and not category.tools:
         await category_service.delete_category(db, category)
     return RedirectResponse(url="/admin/categories/", status_code=303)
 
@@ -576,6 +888,319 @@ async def _get_category_by_name(db: AsyncSession, name: str):
     stmt = select(Category).where(Category.name == name)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
+
+
+@router.get("/tools/", name="admin_tools")
+async def admin_tools_list(request: Request, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    tools = await tool_service.list_tools(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/tools_list.html",
+        _admin_context(request, page_title="ابزارها", active_nav="tools", tools=tools),
+    )
+
+
+@router.get("/tools/new/", name="admin_tool_new")
+async def admin_tool_new_get(request: Request, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    all_categories = await category_service.list_categories(db)
+    all_books = await book_service.list_books_for_select(db)
+    all_posts = await post_service.list_posts(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/tool_form.html",
+        _admin_context(
+            request,
+            page_title="ابزار جدید",
+            active_nav="tools",
+            tool=None,
+            all_categories=all_categories,
+            all_books=all_books,
+            all_posts=all_posts,
+            form_error=None,
+        ),
+    )
+
+
+@router.post("/tools/new/", name="admin_tool_create")
+async def admin_tool_new_post(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    slug: str = Form(""),
+    cover: str = Form(""),
+    category_id: str = Form(""),
+    short_description: str = Form(""),
+    body: str = Form(""),
+    status: str = Form(ToolStatus.DRAFT.value),
+    files: str = Form("[]"),
+    related_book_ids: str = Form("[]"),
+    related_post_ids: str = Form("[]"),
+    cover_file: Optional[UploadFile] = File(None),
+    tool_file_uploads: list[UploadFile] = File(default=[]),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    all_categories = await category_service.list_categories(db)
+    all_books = await book_service.list_books_for_select(db)
+    all_posts = await post_service.list_posts(db)
+
+    form_data = _parse_tool_form(
+        title=title,
+        slug=slug.strip().lower(),
+        cover=cover,
+        category_id=category_id,
+        short_description=short_description,
+        body=body,
+        status=status,
+        files=files,
+        related_book_ids=related_book_ids,
+        related_post_ids=related_post_ids,
+    )
+    if isinstance(form_data, ValidationError):
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title="ابزار جدید",
+                active_nav="tools",
+                tool=_raw_tool_preview(
+                    title, slug, cover, category_id, short_description, body, status,
+                    files, related_book_ids, related_post_ids,
+                ),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error=_format_validation_error(form_data),
+            ),
+            status_code=422,
+        )
+
+    form_data, upload_error = await _resolve_tool_uploads(
+        form_data, cover=cover, cover_file=cover_file, tool_file_uploads=tool_file_uploads
+    )
+    if upload_error:
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title="ابزار جدید",
+                active_nav="tools",
+                tool=await _form_as_tool_preview(db, form_data),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error=upload_error,
+            ),
+            status_code=422,
+        )
+
+    existing = await tool_service.get_tool_by_slug(db, form_data.slug)
+    if existing:
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title="ابزار جدید",
+                active_nav="tools",
+                tool=await _form_as_tool_preview(db, form_data),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error="این نامک (slug) قبلاً استفاده شده است.",
+            ),
+            status_code=422,
+        )
+    if form_data.status == ToolStatus.PUBLISHED.value and not form_data.cover:
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title="ابزار جدید",
+                active_nav="tools",
+                tool=await _form_as_tool_preview(db, form_data),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error="برای انتشار ابزار، تصویر کاور الزامی است.",
+            ),
+            status_code=422,
+        )
+
+    tool = await tool_service.create_tool(db, form_data)
+    return RedirectResponse(url=f"/admin/tools/{tool.slug}/edit/?saved=1", status_code=303)
+
+
+@router.get("/tools/{slug}/edit/", name="admin_tool_edit")
+async def admin_tool_edit_get(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    saved: Optional[int] = None,
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    tool = await tool_service.get_tool_by_slug(db, slug)
+    if tool is None:
+        return RedirectResponse(url="/admin/tools/", status_code=303)
+    all_categories = await category_service.list_categories(db)
+    all_books = await book_service.list_books_for_select(db)
+    all_posts = await post_service.list_posts(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/tool_form.html",
+        _admin_context(
+            request,
+            page_title=f"ویرایش: {tool.title}",
+            active_nav="tools",
+            tool=tool,
+            all_categories=all_categories,
+            all_books=all_books,
+            all_posts=all_posts,
+            form_error=None,
+            saved=bool(saved),
+        ),
+    )
+
+
+@router.post("/tools/{slug}/edit/", name="admin_tool_update")
+async def admin_tool_edit_post(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    slug_field: str = Form("", alias="slug"),
+    cover: str = Form(""),
+    category_id: str = Form(""),
+    short_description: str = Form(""),
+    body: str = Form(""),
+    status: str = Form(ToolStatus.DRAFT.value),
+    files: str = Form("[]"),
+    related_book_ids: str = Form("[]"),
+    related_post_ids: str = Form("[]"),
+    cover_file: Optional[UploadFile] = File(None),
+    tool_file_uploads: list[UploadFile] = File(default=[]),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    tool = await tool_service.get_tool_by_slug(db, slug)
+    if tool is None:
+        return RedirectResponse(url="/admin/tools/", status_code=303)
+
+    all_categories = await category_service.list_categories(db)
+    all_books = await book_service.list_books_for_select(db)
+    all_posts = await post_service.list_posts(db)
+
+    form_data = _parse_tool_form(
+        title=title,
+        slug=slug_field.strip().lower(),
+        cover=cover,
+        category_id=category_id,
+        short_description=short_description,
+        body=body,
+        status=status,
+        files=files,
+        related_book_ids=related_book_ids,
+        related_post_ids=related_post_ids,
+    )
+    if isinstance(form_data, ValidationError):
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {title or slug}",
+                active_nav="tools",
+                tool=_raw_tool_preview(
+                    title, slug_field, cover, category_id, short_description, body, status,
+                    files, related_book_ids, related_post_ids,
+                ),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error=_format_validation_error(form_data),
+            ),
+            status_code=422,
+        )
+
+    form_data, upload_error = await _resolve_tool_uploads(
+        form_data,
+        cover=cover,
+        cover_file=cover_file,
+        tool_file_uploads=tool_file_uploads,
+        old_cover=tool.cover,
+    )
+    if upload_error:
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {title or slug}",
+                active_nav="tools",
+                tool=await _form_as_tool_preview(db, form_data, form_data.slug),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error=upload_error,
+            ),
+            status_code=422,
+        )
+
+    if form_data.slug != slug:
+        existing = await tool_service.get_tool_by_slug(db, form_data.slug)
+        if existing:
+            return templates.TemplateResponse(
+                request,
+                "admin/tool_form.html",
+                _admin_context(
+                    request,
+                    page_title=f"ویرایش: {tool.title}",
+                    active_nav="tools",
+                    tool=await _form_as_tool_preview(db, form_data, form_data.slug),
+                    all_categories=all_categories,
+                    all_books=all_books,
+                    all_posts=all_posts,
+                    form_error="این نامک (slug) قبلاً استفاده شده است.",
+                ),
+                status_code=422,
+            )
+    if form_data.status == ToolStatus.PUBLISHED.value and not form_data.cover:
+        return templates.TemplateResponse(
+            request,
+            "admin/tool_form.html",
+            _admin_context(
+                request,
+                page_title=f"ویرایش: {tool.title}",
+                active_nav="tools",
+                tool=await _form_as_tool_preview(db, form_data, form_data.slug),
+                all_categories=all_categories,
+                all_books=all_books,
+                all_posts=all_posts,
+                form_error="برای انتشار ابزار، تصویر کاور الزامی است.",
+            ),
+            status_code=422,
+        )
+
+    await tool_service.update_tool(db, tool, form_data)
+    return RedirectResponse(url=f"/admin/tools/{form_data.slug}/edit/?saved=1", status_code=303)
+
+
+@router.post("/tools/{slug}/delete/", name="admin_tool_delete")
+async def admin_tool_delete(request: Request, slug: str, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    tool = await tool_service.get_tool_by_slug(db, slug)
+    if tool:
+        await tool_service.delete_tool(db, tool)
+    return RedirectResponse(url="/admin/tools/", status_code=303)
 
 
 @router.get("/about/", name="admin_about")
@@ -804,6 +1429,214 @@ async def _form_as_book_preview(
     if slug:
         preview.slug = slug
     preview.categories = await category_service.get_categories_by_ids(db, data.category_ids)
+    return preview
+
+
+def _parse_post_form(
+    *,
+    title: str,
+    slug: str,
+    cover: str,
+    body: str,
+    excerpt: str,
+    status: str,
+    is_featured: str,
+    published_date: str,
+    existing_published_date=None,
+) -> Union[PostForm, ValidationError]:
+    payload = {
+        "title": title.strip(),
+        "slug": slug.strip().lower(),
+        "cover": cover.strip(),
+        "body": body,
+        "excerpt": excerpt.strip(),
+        "status": status if status in {PostStatus.DRAFT.value, PostStatus.PUBLISHED.value} else PostStatus.DRAFT.value,
+        "is_featured": is_featured == "true",
+        "published_date": post_service.parse_published_date(published_date) or existing_published_date,
+    }
+    try:
+        return PostForm.model_validate(payload)
+    except ValidationError as exc:
+        return exc
+
+
+async def _resolve_post_upload(
+    form_data: PostForm,
+    *,
+    cover: str,
+    cover_file: Optional[UploadFile],
+    old_cover: Optional[str] = None,
+) -> tuple[PostForm, Optional[str]]:
+    try:
+        resolved_cover = await upload_service.resolve_post_cover(
+            cover, cover_file, form_data.slug, old_cover=old_cover
+        )
+        return form_data.model_copy(update={"cover": resolved_cover}), None
+    except ValueError as exc:
+        return form_data, str(exc)
+
+
+def _raw_post_preview(
+    title: str,
+    slug: str,
+    cover: str,
+    body: str,
+    excerpt: str,
+    status: str,
+    is_featured: str,
+    published_date: str,
+) -> _FormPostPreview:
+    preview = _FormPostPreview.__new__(_FormPostPreview)
+    preview.title = title.strip()
+    preview.slug = slug.strip().lower()
+    preview.cover = cover.strip()
+    preview.body = body
+    preview.excerpt = excerpt.strip()
+    preview.status = status if status in {PostStatus.DRAFT.value, PostStatus.PUBLISHED.value} else PostStatus.DRAFT.value
+    preview.is_featured = is_featured == "true"
+    preview.published_date = post_service.parse_published_date(published_date)
+    preview.read_time_minutes = post_service.calculate_read_time(body)
+    return preview
+
+
+class _FormPostPreview:
+    """Lightweight object so post_form.html can re-render after validation errors."""
+
+    def __init__(self, data: PostForm):
+        self.title = data.title
+        self.slug = data.slug
+        self.cover = data.cover
+        self.body = data.body
+        self.excerpt = data.excerpt
+        self.status = data.status
+        self.is_featured = data.is_featured
+        self.published_date = data.published_date
+        self.read_time_minutes = post_service.calculate_read_time(data.body)
+
+
+def _form_as_post_preview(data: PostForm, slug: Optional[str] = None) -> _FormPostPreview:
+    preview = _FormPostPreview(data)
+    if slug:
+        preview.slug = slug
+    return preview
+
+
+def _parse_tool_form(
+    *,
+    title: str,
+    slug: str,
+    cover: str,
+    category_id: str,
+    short_description: str,
+    body: str,
+    status: str,
+    files: str,
+    related_book_ids: str,
+    related_post_ids: str,
+) -> Union[ToolForm, ValidationError]:
+    payload = {
+        "title": title.strip(),
+        "slug": slug.strip().lower(),
+        "cover": cover.strip(),
+        "category_id": int(category_id) if category_id.strip().isdigit() else 0,
+        "short_description": short_description.strip(),
+        "body": body,
+        "status": status if status in {ToolStatus.DRAFT.value, ToolStatus.PUBLISHED.value} else ToolStatus.DRAFT.value,
+        "files": tool_service.parse_tool_files(files),
+        "related_book_ids": tool_service.parse_id_list(related_book_ids),
+        "related_post_ids": tool_service.parse_id_list(related_post_ids),
+    }
+    try:
+        return ToolForm.model_validate(payload)
+    except ValidationError as exc:
+        return exc
+
+
+async def _resolve_tool_uploads(
+    form_data: ToolForm,
+    *,
+    cover: str,
+    cover_file: Optional[UploadFile],
+    tool_file_uploads: list[UploadFile],
+    old_cover: Optional[str] = None,
+) -> tuple[ToolForm, Optional[str]]:
+    try:
+        resolved_cover = await upload_service.resolve_tool_cover(
+            cover, cover_file, form_data.slug, old_cover=old_cover
+        )
+        resolved_files: list[ToolFileInput] = []
+        for i, entry in enumerate(form_data.files):
+            upload = tool_file_uploads[i] if i < len(tool_file_uploads) else None
+            if upload is not None and upload.filename:
+                new_path = await upload_service.save_tool_file_upload(upload, form_data.slug)
+                if entry.file and entry.file != new_path:
+                    upload_service.delete_local_tool_file(entry.file)
+                resolved_files.append(entry.model_copy(update={"file": new_path}))
+            else:
+                resolved_files.append(entry)
+        return form_data.model_copy(update={"cover": resolved_cover, "files": resolved_files}), None
+    except ValueError as exc:
+        return form_data, str(exc)
+
+
+def _raw_tool_preview(
+    title: str,
+    slug: str,
+    cover: str,
+    category_id: str,
+    short_description: str,
+    body: str,
+    status: str,
+    files: str,
+    related_book_ids: str,
+    related_post_ids: str,
+) -> _FormToolPreview:
+    preview = _FormToolPreview.__new__(_FormToolPreview)
+    preview.title = title.strip()
+    preview.slug = slug.strip().lower()
+    preview.cover = cover.strip()
+    preview.category_id = int(category_id) if category_id.strip().isdigit() else None
+    preview.short_description = short_description.strip()
+    preview.body = body
+    preview.status = status if status in {ToolStatus.DRAFT.value, ToolStatus.PUBLISHED.value} else ToolStatus.DRAFT.value
+    preview.files_data = [f.model_dump() for f in tool_service.parse_tool_files(files)]
+    preview.related_book_ids = tool_service.parse_id_list(related_book_ids)
+    preview.related_post_ids = tool_service.parse_id_list(related_post_ids)
+    preview.related_books = []
+    preview.related_posts = []
+    return preview
+
+
+class _FormToolPreview:
+    """Lightweight object so tool_form.html can re-render after validation errors."""
+
+    def __init__(self, data: ToolForm):
+        self.title = data.title
+        self.slug = data.slug
+        self.cover = data.cover
+        self.category_id = data.category_id
+        self.short_description = data.short_description
+        self.body = data.body
+        self.status = data.status
+        self.files_data = [f.model_dump() for f in data.files]
+        self.related_book_ids = data.related_book_ids
+        self.related_post_ids = data.related_post_ids
+        self.related_books: list = []
+        self.related_posts: list = []
+
+
+async def _form_as_tool_preview(
+    db: AsyncSession, data: ToolForm, slug: Optional[str] = None
+) -> _FormToolPreview:
+    preview = _FormToolPreview(data)
+    if slug:
+        preview.slug = slug
+    preview.related_books = await book_service.get_books_by_ids(db, data.related_book_ids)
+    from app.services.posts import get_post_by_id
+
+    preview.related_posts = [
+        p for p in [await get_post_by_id(db, pid) for pid in data.related_post_ids] if p
+    ]
     return preview
 
 

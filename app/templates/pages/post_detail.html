@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% if post %}
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+{% if post.cover %}
+<meta property="og:image" content="{{ request.base_url }}{{ post.cover.lstrip('/') }}">
+{% endif %}
+<meta property="og:type" content="article">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container post-detail-page">
+  <nav class="breadcrumb" aria-label="مسیر">
+    <a href="{{ url_for('blog') }}">بلاگ</a>
+    <span aria-hidden="true">‹</span>
+    <span>{{ post.title if post else slug }}</span>
+  </nav>
+
+  {% if post %}
+  <header class="post-detail-header">
+    <h1 class="post-title">{{ post.title }}</h1>
+    <div class="post-meta">
+      <span>میلاد میرزایی</span><span>·</span>
+      <span>{{ post.published_date | jalali }}</span><span>·</span>
+      <span>{{ post.read_time_minutes | fa_digits }} دقیقه مطالعه</span><span>·</span>
+      <span>👁 {{ post.view_count | fa_digits }} بازدید</span>
+    </div>
+  </header>
+
+  {% if post.cover %}
+  <div class="post-cover">
+    <img src="{{ post.cover }}" alt="{{ post.title }}">
+  </div>
+  {% endif %}
+
+  <div class="post-share-row">
+    {% set post_url = request.url_for('post_detail', slug=post.slug) | string %}
+    <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url={{ post_url | urlencode }}" target="_blank" rel="noopener">لینکدین</a>
+    <a class="share-btn" href="https://twitter.com/intent/tweet?text={{ post.title | urlencode }}&url={{ post_url | urlencode }}" target="_blank" rel="noopener">X</a>
+    <a class="share-btn" href="https://t.me/share/url?url={{ post_url | urlencode }}&text={{ post.title | urlencode }}" target="_blank" rel="noopener">تلگرام</a>
+    <button type="button" class="share-btn copy-link-btn" data-copy-link="{{ post_url }}">کپی لینک 🔗</button>
+  </div>
+
+  <article class="post-body richtext-content">
+    {% if '<' in post.body %}
+    {{ post.body | safe }}
+    {% else %}
+    {{ post.body | replace('\n', '<br>') | safe }}
+    {% endif %}
+  </article>
+
+  <div class="post-share-row post-share-row-bottom">
+    <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url={{ post_url | urlencode }}" target="_blank" rel="noopener">لینکدین</a>
+    <a class="share-btn" href="https://twitter.com/intent/tweet?text={{ post.title | urlencode }}&url={{ post_url | urlencode }}" target="_blank" rel="noopener">X</a>
+    <a class="share-btn" href="https://t.me/share/url?url={{ post_url | urlencode }}&text={{ post.title | urlencode }}" target="_blank" rel="noopener">تلگرام</a>
+    <button type="button" class="share-btn copy-link-btn" data-copy-link="{{ post_url }}">کپی لینک 🔗</button>
+  </div>
+
+  <div class="post-rating-card" id="rating">
+    <div>
+      <div class="post-rating-label">این یادداشت چقدر به‌دردت خورد؟</div>
+      {% if post.rating_count %}
+      <div class="post-rating-stat">میانگین امتیاز: {{ post.average_rating | fa_digits }} از ۵ · بر اساس {{ post.rating_count | fa_digits }} رای</div>
+      {% else %}
+      <div class="post-rating-stat">هنوز رایی ثبت نشده</div>
+      {% endif %}
+    </div>
+    {% if has_rated %}
+    <div class="star-row star-row-done">
+      <span class="star-thanks">ممنون! ✓</span>
+    </div>
+    {% else %}
+    <form method="post" action="{{ url_for('post_rate', slug=post.slug) }}" class="star-row" id="star-form">
+      {% for n in [5, 4, 3, 2, 1] %}
+      <button type="submit" name="stars" value="{{ n }}" class="star-btn" aria-label="{{ n }} ستاره">★</button>
+      {% endfor %}
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="comments-section" id="comments">
+    <div class="comments-header">نظرها ({{ post.approved_comment_count | fa_digits }})</div>
+
+    {% if post.approved_comments %}
+    <div class="comments-list">
+      {% for c in post.approved_comments %}
+      <div class="comment-item">
+        <div class="comment-item-head">
+          <span class="comment-item-name">{{ c.author_name }}</span>
+          <span class="comment-item-date">{{ c.created_at | jalali }}</span>
+        </div>
+        <p class="comment-item-body">{{ c.body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="form-hint">هنوز نظری ثبت نشده — اولین نفر باشید.</p>
+    {% endif %}
+
+    {% if request.query_params.get('commented') %}
+    <p class="form-success" role="status">نظر شما ثبت شد و پس از تأیید نمایش داده می‌شود.</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('post_comment', slug=post.slug) }}" class="comment-form">
+      <div class="comment-form-title">نظر بدید</div>
+      <input type="text" name="website" class="comment-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="text" name="author_name" class="form-control" placeholder="اسم شما" required>
+      <input type="email" name="author_email" class="form-control" placeholder="ایمیل (اختیاری)">
+      <textarea name="body" class="form-control" rows="3" placeholder="نظرتون رو بنویسید…" required></textarea>
+      <button type="submit" class="btn btn-primary">ارسال نظر ←</button>
+    </form>
+  </div>
+
+  <div class="post-footer-nav">
+    <a href="{{ url_for('blog') }}" class="post-back-link">→ همه‌ی یادداشت‌ها</a>
+  </div>
+
+  {% else %}
+  <div class="empty-state" style="padding: 3rem 0;">
+    <p>این یادداشت هنوز منتشر نشده است.</p>
+    <a href="{{ url_for('blog') }}" class="btn btn-ghost" style="margin-top: 1rem;">بازگشت به بلاگ</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_url(request, 'js/blog.js') }}"></script>
+{% endblock %}

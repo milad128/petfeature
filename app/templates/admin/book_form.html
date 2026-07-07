@@ -2,6 +2,10 @@
 
 {% block content_width %}wide{% endblock %}
 
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% endblock %}
+
 {% block topbar_actions %}
 <a href="{{ url_for('admin_books') }}" class="btn btn-ghost">انصراف</a>
 <button type="submit" form="book-form" class="btn btn-primary">ذخیره</button>
@@ -125,8 +129,23 @@
         <label class="form-label" for="note-editor">یادداشت پت فیچر</label>
         <div class="richtext" data-richtext data-target="note-hidden">
           <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
+            <select class="richtext-font-select" data-command="fontName" title="فونت">
+              <option value="">فونت پیش‌فرض</option>
+              <option value="Vazirmatn">وزیرمتن</option>
+              <option value="Vazir">وزیر</option>
+              <option value="Sahel">ساحل</option>
+              <option value="Samim">صمیم</option>
+              <option value="Shabnam">شبنم</option>
+              <option value="Tanha">تنها</option>
+              <option value="Gandom">گندم</option>
+              <option value="Nahid">ناهید</option>
+              <option value="Parastoo">پرستو</option>
+            </select>
+            <span class="richtext-sep" aria-hidden="true"></span>
             <button type="button" class="richtext-btn" data-command="bold" title="ضخیم"><b>B</b></button>
             <button type="button" class="richtext-btn" data-command="italic" title="مورب"><i>I</i></button>
+            <button type="button" class="richtext-btn" data-command="underline" title="زیرخط‌دار"><u>U</u></button>
+            <input type="color" class="richtext-color-input" data-command="foreColor" title="رنگ متن" value="#c2410c">
             <span class="richtext-sep" aria-hidden="true"></span>
             <button type="button" class="richtext-btn" data-command="formatBlock" data-value="blockquote" title="نقل‌قول">”</button>
             <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">☰</button>

@@ -32,3 +32,9 @@ app/static/uploads/covers/*
 !app/static/uploads/covers/.gitkeep
 app/static/uploads/downloads/*
 !app/static/uploads/downloads/.gitkeep
+app/static/uploads/post-covers/*
+!app/static/uploads/post-covers/.gitkeep
+app/static/uploads/tool-covers/*
+!app/static/uploads/tool-covers/.gitkeep
+app/static/uploads/tool-files/*
+!app/static/uploads/tool-files/.gitkeep

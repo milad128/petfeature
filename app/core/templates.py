@@ -4,10 +4,14 @@ from pathlib import Path
 
 from fastapi.templating import Jinja2Templates
 
+from app.core.jalali import format_jalali, to_fa_digits
+
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 STATIC_DIR = Path(__file__).parent.parent / "static"
 
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+templates.env.filters["jalali"] = format_jalali
+templates.env.filters["fa_digits"] = to_fa_digits
 
 
 def asset_url(request, path: str) -> str:

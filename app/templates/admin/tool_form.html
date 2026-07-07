@@ -1,0 +1,243 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_tools') }}" class="btn btn-ghost">انصراف</a>
+<button type="submit" form="tool-form" class="btn btn-primary">ذخیره</button>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+<form id="tool-form" method="post" enctype="multipart/form-data" action="{% if tool and tool.slug %}{{ url_for('admin_tool_update', slug=tool.slug) }}{% else %}{{ url_for('admin_tool_create') }}{% endif %}" data-admin-form>
+  <input type="hidden" name="cover" id="cover-hidden" value="{{ tool.cover if tool else '' }}">
+  <input type="hidden" id="status-hidden" name="status" value="{{ tool.status if tool else 'draft' }}">
+  <input type="hidden" id="tool-files-hidden" name="files" value='{{ (tool.files_data if tool else []) | tojson }}'>
+  <input type="hidden" id="related-books-hidden" name="related_book_ids" value='{{ (tool.related_book_ids if tool else []) | tojson }}'>
+  <input type="hidden" id="related-posts-hidden" name="related_post_ids" value='{{ (tool.related_post_ids if tool else []) | tojson }}'>
+
+  <div class="card">
+    <div class="card-section">
+      <div class="card-section-title">اطلاعات ابزار</div>
+
+      <div class="form-group">
+        <label class="form-label" for="cover-file">تصویر کاور</label>
+        <div class="cover-upload">
+          <div class="cover-preview-wrap {% if not tool or not tool.cover %}is-empty{% endif %}" id="cover-preview-wrap">
+            {% if tool and tool.cover %}
+            <img id="cover-preview" src="{{ tool.cover }}" alt="پیش‌نمایش کاور">
+            {% else %}
+            <img id="cover-preview" alt="" hidden>
+            <span class="cover-preview-placeholder" id="cover-preview-placeholder">بدون تصویر</span>
+            {% endif %}
+          </div>
+          <input class="form-control" type="file" id="cover-file" name="cover_file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <span class="form-hint">JPG، PNG، WebP یا GIF — حداکثر ۵ مگابایت. برای انتشار الزامی است.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="title">عنوان</label>
+        <input class="form-control" type="text" id="title" name="title" value="{{ tool.title if tool else '' }}" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="slug">نامک (Slug)</label>
+          <input class="form-control" type="text" id="slug" name="slug" value="{{ tool.slug if tool else '' }}" dir="ltr" required pattern="[a-z0-9-]+">
+          <span class="form-hint">آدرس صفحه: /tools/{{ tool.slug if tool else '...' }}/</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="category_id">دسته‌بندی</label>
+          {% if all_categories %}
+          <select class="form-control" id="category_id" name="category_id" required>
+            <option value="" disabled {% if not tool %}selected{% endif %}>یک دسته‌بندی انتخاب کنید</option>
+            {% for cat in all_categories %}
+            <option value="{{ cat.id }}" {% if tool and tool.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <p class="form-hint">هنوز دسته‌بندی‌ای اضافه نشده — <a href="{{ url_for('admin_category_new') }}" target="_blank">یک دسته‌بندی جدید بسازید</a>.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="short_description">توضیح کوتاه</label>
+        <textarea class="form-control" id="short_description" name="short_description" rows="2" placeholder="یک یا دو جمله — روی کارت و زیر عنوان صفحه‌ی ابزار نمایش داده می‌شود">{{ tool.short_description if tool else '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">وضعیت انتشار</label>
+        <div class="status-switch">
+          <span class="switch {% if tool and tool.status == 'published' %}on{% endif %}" id="status-switch" role="switch" aria-checked="{{ 'true' if tool and tool.status == 'published' else 'false' }}"></span>
+          <span class="form-hint" id="status-hint">{{ 'منتشرشده — روی سایت قابل مشاهده است' if tool and tool.status == 'published' else 'پیش‌نویس — فقط برای شما قابل مشاهده است' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">راهنمای استفاده</div>
+      <div class="form-group">
+        <label class="form-label" for="body-editor">متن راهنما</label>
+        <div class="richtext" data-richtext data-target="body-hidden">
+          <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
+            <select class="richtext-font-select" data-command="fontName" title="فونت">
+              <option value="">فونت پیش‌فرض</option>
+              <option value="Vazirmatn">وزیرمتن</option>
+              <option value="Vazir">وزیر</option>
+              <option value="Sahel">ساحل</option>
+              <option value="Samim">صمیم</option>
+              <option value="Shabnam">شبنم</option>
+              <option value="Tanha">تنها</option>
+              <option value="Gandom">گندم</option>
+              <option value="Nahid">ناهید</option>
+              <option value="Parastoo">پرستو</option>
+            </select>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="bold" title="ضخیم"><b>B</b></button>
+            <button type="button" class="richtext-btn" data-command="italic" title="مورب"><i>I</i></button>
+            <button type="button" class="richtext-btn" data-command="underline" title="زیرخط‌دار"><u>U</u></button>
+            <input type="color" class="richtext-color-input" data-command="foreColor" title="رنگ متن" value="#c2410c">
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="formatBlock" data-value="blockquote" title="نقل‌قول">”</button>
+            <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">☰</button>
+            <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">☷</button>
+            <span class="richtext-sep" aria-hidden="true"></span>
+            <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
+            <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
+          </div>
+          <div class="richtext-editor" id="body-editor" contenteditable="true" data-placeholder="توضیح دهید این ابزار چیست، چه زمانی و چطور استفاده شود..."></div>
+        </div>
+        <textarea id="body-hidden" name="body" hidden>{{ tool.body if tool else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">فایل‌های قابل دانلود</div>
+      <div id="tool-file-rows">
+        {% for file in (tool.files_data if tool else []) %}
+        <div class="resource-row tool-file-row" data-existing-file="{{ file.file }}">
+          <input class="form-control" type="text" placeholder="نام نسخه (مثلاً نسخه‌ی PDF)" value="{{ file.name }}">
+          <input class="form-control" type="text" placeholder="توضیح کوتاه" value="{{ file.description or '' }}">
+          <input class="form-control" type="file" name="tool_file_uploads" accept=".pdf,.xlsx,.docx,.pptx,.csv">
+          {% if file.file %}
+          <a href="{{ file.file }}" target="_blank" rel="noopener" class="form-hint" dir="ltr">{{ file.file.split('/')[-1] }}</a>
+          {% endif %}
+          <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-tool-file-btn">+ افزودن فایل</button>
+      <span class="form-hint" style="display:block; margin-top:0.5rem;">PDF، Excel، Word، PowerPoint یا CSV — حداکثر ۲۵ مگابایت هر فایل</span>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">کتاب‌های مرتبط</div>
+      {% if all_books %}
+      <div class="referred-books-selected" id="related-books-selected">
+        {% for candidate in all_books %}
+        {% if tool and candidate.id in tool.related_book_ids %}
+        <div class="referred-book-chip" data-item-id="{{ candidate.id }}">
+          <span>
+            <span class="referred-book-chip-title">{{ candidate.title }}</span>
+            {% if candidate.authors_display %}
+            <small>{{ candidate.authors_display }}</small>
+            {% endif %}
+          </span>
+          <button type="button" class="remove-referred-book" aria-label="حذف">×</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-related-book-btn">+ افزودن کتاب مرتبط</button>
+
+      <div class="modal-overlay" id="related-books-modal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="related-books-modal-title">
+          <div class="modal-header">
+            <h3 id="related-books-modal-title">افزودن کتاب مرتبط</h3>
+            <button type="button" class="modal-close" id="related-books-modal-close" aria-label="بستن">×</button>
+          </div>
+          <input type="text" class="form-control" id="related-books-search" placeholder="جستجوی کتاب...">
+          <div class="modal-list" id="related-books-modal-list">
+            {% for candidate in all_books %}
+            <button type="button" class="modal-list-item" data-item-id="{{ candidate.id }}" data-item-title="{{ candidate.title }}" data-item-subtitle="{{ candidate.authors_display }}">
+              <span class="modal-list-item-title">{{ candidate.title }}</span>
+              {% if candidate.authors_display %}
+              <span class="modal-list-item-author">{{ candidate.authors_display }}</span>
+              {% endif %}
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p class="form-hint">هنوز کتابی در کتابخانه ثبت نشده.</p>
+      {% endif %}
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">یادداشت‌های مرتبط</div>
+      {% if all_posts %}
+      <div class="referred-books-selected" id="related-posts-selected">
+        {% for candidate in all_posts %}
+        {% if tool and candidate.id in tool.related_post_ids %}
+        <div class="referred-book-chip" data-item-id="{{ candidate.id }}">
+          <span>
+            <span class="referred-book-chip-title">{{ candidate.title }}</span>
+          </span>
+          <button type="button" class="remove-referred-book" aria-label="حذف">×</button>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="add-related-post-btn">+ افزودن یادداشت مرتبط</button>
+
+      <div class="modal-overlay" id="related-posts-modal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="related-posts-modal-title">
+          <div class="modal-header">
+            <h3 id="related-posts-modal-title">افزودن یادداشت مرتبط</h3>
+            <button type="button" class="modal-close" id="related-posts-modal-close" aria-label="بستن">×</button>
+          </div>
+          <input type="text" class="form-control" id="related-posts-search" placeholder="جستجوی یادداشت...">
+          <div class="modal-list" id="related-posts-modal-list">
+            {% for candidate in all_posts %}
+            <button type="button" class="modal-list-item" data-item-id="{{ candidate.id }}" data-item-title="{{ candidate.title }}" data-item-subtitle="">
+              <span class="modal-list-item-title">{{ candidate.title }}</span>
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p class="form-hint">هنوز یادداشتی در بلاگ ثبت نشده.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <div class="form-actions-left">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <a href="{{ url_for('admin_tools') }}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+
+</form>
+
+{% if tool and tool.slug %}
+<form method="post" action="{{ url_for('admin_tool_delete', slug=tool.slug) }}" data-delete-form data-confirm="این ابزار حذف شود؟" class="form-actions form-actions-danger">
+  <button type="submit" class="btn btn-danger">حذف ابزار</button>
+</form>
+{% endif %}
+{% endblock %}

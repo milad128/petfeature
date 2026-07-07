@@ -9,12 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="{{ asset_url(request, 'css/admin.css') }}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   <div class="admin-shell">
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">
-        <span class="brand-icon" aria-hidden="true">پ</span>
+        <img src="{{ asset_url(request, 'img/logo.png') }}" alt="پت فیچر" class="brand-logo">
         <span>
           پت فیچر
           <small>پنل مدیریت</small>
@@ -27,6 +28,15 @@
         </a>
         <a href="{{ url_for('admin_categories') }}" class="{% if active_nav == 'categories' %}active{% endif %}">
           <span class="nav-icon" aria-hidden="true">🏷️</span> دسته‌بندی‌ها
+        </a>
+        <a href="{{ url_for('admin_posts') }}" class="{% if active_nav == 'posts' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">✍️</span> یادداشت‌ها
+        </a>
+        <a href="{{ url_for('admin_post_comments') }}" class="{% if active_nav == 'post_comments' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">💬</span> نظرها
+        </a>
+        <a href="{{ url_for('admin_tools') }}" class="{% if active_nav == 'tools' %}active{% endif %}">
+          <span class="nav-icon" aria-hidden="true">🛠️</span> ابزارها
         </a>
         <a href="{{ url_for('admin_about') }}" class="{% if active_nav == 'about' %}active{% endif %}">
           <span class="nav-icon" aria-hidden="true">👤</span> درباره من

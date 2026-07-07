@@ -1,6 +1,6 @@
 # Product Spec — پت فیچر (petfeature.ir)
 
-Overview and index for the petfeature.ir remake. Detailed requirements live in version-specific specs.
+Overview and index for petfeature.ir. Detailed requirements live in version-specific specs.
 
 ## Product summary
 
@@ -12,7 +12,18 @@ Overview and index for the petfeature.ir remake. Detailed requirements live in v
 | **Domain** | [petfeature.ir](https://petfeature.ir) |
 | **Language** | فارسی (RTL) |
 
-**One-liner:** A personal PM encyclopedia — ship the book library first in v1, then add path, blog, newsletter, contact, sharing, and community in v2.
+**One-liner:** A personal PM encyclopedia built around four epics — Library, Blog, Tools, and Roadmap.
+
+---
+
+## Four epics
+
+| Epic | Description | Status |
+|------|-------------|--------|
+| **Library** | Curated PM book library with full notes, quotes, media links, and downloads | Shipped (v1) |
+| **Blog** | Personal PM essays with ratings, comments, social sharing, and view counts | Planned (v2) |
+| **Tools** | Curated PM template library — downloadable frameworks, guides, and artifacts for day-to-day work | Planned (v3) |
+| **Roadmap** | Structured learning path linking books and posts into an opinionated sequence | Backlog |
 
 ---
 
@@ -20,25 +31,25 @@ Overview and index for the petfeature.ir remake. Detailed requirements live in v
 
 ```mermaid
 flowchart LR
-  Current["Current site"] --> v1["Spec v1\nLibrary launch"]
-  v1 --> v2["Spec v2\nFull site + community"]
+  v1["v1 ✓\nLibrary"] --> v2["v2\nBlog"]
+  v2 --> v3["v3\nTools"]
+  v3 --> vN["...\nBacklog"]
 ```
 
-| Version | Document | Scope |
-|---------|----------|--------|
-| **Current** | — | Live site baseline ([petfeature.ir](https://petfeature.ir)) |
-| **v1** | **[Product Spec v1](./product-spec-v1.md)** | Library: browse books, visit about me; admin manages books and about-author content |
-| **v2** | **[Product Spec v2](./product-spec-v2.md)** | Path, blog, newsletter, contact, share, register, auth, reactions, comments, moderation |
+| Version | Document | Epic | Scope | Status |
+|---------|----------|------|-------|--------|
+| **v1** | [Product Spec v1](./product-spec-v1.md) | Library | Book library, about page, admin CMS | **Shipped** |
+| **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, tag filter, view counts, star ratings, comments, social sharing | Planned |
+| **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | Planning |
+| **Backlog** | [Idea Backlog](./idea-backlog.md) | All | Roadmap, newsletter, contact, book engagement, analytics | Unscheduled |
 
 ---
 
 ## Problem & opportunity
 
-**Readers:** PM learning is scattered; hard to find complete, curated book notes in one place.
+**Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** Need a solid library foundation first, then expand to path, blog, newsletter, and community.
-
-**Approach:** Ship the **library** in **v1**, then add the full site and authenticated engagement in **v2**.
+**Admin:** Needs a solid library and blog first, then practical tools, then a structured learning path.
 
 ---
 
@@ -46,47 +57,37 @@ flowchart LR
 
 | Doc | Purpose |
 |-----|---------|
-| [project-structure-and-deployment.md](./project-structure-and-deployment.md) | Project layout, Hamravesh deploy, local dev (updated with code changes) |
-| [product-spec-v1.md](./product-spec-v1.md) | Full PRD for library launch |
-| [product-spec-v2.md](./product-spec-v2.md) | Full PRD for full site + community release |
-| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2) |
+| [project-structure-and-deployment.md](./project-structure-and-deployment.md) | Project layout, stack, Hamravesh deploy, local dev |
+| [product-spec-v1.md](./product-spec-v1.md) | PRD for Library epic (shipped) |
+| [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic |
+| [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic |
+| [idea-backlog.md](./idea-backlog.md) | Unscheduled ideas: Roadmap, newsletter, contact, book engagement, analytics |
+| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
 
 ---
 
 ## Use case map (high level)
 
-### v1 — visitor
-
+### v1 — Library (shipped)
 - Browse Book Library → View Book Details
 - Visit About Me
+- Admin: Manage Library Content, Manage About Author Content
 
-### v1 — admin
+### v2 — Blog
+- Browse Blog → Read Post, Rate Post (stars), Comment on Post, Share, Copy Link
+- Admin: Manage Blog Posts, Moderate Post Comments
 
-- Manage Library Content
-- Manage About Author Content
+### v3 — Tools
+- Browse Tools → Use a Tool
+- Admin: Manage Tools
 
-### v2 — adds for visitors
-
-- Subscribe to Newsletter
-- Contact
-- Browse Learning Path → View Path Content
-- Browse Blog → Read Blog Posts, Share to Social Networks
-
-### v2 — adds for registered users
-
-- Register + Authenticate
-- Browse Book Library → Read Book Comments (post when logged in)
-- Browse Blog → Make Reaction, Comment on Post
-
-### v2 — adds for admin
-
-- Manage Learning Path, Manage Blog Posts
-- Receive Contact Messages, Send Newsletter
-- Moderate Comments
+### Backlog — Roadmap epic
+- Browse Roadmap → View Path Steps (linked to books and posts)
+- Admin: Manage Path Steps
 
 See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*June 2026*
+*July 2026*

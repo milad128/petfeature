@@ -1,0 +1,73 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_tool_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> ابزار جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  {% if tools %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ابزار</th>
+        <th>دسته‌بندی</th>
+        <th>فایل‌ها</th>
+        <th>وضعیت</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tool in tools %}
+      <tr>
+        <td>
+          <div class="row-book">
+            <div class="row-book-cover">
+              {% if tool.cover %}
+              <img src="{{ tool.cover }}" alt="">
+              {% else %}
+              <span aria-hidden="true">🛠</span>
+              {% endif %}
+            </div>
+            <div>
+              <div class="row-book-title">{{ tool.title }}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="tag-chip">{{ tool.category.name }}</span></td>
+        <td>{{ tool.files | length | fa_digits }}</td>
+        <td>
+          {% if tool.status == 'published' %}
+          <span class="badge badge-published">منتشرشده</span>
+          {% else %}
+          <span class="badge badge-draft">پیش‌نویس</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="row-actions">
+            <a href="{{ url_for('admin_tool_edit', slug=tool.slug) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+            <form method="post" action="{{ url_for('admin_tool_delete', slug=tool.slug) }}" data-delete-form data-confirm="این ابزار حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">🛠</div>
+    <h3>هنوز ابزاری اضافه نشده</h3>
+    <p>اولین قالب یا چارچوب را اضافه کنید تا در سایت نمایش داده شود.</p>
+    <a href="{{ url_for('admin_tool_new') }}" class="btn btn-primary">+ ابزار جدید</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

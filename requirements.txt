@@ -15,6 +15,10 @@ alembic==1.14.0
 pydantic==2.10.4
 pydantic-settings==2.7.0
 
+# Jalali (Shamsi) dates for the blog
+jalali-core==1.0.0
+jdatetime==5.3.0
+
 # Security (admin CMS later)
 passlib[bcrypt]==1.7.4
 itsdangerous==2.2.0

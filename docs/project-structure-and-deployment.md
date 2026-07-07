@@ -8,6 +8,7 @@
 
 | Date | Change |
 |------|--------|
+| 2026-07-06 | Updated to reflect shipped v1: full models, admin CMS, upload service, category management |
 | 2026-06-24 | Initial structure: FastAPI + Jinja2 + PostgreSQL + Docker; Hamravesh Darkube deploy guide |
 
 ---
@@ -20,8 +21,11 @@
 | Web framework | FastAPI | Fast, async, good for API + SSR |
 | Templates | Jinja2 | Server-rendered RTL pages; one container to deploy |
 | Database | PostgreSQL | Hamravesh managed addon; async via SQLAlchemy + asyncpg |
+| ORM | SQLAlchemy async (`asyncpg`) | Async-native; works well with FastAPI |
 | Migrations | Alembic | Safe schema changes on deploy |
+| Config | Pydantic-settings | `.env`-based; same image dev and prod |
 | Container | Docker | Required by Hamravesh Darkube |
+| File storage | Local filesystem | Covers + PDFs in `static/uploads/` |
 
 ---
 
@@ -29,56 +33,103 @@
 
 ```
 petfeature/
-├── Dockerfile                 # Production image for Hamravesh Darkube
-├── docker-compose.yml         # Local dev: web + PostgreSQL
-├── requirements.txt           # Python dependencies
-├── .env.example               # Template for local / Hamravesh env vars
-├── alembic.ini                # Alembic config
+├── Dockerfile                          # Production image for Hamravesh Darkube
+├── docker-compose.yml                  # Local dev: web + PostgreSQL
+├── requirements.txt                    # Python dependencies
+├── .env.example                        # Template for local / Hamravesh env vars
+├── alembic.ini                         # Alembic config
 ├── alembic/
-│   ├── env.py                 # Migration environment (wired to app settings)
-│   ├── script.py.mako         # Migration template
-│   └── versions/              # Migration files (empty until models exist)
+│   ├── env.py                          # Migration environment (wired to app settings)
+│   ├── script.py.mako                  # Migration template
+│   └── versions/                       # Generated migration files
 ├── app/
-│   ├── main.py                # FastAPI entry point — wires all routers
+│   ├── main.py                         # FastAPI entry point — wires all routers
 │   ├── core/
-│   │   ├── config.py          # Settings from environment variables
-│   │   └── database.py        # SQLAlchemy engine + session
+│   │   ├── config.py                   # Settings singleton (lru_cache)
+│   │   ├── database.py                 # Base, engine, async_session_factory, get_db()
+│   │   ├── sqlite_migrations.py        # SQLite migration helper (local dev only)
+│   │   └── templates.py               # Jinja2 template environment setup
 │   ├── web/
-│   │   └── routes.py          # Public pages (home, library, about)
+│   │   └── routes.py                   # Public pages: /, /library/, /library/{slug}/, /about/
 │   ├── admin/
-│   │   └── routes.py          # Admin CMS (placeholder)
+│   │   ├── auth.py                     # Session-based admin authentication
+│   │   └── routes.py                   # Admin CMS: books, categories, about
 │   ├── api/
 │   │   └── v1/
-│   │       └── router.py      # REST API (health check; more later)
-│   ├── models/                # SQLAlchemy ORM (empty until data layer)
-│   ├── schemas/               # Pydantic request/response schemas
-│   ├── services/              # Business logic shared by web, admin, API
-│   ├── templates/             # Jinja2 HTML (RTL)
-│   │   ├── base.html
-│   │   └── pages/
-│   │       ├── home.html
-│   │       ├── library.html
-│   │       ├── book_detail.html
-│   │       └── about.html
+│   │       └── router.py               # REST API (health check)
+│   ├── models/
+│   │   ├── book.py                     # Book, BookMediaLink, book_references, book_categories
+│   │   ├── category.py                 # Category, book_categories join table
+│   │   └── about.py                    # AboutPage (singleton)
+│   ├── schemas/
+│   │   ├── book.py                     # BookForm, MediaLinkInput
+│   │   ├── category.py                 # CategoryForm
+│   │   └── about.py                    # AboutForm, LinkInput
+│   ├── services/
+│   │   ├── books.py                    # Book CRUD, list, slug lookup, JSON parsers
+│   │   ├── categories.py               # Category CRUD, list
+│   │   ├── about.py                    # AboutPage get/update
+│   │   └── uploads.py                  # Cover and PDF upload resolution
+│   ├── templates/
+│   │   ├── base.html                   # Public layout (RTL, nav, footer)
+│   │   ├── pages/
+│   │   │   ├── home.html
+│   │   │   ├── library.html            # Grid + category filter
+│   │   │   ├── book_detail.html        # Full book detail
+│   │   │   └── about.html
+│   │   ├── admin/
+│   │   │   ├── base.html               # Admin layout
+│   │   │   ├── login.html
+│   │   │   ├── books_list.html
+│   │   │   ├── book_form.html          # Create/edit book (all fields)
+│   │   │   ├── categories_list.html
+│   │   │   ├── category_form.html
+│   │   │   └── about_form.html
+│   │   └── partials/
+│   │       └── note_fonts.html
 │   └── static/
-│       ├── css/main.css
-│       └── js/
-└── docs/                      # Product specs + this file
+│       ├── css/
+│       │   ├── main.css                # Public site styles
+│       │   └── admin.css               # Admin panel styles
+│       ├── js/
+│       │   ├── library.js              # Client-side category filtering
+│       │   └── admin.js                # Admin form JS (dynamic fields)
+│       └── uploads/
+│           ├── covers/                 # Uploaded book cover images
+│           └── downloads/              # Uploaded book PDF files
+└── docs/                               # Product specs + this file
 ```
 
 ---
 
-## 3. Routes (current)
+## 3. Routes (v1 — shipped)
 
-| Route | Module | Status |
-|-------|--------|--------|
-| `/` | `app/web/routes.py` | Placeholder home |
-| `/library/` | `app/web/routes.py` | Placeholder book list |
-| `/library/{slug}/` | `app/web/routes.py` | Placeholder book detail |
-| `/about/` | `app/web/routes.py` | Placeholder about page |
-| `/admin/` | `app/admin/routes.py` | Stub — CMS coming next |
-| `/api/v1/health` | `app/api/v1/router.py` | Health check for deploy |
-| `/static/*` | `app/main.py` | CSS, JS, images |
+| Route | Module | Description |
+|-------|--------|-------------|
+| `GET /` | `app/web/routes.py` | Home page |
+| `GET /library/` | `app/web/routes.py` | Book list (published + show_in_library only) |
+| `GET /library/{slug}/` | `app/web/routes.py` | Book detail (published only) |
+| `GET /about/` | `app/web/routes.py` | About page |
+| `GET /admin/` | `app/admin/routes.py` | Redirects to /admin/books/ |
+| `GET /admin/login/` | `app/admin/routes.py` | Admin login form |
+| `POST /admin/login/` | `app/admin/routes.py` | Admin login submit |
+| `GET /admin/logout/` | `app/admin/routes.py` | Admin logout |
+| `GET /admin/books/` | `app/admin/routes.py` | Books list (all statuses, searchable) |
+| `GET /admin/books/new/` | `app/admin/routes.py` | New book form |
+| `POST /admin/books/new/` | `app/admin/routes.py` | Create book |
+| `GET /admin/books/{slug}/edit/` | `app/admin/routes.py` | Edit book form |
+| `POST /admin/books/{slug}/edit/` | `app/admin/routes.py` | Update book |
+| `POST /admin/books/{slug}/delete/` | `app/admin/routes.py` | Delete book |
+| `GET /admin/categories/` | `app/admin/routes.py` | Categories list with book count |
+| `GET /admin/categories/new/` | `app/admin/routes.py` | New category form |
+| `POST /admin/categories/new/` | `app/admin/routes.py` | Create category |
+| `GET /admin/categories/{id}/edit/` | `app/admin/routes.py` | Edit category form |
+| `POST /admin/categories/{id}/edit/` | `app/admin/routes.py` | Update category |
+| `POST /admin/categories/{id}/delete/` | `app/admin/routes.py` | Delete category |
+| `GET /admin/about/` | `app/admin/routes.py` | About page edit form |
+| `POST /admin/about/` | `app/admin/routes.py` | Update about page |
+| `GET /api/v1/health` | `app/api/v1/router.py` | Health check for deploy |
+| `/static/*` | `app/main.py` | CSS, JS, uploaded files |
 
 ---
 
@@ -95,21 +146,19 @@ This layout matches that model:
 3. **PostgreSQL as external service** → stateless app container
 4. **`--proxy-headers`** on Uvicorn → correct behavior behind Hamravesh reverse proxy (HTTPS, domain)
 
-### Layered folders = build order
+### Layered folders = version build order
 
-| Phase | Folder | Purpose |
-|-------|--------|---------|
-| **1 (now)** | `web/` + `templates/` + `static/` | Public front pages |
-| **2 (next)** | `admin/` | CMS for books and about content |
-| **3** | `models/` + `alembic/versions/` | Data model + migrations |
-| **4** | `services/` | Business logic shared across layers |
-| **5 (optional)** | `api/v1/` | JSON API for future SPA or integrations |
+| Phase | Folder | Status |
+|-------|--------|--------|
+| **v1** | `web/` + `admin/` + `models/` + `services/` + `templates/` + `static/` | Shipped |
+| **v2** | New models (Post, Subscriber, ContactMessage), new routes, new templates | Planned |
+| **v3** | New model (PathStep), new admin routes, new public template | Planned |
 
 Routes stay thin; logic lives in `services/` so web and admin do not duplicate code.
 
 ### FastAPI + Jinja2 (not a separate React app)
 
-For v1 (library + about), server-rendered HTML means **one container** — no second frontend build step. An API layer can be added later without rewriting the site.
+Server-rendered HTML means **one container** — no second frontend build step. An API layer exists at `/api/v1/` and can be extended for future integrations.
 
 ---
 
@@ -121,11 +170,11 @@ Copy `.env.example` to `.env` for local development.
 |----------|----------|-------------|
 | `APP_NAME` | No | App label (default: `petfeature`) |
 | `DEBUG` | No | `true` locally; `false` in production |
-| `SECRET_KEY` | Yes (prod) | Random string for sessions/signing |
+| `SECRET_KEY` | Yes (prod) | Random string for session signing |
 | `PORT` | No | Server port (default: `8000`; Hamravesh may set this) |
-| `DATABASE_URL` | Yes (when DB used) | `postgresql+asyncpg://user:pass@host:5432/db` |
-| `ADMIN_USERNAME` | Yes (when admin live) | CMS login username |
-| `ADMIN_PASSWORD` | Yes (when admin live) | CMS login password |
+| `DATABASE_URL` | Yes | `postgresql+asyncpg://user:pass@host:5432/db` |
+| `ADMIN_USERNAME` | Yes | CMS login username |
+| `ADMIN_PASSWORD` | Yes | CMS login password |
 
 **Note:** Alembic uses a sync URL derived from `DATABASE_URL` (replaces `+asyncpg` with nothing).
 
@@ -155,7 +204,7 @@ docker compose up --build
 - App: http://localhost:8000
 - PostgreSQL: `localhost:5432` (user/pass/db: `petfeature`)
 
-### Database migrations (after models exist)
+### Database migrations
 
 ```bash
 alembic revision --autogenerate -m "describe change"
@@ -181,7 +230,7 @@ flowchart LR
 
 In the Darkube panel, create a **PostgreSQL** app. Copy the connection URL.
 
-Convert for this app if needed:
+Convert for this app:
 
 ```
 postgresql+asyncpg://USER:PASSWORD@HOST:5432/DATABASE
@@ -197,11 +246,7 @@ postgresql+asyncpg://USER:PASSWORD@HOST:5432/DATABASE
 | Service port | `8000` |
 | Execute command | `uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers` |
 
-The `Dockerfile` `CMD` already runs the same command; the panel setting can override it.
-
 ### Step 3 — Set environment variables
-
-In the app panel, add at minimum:
 
 | Variable | Production value |
 |----------|------------------|
@@ -213,20 +258,15 @@ In the app panel, add at minimum:
 
 ### Step 4 — Run migrations on deploy
 
-After models and migrations exist, run before serving traffic:
-
 ```bash
 alembic upgrade head
 ```
 
-Options on Hamravesh:
-
-- One-off job / init container in the deploy pipeline
-- Manual run via kubectl or a temporary shell (if available)
+Run before serving traffic via a one-off job or init container in the Darkube pipeline.
 
 ### Step 5 — Domain & SSL
 
-Attach your domain (`petfeature.ir`) or a `darkube.app` subdomain in the panel. SSL is handled by Hamravesh.
+Attach `petfeature.ir` in the panel. SSL is handled by Hamravesh.
 
 ---
 
@@ -246,29 +286,16 @@ CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --proxy-headers
 
 ---
 
-## 9. Planned build sequence
-
-Aligned with [Product Spec v1](./product-spec-v1.md):
-
-1. **Front pages** — design and content in `templates/` and `static/`
-2. **Data model** — `Book`, `Resource`, `AboutPage` in `models/`; Alembic migrations
-3. **Services** — `services/` loads data for `web/` routes
-4. **Admin CMS** — auth + CRUD in `admin/` for books and about content
-5. **Deploy** — push to Git; configure Darkube app + PostgreSQL
-
-v2 features (path, blog, newsletter, community) are in [Product Spec v2](./product-spec-v2.md).
-
----
-
-## 10. Related docs
+## 9. Related docs
 
 | Doc | Purpose |
 |-----|---------|
 | [product-spec.md](./product-spec.md) | Product overview and version roadmap |
-| [product-spec-v1.md](./product-spec-v1.md) | v1 scope: library + about |
-| [product-spec-v2.md](./product-spec-v2.md) | v2 scope: full site + community |
-| [use-case-diagram.md](./use-case-diagram.md) | UML use cases |
+| [product-spec-v1.md](./product-spec-v1.md) | v1 scope: library + about (shipped) |
+| [product-spec-v2.md](./product-spec-v2.md) | v2 scope: blog + newsletter + contact |
+| [product-spec-v3.md](./product-spec-v3.md) | v3 scope: product road |
+| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
 
 ---
 
-*Last updated: 2026-06-24*
+*Last updated: 2026-07-06*

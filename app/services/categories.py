@@ -16,12 +16,22 @@ from app.schemas.category import CategoryForm
 async def list_categories(session: AsyncSession, *, with_book_count: bool = False) -> list[Category]:
     stmt = select(Category).order_by(Category.name.asc())
     if with_book_count:
-        stmt = stmt.options(selectinload(Category.books))
+        stmt = stmt.options(selectinload(Category.books), selectinload(Category.tools))
     result = await session.execute(stmt)
     return list(result.scalars().unique().all())
 
 
-async def get_category(session: AsyncSession, category_id: int) -> Optional[Category]:
+async def get_category(
+    session: AsyncSession, category_id: int, *, with_tool_count: bool = False
+) -> Optional[Category]:
+    if with_tool_count:
+        stmt = (
+            select(Category)
+            .options(selectinload(Category.tools))
+            .where(Category.id == category_id)
+        )
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
     return await session.get(Category, category_id)
 
 

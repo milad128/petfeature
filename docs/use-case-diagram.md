@@ -1,8 +1,8 @@
 # Use Case Diagram — petfeature.ir
 
-UML use case diagram for **petfeature.ir** — **v1** library scope plus planned **v2** capabilities.
+UML use case diagram for **petfeature.ir** — v1 Library (shipped), v2 Blog, v3 Tools. Backlog epics (Roadmap, newsletter, engagement, analytics) are not shown here until scoped into a version.
 
-**Specs:** [v1](./product-spec-v1.md) · [v2](./product-spec-v2.md) · [Overview](./product-spec.md)
+**Specs:** [v1](./product-spec-v1.md) · [v2](./product-spec-v2.md) · [v3](./product-spec-v3.md) · [Backlog](./idea-backlog.md) · [Overview](./product-spec.md)
 
 ## Diagram
 
@@ -12,73 +12,55 @@ Render `use-case-diagram.puml` with the [PlantUML](https://plantuml.com/use-case
 
 | Use case | Included sub-use cases | Version |
 |----------|------------------------|---------|
-| **Browse Book Library** | View Book Details; Read Book Comments | Library: v1; Comments: v2 |
+| **Browse Book Library** | View Book Details | v1 |
 | **Visit About Me** | — | v1 |
-| **Subscribe to Newsletter** | Validate Form, Show Success | v2 |
-| **Contact** | Validate Form, Show Success | v2 |
-| **Browse Learning Path** | View Path Content | v2 |
-| **Browse Blog** | Read Blog Posts; Make Reaction; Comment on Post; Share to Social Networks | v2 |
-| **Register** | Authenticate | v2 |
+| **Browse Blog** | Read Post; Rate Post (stars); Comment on Post; Share to Social Networks; Copy Link | v2 |
+| **Browse Tools** | Use a Tool | v3 |
 
 ## Structure (UML)
 
 ```
 Visitor
 ├── Browse Book Library (v1)
-│   ├── <<include>> View Book Details (v1)
-│   └── <<include>> Read Book Comments (v2)
+│   └── <<include>> View Book Details (v1)
 ├── Visit About Me (v1)
-├── Subscribe to Newsletter (v2)
-├── Contact (v2)
-├── Browse Learning Path (v2)
-│   └── <<include>> View Path Content
 ├── Browse Blog (v2)
-│   ├── <<include>> Read Blog Posts
-│   ├── <<include>> Make Reaction
+│   ├── <<include>> Read Post
+│   ├── <<include>> Rate Post (stars)
 │   ├── <<include>> Comment on Post
-│   └── <<include>> Share to Social Networks
-└── Register (v2)
+│   ├── <<include>> Share to Social Networks
+│   └── <<include>> Copy Link
+└── Browse Tools (v3)
+    └── <<include>> Use a Tool
 ```
-
-**Authentication (v2):** Register includes Authenticate. Make Reaction, Comment on Post, and Read Book Comments extend Authenticate when the user is not logged in.
 
 ## Actors
 
 | Actor | Role |
 |-------|------|
-| **Visitor** | Reads books and about page (v1); browses path/blog, subscribes, contacts, shares (v2); registers in v2 |
-| **Admin (Milad Mirzaei)** | Manages books and about-author content (v1); path, blog, newsletter, contact, moderation (v2) |
-| **Email Service** | Newsletter signup, contact delivery, outbound newsletter (v2) |
-| **Social Networks** | External targets for share action (v2) |
+| **Visitor** | Reads books and about page (v1); reads/rates/comments on posts, shares (v2); uses tools (v3) |
+| **Admin (Milad Mirzaei)** | Manages books, categories, about (v1); publishes posts, moderates comments (v2); manages tools (v3) |
+| **Social Networks** | External share targets for blog posts (v2) |
 
 ## Admin use cases
 
 | Use case | Version |
 |----------|---------|
-| Manage Library Content | v1 |
+| Manage Library Content (books, categories, uploads) | v1 |
 | Manage About Author Content | v1 |
-| Manage Learning Path | v2 |
-| Manage Blog Posts | v2 |
-| Moderate Comments | v2 |
-| Receive Contact Messages | v2 |
-| Send Newsletter | v2 |
-
-## UML relationships
-
-| Relationship | Usage in this diagram |
-|--------------|-------------------------|
-| **Association** | Actor initiates a top-level use case |
-| **`<<include>>`** | Parent browse/engagement use case always involves the child (e.g. Browse Blog includes Read Posts) |
-| **`<<extend>>`** | Reaction, comment, and book comments extend Authenticate when login is required |
-| **`<<v2>>`** | Planned for version 2 |
+| Manage Blog Posts (CRUD, featured, tags) | v2 |
+| Moderate Post Comments | v2 |
+| Manage Tools | v3 |
 
 ## Version legend
 
 | Label | Meaning |
 |-------|---------|
-| **v1** | Library launch: books, about me, admin content management |
-| **v2** | Full site + community: path, blog, newsletter, contact, share, auth, reactions, comments, moderation |
+| **v1** | Library — books, about me, admin CMS (shipped) |
+| **v2** | Blog — posts, ratings, comments, sharing |
+| **v3** | Tools — downloadable PM template library |
+| **Backlog** | Roadmap, newsletter, contact, book engagement, analytics — unscheduled |
 
 ---
 
-*See also: [product-spec.md](./product-spec.md) · [product-spec-v1.md](./product-spec-v1.md) · [product-spec-v2.md](./product-spec-v2.md)*
+*See also: [product-spec.md](./product-spec.md) · [idea-backlog.md](./idea-backlog.md)*

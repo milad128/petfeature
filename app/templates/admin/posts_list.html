@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_post_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> یادداشت جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  {% if posts %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>یادداشت</th>
+        <th>وضعیت</th>
+        <th>تاریخ</th>
+        <th>بازدید</th>
+        <th>امتیاز</th>
+        <th>نظرها</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr>
+        <td>
+          <div class="row-book">
+            <div class="row-book-cover">
+              {% if post.cover %}
+              <img src="{{ post.cover }}" alt="">
+              {% else %}
+              <span aria-hidden="true">✍️</span>
+              {% endif %}
+            </div>
+            <div>
+              <div class="row-book-title">{{ post.title }}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="badge-stack">
+            {% if post.status == 'published' %}
+            <span class="badge badge-published">منتشرشده</span>
+            {% else %}
+            <span class="badge badge-draft">پیش‌نویس</span>
+            {% endif %}
+            {% if post.is_featured %}
+            <span class="badge badge-library">ویژه</span>
+            {% endif %}
+          </div>
+        </td>
+        <td>{{ post.published_date | jalali if post.published_date else '—' }}</td>
+        <td>{{ post.view_count | fa_digits }}</td>
+        <td>{% if post.rating_count %}{{ post.average_rating | fa_digits }} ({{ post.rating_count | fa_digits }}){% else %}—{% endif %}</td>
+        <td>{{ post.approved_comment_count | fa_digits }} تأییدشده{% if post.pending_comment_count %} · {{ post.pending_comment_count | fa_digits }} در انتظار{% endif %}</td>
+        <td>
+          <div class="row-actions">
+            <a href="{{ url_for('admin_post_edit', slug=post.slug) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+            <form method="post" action="{{ url_for('admin_post_delete', slug=post.slug) }}" data-delete-form data-confirm="این یادداشت حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">✍️</div>
+    <h3>هنوز یادداشتی اضافه نشده</h3>
+    <p>اولین یادداشت بلاگ را اضافه کنید تا در سایت نمایش داده شود.</p>
+    <a href="{{ url_for('admin_post_new') }}" class="btn btn-primary">+ یادداشت جدید</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

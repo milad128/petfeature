@@ -29,3 +29,7 @@ class Category(Base):
         secondary=book_categories,
         back_populates="categories",
     )
+    tools: Mapped[list["Tool"]] = relationship(  # noqa: F821
+        "Tool",
+        back_populates="category",
+    )
