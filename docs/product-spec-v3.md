@@ -1,6 +1,6 @@
 # Product Spec v3 — پت فیچر (Tools / Template Library)
 
-> **Prerequisite:** [Product Spec v2](./product-spec-v2.md) must be shipped first · **Parent:** [Product overview](./product-spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Status: Shipped** · **Prerequisite:** [Product Spec v2](./product-spec-v2.md) · **Parent:** [Product overview](./product-spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 > **Design files:** `petfeature redesign/project/Petfeature Tools.dc.html`, `Petfeature Tool Detail.dc.html`
 
 ## 1. Summary
@@ -8,7 +8,7 @@
 | Field | Value |
 |--------|--------|
 | **Version** | v3 — Tools |
-| **Status** | Planned |
+| **Status** | Shipped |
 | **Goal** | A curated Persian PM template library — ready-to-use downloadable artifacts with usage guides, cross-linked to books and posts |
 | **Builds on** | [Product Spec v2](./product-spec-v2.md) |
 | **Epic** | Tools |
@@ -280,4 +280,4 @@ v3 assumes v2 provides:
 
 ---
 
-*v3 spec — July 2026 · Updated from design files: Petfeature Tools.dc.html, Petfeature Tool Detail.dc.html*
+*v3 spec — July 2026 · Updated from design files: Petfeature Tools.dc.html, Petfeature Tool Detail.dc.html · **Shipped***

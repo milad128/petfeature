@@ -43,3 +43,16 @@ class BookForm(BaseModel):
         if not cleaned:
             raise ValueError("حداقل یک نویسنده لازم است")
         return cleaned
+
+
+class BookCommentForm(BaseModel):
+    author_name: str = Field(min_length=1, max_length=150)
+    author_email: Optional[str] = Field(default=None, max_length=300)
+    body: str = Field(min_length=1)
+
+    @field_validator("author_email", mode="before")
+    @classmethod
+    def empty_email_to_none(cls, v: object) -> object:
+        if isinstance(v, str) and not v.strip():
+            return None
+        return v

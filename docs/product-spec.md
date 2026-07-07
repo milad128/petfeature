@@ -20,10 +20,22 @@ Overview and index for petfeature.ir. Detailed requirements live in version-spec
 
 | Epic | Description | Status |
 |------|-------------|--------|
-| **Library** | Curated PM book library with full notes, quotes, media links, and downloads | Shipped (v1) |
-| **Blog** | Personal PM essays with ratings, comments, social sharing, and view counts | Planned (v2) |
-| **Tools** | Curated PM template library — downloadable frameworks, guides, and artifacts for day-to-day work | Planned (v3) |
+| **Library** | Curated PM book library with full notes, quotes, media links, and downloads | **Shipped** (v1) |
+| **Blog** | Personal PM essays with ratings, comments, social sharing, and view counts | **Shipped** (v2) |
+| **Tools** | Curated PM template library — downloadable frameworks, guides, and artifacts for day-to-day work | **Shipped** (v3) |
 | **Roadmap** | Structured learning path linking books and posts into an opinionated sequence | Backlog |
+
+---
+
+## Backlog epics (unscheduled)
+
+| Epic | Description | Status |
+|------|-------------|--------|
+| **Newsletter + Contact** | Subscription form, contact page, admin subscriber/message views | Backlog |
+| **Book Engagement** | Star ratings and comments on library books (book like deferred) | **Shipped** (v4) |
+| **Visitor Analytics** | Site-wide page-view tracking and admin dashboard | Partial — post view counts only (shipped with Blog) |
+
+See [Product Backlog](./product%20backlog.md) for feature detail.
 
 ---
 
@@ -31,17 +43,19 @@ Overview and index for petfeature.ir. Detailed requirements live in version-spec
 
 ```mermaid
 flowchart LR
-  v1["v1 ✓\nLibrary"] --> v2["v2\nBlog"]
-  v2 --> v3["v3\nTools"]
-  v3 --> vN["...\nBacklog"]
+  v1["v1 ✓\nLibrary"] --> v2["v2 ✓\nBlog"]
+  v2 --> v3["v3 ✓\nTools"]
+  v3 --> v4["v4 ✓\nBook Engagement"]
+  v4 --> vN["...\nBacklog"]
 ```
 
 | Version | Document | Epic | Scope | Status |
 |---------|----------|------|-------|--------|
 | **v1** | [Product Spec v1](./product-spec-v1.md) | Library | Book library, about page, admin CMS | **Shipped** |
-| **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, tag filter, view counts, star ratings, comments, social sharing | Planned |
-| **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | Planning |
-| **Backlog** | [Idea Backlog](./idea-backlog.md) | All | Roadmap, newsletter, contact, book engagement, analytics | Unscheduled |
+| **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, view counts, star ratings, comments, social sharing | **Shipped** |
+| **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | **Shipped** |
+| **v4** | [Product Spec v4](./product-spec-v4.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
+| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter, contact, book like, analytics | Unscheduled |
 
 ---
 
@@ -49,7 +63,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** Needs a solid library and blog first, then practical tools, then a structured learning path.
+**Admin:** Library, blog, tools, and book engagement are all live. Next: the backlog epics — Newsletter + Contact is the recommended next priority, followed by Roadmap and analytics.
 
 ---
 
@@ -59,10 +73,11 @@ flowchart LR
 |-----|---------|
 | [project-structure-and-deployment.md](./project-structure-and-deployment.md) | Project layout, stack, Hamravesh deploy, local dev |
 | [product-spec-v1.md](./product-spec-v1.md) | PRD for Library epic (shipped) |
-| [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic |
-| [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic |
-| [idea-backlog.md](./idea-backlog.md) | Unscheduled ideas: Roadmap, newsletter, contact, book engagement, analytics |
-| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
+| [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic (shipped) |
+| [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic (shipped) |
+| [product-spec-v4.md](./product-spec-v4.md) | PRD for Book Engagement epic (shipped) |
+| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter, contact, book like, analytics |
+| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3 + v4) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
 
 ---
@@ -74,13 +89,18 @@ flowchart LR
 - Visit About Me
 - Admin: Manage Library Content, Manage About Author Content
 
-### v2 — Blog
+### v2 — Blog (shipped)
 - Browse Blog → Read Post, Rate Post (stars), Comment on Post, Share, Copy Link
 - Admin: Manage Blog Posts, Moderate Post Comments
 
-### v3 — Tools
+### v3 — Tools (shipped)
 - Browse Tools → Use a Tool
 - Admin: Manage Tools
+
+### v4 — Book Engagement (shipped)
+- Rate a Book (stars) → View average rating
+- Comment on a Book → Read approved comments
+- Admin: Moderate Book Comments
 
 ### Backlog — Roadmap epic
 - Browse Roadmap → View Path Steps (linked to books and posts)
@@ -90,4 +110,14 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*July 2026*
+## Known gaps (not yet in any epic)
+
+| Item | Notes |
+|------|-------|
+| Home page library preview | Static hardcoded cards — not loaded from DB |
+| Book page analytics | v1 NFR mentions traffic on book pages; only post view counts exist today |
+| Site-wide analytics dashboard | Backlog epic — partial overlap with post view counts |
+
+---
+
+*July 2026 · Updated to reflect shipped v4 Book Engagement*

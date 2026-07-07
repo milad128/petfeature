@@ -1,13 +1,13 @@
 # Product Spec v2 — پت فیچر (Blog)
 
-> **Prerequisite:** [Product Spec v1](./product-spec-v1.md) must be shipped first · **Parent:** [Product overview](./product-spec.md) · **Next:** [Product Spec v3](./product-spec-v3.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Status: Shipped** · **Prerequisite:** [Product Spec v1](./product-spec-v1.md) · **Parent:** [Product overview](./product-spec.md) · **Next:** [Product Spec v3](./product-spec-v3.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 
 ## 1. Summary
 
 | Field | Value |
 |--------|--------|
 | **Version** | v2 — Blog |
-| **Status** | Planned |
+| **Status** | Shipped |
 | **Goal** | Publish personal PM essays with clean URLs, social sharing, view counts, star ratings, and a comment section |
 | **Builds on** | [Product Spec v1](./product-spec-v1.md) |
 | **Design files** | `petfeature redesign/project/Petfeature Blog.dc.html`, `Petfeature Post.dc.html` |
@@ -282,4 +282,4 @@ v2 assumes v1 provides:
 
 ---
 
-*v2 spec — July 2026 · Updated from design files: Petfeature Blog.dc.html, Petfeature Post.dc.html*
+*v2 spec — July 2026 · Updated from design files: Petfeature Blog.dc.html, Petfeature Post.dc.html · **Shipped***

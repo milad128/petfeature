@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap">
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root, [data-theme="light"] {
+    --bg:#faf9f7; --surface:#ffffff; --surface-2:#fbfaf8; --border:#e8e2db;
+    --text:#1c1917; --muted:#78716c; --accent:#c2410c; --accent-bg:#fff7ed; --accent-bd:#fde0c8;
+    --shadow:0 8px 32px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] {
+    --bg:#0d0f12; --surface:#15181e; --surface-2:#11141a; --border:rgba(255,255,255,.09);
+    --text:#eceef1; --muted:#9aa1aa; --accent:#f0834e; --accent-bg:rgba(240,131,78,.12); --accent-bd:rgba(240,131,78,.28);
+    --shadow:0 18px 48px rgba(0,0,0,0.45);
+  }
+  body { margin:0; font-family:'Vazirmatn',system-ui,Tahoma,sans-serif; background:var(--bg); color:var(--text); direction:rtl; line-height:1.8; -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--accent-bd); }
+  @media (max-width:820px) {
+    .book-layout { grid-template-columns:1fr !important; }
+    .book-aside { position:static !important; display:flex !important; flex-direction:row !important; align-items:center; gap:18px !important; }
+    .book-aside .cover-lg { width:110px !important; aspect-ratio:3/4 !important; }
+    .comment-name-row { grid-template-columns:1fr !important; }
+  }
+</style>
+</helmet>
+
+<div data-theme="{{ theme }}" data-screen-label="Book Detail v4" style="background:var(--bg); color:var(--text); min-height:100vh; font-family:'Vazirmatn',system-ui,Tahoma,sans-serif; direction:rtl;">
+
+  <!-- HEADER -->
+  <header style="position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);">
+    <div style="max-width:1100px; margin:0 auto; padding:0 24px; height:66px; display:flex; align-items:center; justify-content:space-between;">
+      <a href="#" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);">
+        <svg width="30" height="30" viewBox="0 0 96 96" fill="none" style="display:block; flex-shrink:0;"><g stroke="var(--accent)" stroke-width="4" opacity=".55"><line x1="48" y1="46" x2="22" y2="24"/><line x1="48" y1="46" x2="74" y2="20"/><line x1="48" y1="46" x2="26" y2="74"/><line x1="48" y1="46" x2="76" y2="70"/></g><circle cx="48" cy="46" r="11" fill="var(--accent)"/><circle cx="22" cy="24" r="6" fill="var(--accent)"/><circle cx="74" cy="20" r="6" fill="var(--accent)"/><circle cx="26" cy="74" r="6" fill="var(--accent)"/><circle cx="76" cy="70" r="6" fill="var(--accent)"/></svg>
+        <b style="font-size:18px; letter-spacing:-.01em;">پت فیچر</b>
+      </a>
+      <nav style="display:flex; gap:6px; align-items:center;">
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:600; color:var(--accent); background:var(--accent-bg); text-decoration:none;">کتابخانه</a>
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none;" style-hover="color:var(--text);">بلاگ</a>
+        <a href="#" style="padding:7px 15px; border-radius:7px; font-size:14px; font-weight:500; color:var(--muted); text-decoration:none;" style-hover="color:var(--text);">درباره من</a>
+      </nav>
+    </div>
+  </header>
+
+  <div style="max-width:1100px; margin:0 auto; padding:34px 24px 80px;">
+
+    <!-- BREADCRUMB -->
+    <nav style="display:flex; align-items:center; gap:8px; font-size:.88rem; color:var(--muted); margin-bottom:32px;">
+      <a href="#" style="color:var(--accent); text-decoration:none;">کتابخانه</a>
+      <span>‹</span>
+      <span>قلاب</span>
+    </nav>
+
+    <div class="book-layout" style="display:grid; grid-template-columns:280px 1fr; gap:44px; align-items:start;">
+
+      <!-- ASIDE -->
+      <aside class="book-aside" style="position:sticky; top:100px;">
+        <div class="cover-lg" style="aspect-ratio:3/4; border-radius:12px; background:linear-gradient(145deg,#e8d3f0,#c9a8d6); box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; font-size:4rem; margin-bottom:14px;">📔</div>
+        <div style="font-size:.85rem; color:var(--muted); text-align:center;">سال انتشار: ۲۰۱۴</div>
+      </aside>
+
+      <!-- MAIN -->
+      <main>
+        <!-- hero -->
+        <header style="margin-bottom:26px;">
+          <h1 style="font-size:2.2rem; font-weight:700; letter-spacing:-.02em; margin-bottom:8px;">قلاب</h1>
+          <p style="font-size:1.1rem; color:var(--muted); margin-bottom:12px;">چگونه محصولات جذاب می‌سازیم</p>
+          <p style="font-size:.95rem; color:var(--text); margin-bottom:16px;">نویسنده: <b style="font-weight:600;">نیر ایال</b></p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:.78rem; font-weight:500; padding:4px 12px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">رفتار کاربر</span>
+            <span style="font-size:.78rem; font-weight:500; padding:4px 12px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">عادت‌سازی</span>
+            <span style="font-size:.78rem; font-weight:500; padding:4px 12px; border-radius:20px; background:var(--accent-bg); color:var(--accent);">محصول</span>
+          </div>
+        </header>
+
+        <!-- actions -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap; padding:18px; background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:36px;">
+          <a href="#" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#fff; font-weight:600; font-size:14.5px; padding:11px 22px; border-radius:9px; text-decoration:none;" style-hover="opacity:.9;">خرید از طاقچه <span style="font-size:12px;">↗</span></a>
+          <a href="#" style="display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--accent); font-weight:600; font-size:14.5px; padding:11px 22px; border-radius:9px; border:1.5px solid var(--accent); text-decoration:none;" style-hover="background:var(--accent-bg);">دانلود PDF <span style="font-size:12px;">↓</span></a>
+        </div>
+
+        <!-- note -->
+        <section style="margin-bottom:36px;">
+          <div style="font-size:12.5px; font-weight:600; color:var(--accent); letter-spacing:.04em; margin-bottom:14px;">یادداشت پت فیچر</div>
+          <p style="font-size:1.05rem; line-height:1.95; margin-bottom:16px;">چیزی که در «قلاب» بیشتر از هر کتاب دیگری برایم روشن شد این بود که عادت‌ها محصول تصادف نیستند؛ محصول طراحی‌اند. نیر ایال یک مدل ساده اما دقیق می‌دهد که با آن می‌شود فهمید چرا بعضی اپ‌ها بدون هیچ تبلیغی به بخشی از روتین روزانه‌مان تبدیل می‌شوند و بعضی دیگر، با بودجه‌ی تبلیغاتی هنگفت، فراموش می‌شوند.</p>
+          <p style="font-size:1.05rem; line-height:1.95; margin-bottom:16px;">چیزی که برایم کاربردی بود، تفکیک بین «تریگرهای بیرونی» و «تریگرهای درونی» است. اکثر تیم‌های محصولی که با آن‌ها کار کرده‌ام، وقت زیادی صرف تریگر بیرونی (نوتیفیکیشن، ایمیل) می‌کنند، اما تریگر درونی — احساسی که کاربر را بدون هیچ پیامی به سراغ اپ می‌برد — جایی است که واقعاً ارزش ساخته می‌شود.</p>
+          <p style="font-size:1.05rem; line-height:1.95;">نکته‌ی مهم‌تر برایم، فصل مربوط به اخلاق است. ایال به‌صراحت می‌گوید همین مدل می‌تواند برای بد هم استفاده شود. این کتاب را کنار «الهام‌گرفته» بخوانید تا ببینید کشف محصول و طراحی عادت چطور مکمل هم می‌شوند.</p>
+        </section>
+
+        <!-- quotes -->
+        <section style="margin-bottom:36px;">
+          <div style="font-size:12.5px; font-weight:600; color:var(--accent); letter-spacing:.04em; margin-bottom:14px;">نقل‌قول</div>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:var(--accent-bg); border-right:3px solid var(--accent); border-radius:0 10px 10px 0; padding:16px 20px; font-size:1rem; color:var(--text); font-style:italic; line-height:1.8;">«برای ایجاد عادت، محصول باید کاربر را از Trigger به Action و سپس Reward ببرد.»</div>
+            <div style="background:var(--accent-bg); border-right:3px solid var(--accent); border-radius:0 10px 10px 0; padding:16px 20px; font-size:1rem; color:var(--text); font-style:italic; line-height:1.8;">«تریگر درونی، احساسی است که بدون نیاز به هیچ پیامی، کاربر را به سمت محصول شما می‌کشاند.»</div>
+            <div style="background:var(--accent-bg); border-right:3px solid var(--accent); border-radius:0 10px 10px 0; padding:16px 20px; font-size:1rem; color:var(--text); font-style:italic; line-height:1.8;">«هر چه سرمایه‌گذاری کاربر در محصول بیشتر باشد، احتمال بازگشت او هم بیشتر می‌شود.»</div>
+          </div>
+        </section>
+
+        <!-- media -->
+        <section style="margin-bottom:36px;">
+          <div style="font-size:12.5px; font-weight:600; color:var(--accent); letter-spacing:.04em; margin-bottom:14px;">ویدیو و پادکست</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:10px;" style-hover="border-color:var(--accent);">
+              <span style="width:36px; height:36px; border-radius:9px; background:var(--accent-bg); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">🎬</span>
+              <span style="flex:1; font-size:.95rem; font-weight:500;">خلاصه‌ی تصویری مدل Hook</span>
+              <a href="#" target="_blank" rel="noopener" style="color:var(--accent); font-size:.85rem; font-weight:600; text-decoration:none; flex-shrink:0;">مشاهده ←</a>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:10px;" style-hover="border-color:var(--accent);">
+              <span style="width:36px; height:36px; border-radius:9px; background:var(--accent-bg); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">🎙</span>
+              <span style="flex:1; font-size:.95rem; font-weight:500;">گفتگو درباره‌ی عادت‌سازی در محصول</span>
+              <a href="#" target="_blank" rel="noopener" style="color:var(--accent); font-size:.85rem; font-weight:600; text-decoration:none; flex-shrink:0;">مشاهده ←</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- referred books -->
+        <section style="padding-top:28px; border-top:1px solid var(--border);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+            <span style="font-size:1.1rem;">🧵</span>
+            <div style="font-size:12.5px; font-weight:600; color:var(--accent); letter-spacing:.04em;">کتاب‌های ارجاع‌شده — دنبال سرنخ بگرد</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px;">
+            <a href="#" style="display:flex; align-items:center; gap:14px; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; text-decoration:none; color:inherit;" style-hover="border-color:var(--accent); transform:translateY(-2px);">
+              <span style="width:50px; height:66px; border-radius:6px; background:linear-gradient(145deg,#f5ddd3,#e8b5a2); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">📕</span>
+              <span><span style="display:block; font-size:.95rem; font-weight:600; margin-bottom:2px;">الهام‌گرفته</span><span style="display:block; font-size:.82rem; color:var(--muted);">مارتی کیگان</span></span>
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:14px; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; text-decoration:none; color:inherit;" style-hover="border-color:var(--accent); transform:translateY(-2px);">
+              <span style="width:50px; height:66px; border-radius:6px; background:linear-gradient(145deg,#d3ddf5,#a2b5e8); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">📘</span>
+              <span><span style="display:block; font-size:.95rem; font-weight:600; margin-bottom:2px;">صفر به یک</span><span style="display:block; font-size:.82rem; color:var(--muted);">پیتر تیل</span></span>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div><!-- /book-layout grid -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         ENGAGEMENT SECTIONS — full width, below the grid
+         ═══════════════════════════════════════════════════ -->
+    <div style="margin-top:56px; padding-top:44px; border-top:1px solid var(--border);">
+
+      <!-- STAR RATING WIDGET -->
+      <div style="padding:26px 28px; border-radius:14px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:44px;">
+        <div>
+          <div style="font-weight:600; font-size:1rem; margin-bottom:5px;">این کتاب چقدر به‌دردت خورد؟</div>
+          <div style="font-size:.85rem; color:var(--muted);">میانگین امتیاز: ۴.۳ از ۵ · بر اساس ۵۲ رای</div>
+        </div>
+        <div class="star-row" style="display:flex; gap:6px; align-items:center;">
+          <button onClick="{{ onStarClick }}" onMouseEnter="{{ onStarHover }}" onMouseLeave="{{ onStarLeave }}" class="star-btn" style="background:none; border:none; cursor:pointer; font-size:2rem; line-height:1; padding:2px; color:var(--border); font-family:inherit;">★</button>
+          <button onClick="{{ onStarClick }}" onMouseEnter="{{ onStarHover }}" onMouseLeave="{{ onStarLeave }}" class="star-btn" style="background:none; border:none; cursor:pointer; font-size:2rem; line-height:1; padding:2px; color:var(--border); font-family:inherit;">★</button>
+          <button onClick="{{ onStarClick }}" onMouseEnter="{{ onStarHover }}" onMouseLeave="{{ onStarLeave }}" class="star-btn" style="background:none; border:none; cursor:pointer; font-size:2rem; line-height:1; padding:2px; color:var(--border); font-family:inherit;">★</button>
+          <button onClick="{{ onStarClick }}" onMouseEnter="{{ onStarHover }}" onMouseLeave="{{ onStarLeave }}" class="star-btn" style="background:none; border:none; cursor:pointer; font-size:2rem; line-height:1; padding:2px; color:var(--border); font-family:inherit;">★</button>
+          <button onClick="{{ onStarClick }}" onMouseEnter="{{ onStarHover }}" onMouseLeave="{{ onStarLeave }}" class="star-btn" style="background:none; border:none; cursor:pointer; font-size:2rem; line-height:1; padding:2px; color:var(--border); font-family:inherit;">★</button>
+          <sc-if value="{{ hasRated }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:.88rem; color:var(--accent); font-weight:600; margin-inline-start:10px;">ممنون! ✓</span>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- COMMENTS SECTION -->
+      <div>
+        <div style="font-size:1.05rem; font-weight:700; margin-bottom:20px;">نظرها ({{ commentCount }})</div>
+
+        <!-- empty state -->
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px; text-align:center; background:var(--surface); border:1px dashed var(--border); border-radius:12px; color:var(--muted); font-size:.95rem; margin-bottom:24px;">هنوز نظری ثبت نشده — اول نفر باش!</div>
+        </sc-if>
+
+        <!-- comment list -->
+        <sc-if value="{{ hasComments }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:28px;">
+            <sc-for list="{{ comments }}" as="c" hint-placeholder-count="2">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 20px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span style="font-weight:600; font-size:.92rem;">{{ c.name }}</span>
+                  <span style="font-size:.78rem; color:var(--muted);">{{ c.date }}</span>
+                </div>
+                <p style="font-size:.95rem; color:var(--text); line-height:1.85; margin:0;">{{ c.text }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- COMMENT FORM -->
+        <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:22px 24px;">
+          <div style="font-weight:600; font-size:.95rem; margin-bottom:16px;">نظر بدید</div>
+
+          <!-- success notice — shown after submit, form stays visible -->
+          <sc-if value="{{ commentSubmitted }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--accent-bg); border:1px solid var(--accent-bd); border-radius:10px; margin-bottom:16px; font-size:.9rem; color:var(--accent); font-weight:500;">
+              <span style="font-size:1rem;">✓</span>
+              <span>نظرت ثبت شد و پس از بررسی منتشر می‌شه.</span>
+            </div>
+          </sc-if>
+
+          <!-- name + email row -->
+          <div class="comment-name-row" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <input ref="{{ nameInputRef }}" type="text" placeholder="نام شما (الزامی)" style="width:100%; padding:10px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:.92rem; direction:rtl;"></input>
+            <input ref="{{ emailInputRef }}" type="email" placeholder="ایمیل (اختیاری)" style="width:100%; padding:10px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:.92rem; direction:ltr; text-align:right;"></input>
+          </div>
+
+          <!-- comment body -->
+          <textarea ref="{{ textInputRef }}" placeholder="متن نظرت رو بنویس…" rows="4" style="width:100%; padding:10px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:.92rem; resize:vertical; margin-bottom:14px; direction:rtl;"></textarea>
+
+          <button onClick="{{ onSubmitComment }}" style="background:var(--accent); color:#fff; font-weight:600; font-size:.88rem; padding:10px 22px; border-radius:9px; border:none; cursor:pointer; font-family:inherit;">ارسال نظر ←</button>
+        </div>
+      </div>
+
+    </div><!-- /engagement sections -->
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid var(--border); background:var(--surface);">
+    <div style="max-width:1100px; margin:0 auto; padding:28px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <span style="color:var(--muted); font-size:.85rem;">پت فیچر — دانشنامه‌ی یک مدیر محصول</span>
+      <div style="display:flex; gap:20px;">
+        <a href="#" style="color:var(--muted); font-size:.85rem; text-decoration:none;" style-hover="color:var(--accent);">کتابخانه</a>
+        <a href="#" style="color:var(--muted); font-size:.85rem; text-decoration:none;" style-hover="color:var(--accent);">درباره من</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:1800},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;}}">
+class Component extends DCLogic {
+  state = {
+    rating: 0,
+    hoverRating: 0,
+    commentSubmitted: false,
+    comments: [
+      { name: 'سارا احمدی', date: '۳ تیر ۱۴۰۵', text: 'یکی از بهترین کتاب‌هایی بود که خوندم. فصل تریگرهای درونی خیلی برام جا افتاد — همیشه فکر می‌کردم نوتیفیکیشن یه نعمت خالصه، حالا دیدم ماجرا پیچیده‌تره.' },
+      { name: 'علی رضایی', date: '۱ تیر ۱۴۰۵', text: 'فصل اخلاق رو حتماً بخونید. خیلی‌ها این کتاب رو می‌خونن برای ساختن محصول، ولی اون فصل یه آینه‌ی خوبیه که ببینیم داریم چیکار می‌کنیم.' },
+    ],
+  };
+
+  constructor(props) {
+    super(props);
+    this.nameRef = React.createRef();
+    this.emailRef = React.createRef();
+    this.textRef = React.createRef();
+  }
+
+  toFa(n) { return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]); }
+
+  applyStarStyles() {
+    const level = this.state.hoverRating || this.state.rating;
+    document.querySelectorAll('.star-row .star-btn').forEach((btn, i) => {
+      btn.style.color = (i < level) ? 'var(--accent)' : 'var(--border)';
+    });
+  }
+
+  componentDidMount() { this.applyStarStyles(); }
+  componentDidUpdate() { this.applyStarStyles(); }
+
+  starIndex(e) {
+    const btn = e.currentTarget;
+    return Array.prototype.indexOf.call(btn.parentElement.children, btn) + 1;
+  }
+
+  submitComment() {
+    const name = (this.nameRef.current && this.nameRef.current.value || '').trim();
+    const text = (this.textRef.current && this.textRef.current.value || '').trim();
+    if (!name || !text) return;
+    this.setState(s => ({
+      commentSubmitted: true,
+      comments: [{ name, date: 'همین الان', text }, ...s.comments],
+    }));
+    if (this.nameRef.current) this.nameRef.current.value = '';
+    if (this.emailRef.current) this.emailRef.current.value = '';
+    if (this.textRef.current) this.textRef.current.value = '';
+    // clear notice after 5 seconds
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ commentSubmitted: false }), 5000);
+  }
+
+  renderVals() {
+    const { rating, hoverRating, commentSubmitted, comments } = this.state;
+    return {
+      theme: this.props.theme ?? 'dark',
+      // rating
+      hasRated: rating > 0,
+      onStarClick: (e) => this.setState({ rating: this.starIndex(e) }),
+      onStarHover: (e) => this.setState({ hoverRating: this.starIndex(e) }),
+      onStarLeave: () => this.setState({ hoverRating: 0 }),
+      // comments
+      comments,
+      commentCount: this.toFa(comments.length),
+      hasComments: comments.length > 0,
+      isEmpty: comments.length === 0,
+      commentSubmitted,
+      // form refs
+      nameInputRef: this.nameRef,
+      emailInputRef: this.emailRef,
+      textInputRef: this.textRef,
+      onSubmitComment: () => this.submitComment(),
+    };
+  }
+}
+</script>
+</body>
+</html>

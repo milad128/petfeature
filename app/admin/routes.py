@@ -18,7 +18,7 @@ from app.admin.auth import (
 )
 from app.core.database import get_db
 from app.core.templates import templates
-from app.models.book import BookStatus
+from app.models.book import BookCommentStatus, BookStatus
 from app.models.category import Category
 from app.models.post import CommentStatus, PostStatus
 from app.models.tool import ToolStatus
@@ -1652,3 +1652,58 @@ class _FormAboutPreview:
 
 def _form_as_about_preview(data: AboutForm) -> _FormAboutPreview:
     return _FormAboutPreview(data)
+
+
+# ── Book comments ──────────────────────────────────────────────────────────
+
+
+@router.get("/books/comments/", name="admin_book_comments")
+async def admin_book_comments_list(
+    request: Request,
+    status: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    current_status = status or "pending"
+    comments = await book_service.list_book_comments(db, status=current_status)
+    return templates.TemplateResponse(
+        request,
+        "admin/book_comments_list.html",
+        {
+            "page_title": "نظرهای کتاب‌ها",
+            "active_nav": "book_comments",
+            "comments": comments,
+            "current_status": current_status,
+        },
+    )
+
+
+@router.post("/books/comments/{comment_id}/approve/", name="admin_book_comment_approve")
+async def admin_book_comment_approve(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    comment = await book_service.get_book_comment(db, comment_id)
+    if comment:
+        await book_service.set_book_comment_status(db, comment, BookCommentStatus.APPROVED.value)
+    return RedirectResponse(url="/admin/books/comments/?status=pending", status_code=303)
+
+
+@router.post("/books/comments/{comment_id}/reject/", name="admin_book_comment_reject")
+async def admin_book_comment_reject(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    comment = await book_service.get_book_comment(db, comment_id)
+    if comment:
+        await book_service.set_book_comment_status(db, comment, BookCommentStatus.REJECTED.value)
+    return RedirectResponse(url="/admin/books/comments/?status=pending", status_code=303)
+
+
+@router.post("/books/comments/{comment_id}/delete/", name="admin_book_comment_delete")
+async def admin_book_comment_delete(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    comment = await book_service.get_book_comment(db, comment_id)
+    if comment:
+        await book_service.delete_book_comment(db, comment)
+    return RedirectResponse(url="/admin/books/comments/?status=pending", status_code=303)

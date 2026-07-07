@@ -6,7 +6,7 @@ import enum
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String, Table, Text, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String, Table, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -21,6 +21,12 @@ class BookStatus(str, enum.Enum):
 class MediaLinkType(str, enum.Enum):
     VIDEO = "video"
     PODCAST = "podcast"
+
+
+class BookCommentStatus(str, enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 
 book_references = Table(
@@ -71,6 +77,12 @@ class Book(Base):
         back_populates="books",
         order_by="Category.name",
     )
+    ratings: Mapped[list["BookRating"]] = relationship(
+        back_populates="book", cascade="all, delete-orphan"
+    )
+    comments: Mapped[list["BookComment"]] = relationship(
+        back_populates="book", cascade="all, delete-orphan", order_by="BookComment.created_at"
+    )
 
     @property
     def authors_display(self) -> str:
@@ -95,6 +107,28 @@ class Book(Base):
             for link in self.media_links
         ]
 
+    @property
+    def average_rating(self) -> float:
+        if not self.ratings:
+            return 0.0
+        return round(sum(r.stars for r in self.ratings) / len(self.ratings), 1)
+
+    @property
+    def rating_count(self) -> int:
+        return len(self.ratings)
+
+    @property
+    def approved_comments(self) -> list["BookComment"]:
+        return [c for c in self.comments if c.status == BookCommentStatus.APPROVED.value]
+
+    @property
+    def approved_comment_count(self) -> int:
+        return len(self.approved_comments)
+
+    @property
+    def pending_comment_count(self) -> int:
+        return len([c for c in self.comments if c.status == BookCommentStatus.PENDING.value])
+
 
 class BookMediaLink(Base):
     __tablename__ = "book_media_links"
@@ -107,3 +141,30 @@ class BookMediaLink(Base):
     sort_order: Mapped[int] = mapped_column(default=0)
 
     book: Mapped["Book"] = relationship(back_populates="media_links")
+
+
+class BookRating(Base):
+    __tablename__ = "book_ratings"
+    __table_args__ = (UniqueConstraint("book_id", "visitor_token", name="uq_book_rating_visitor"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    book_id: Mapped[int] = mapped_column(ForeignKey("books.id", ondelete="CASCADE"))
+    visitor_token: Mapped[str] = mapped_column(String(64))
+    stars: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    book: Mapped["Book"] = relationship(back_populates="ratings")
+
+
+class BookComment(Base):
+    __tablename__ = "book_comments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    book_id: Mapped[int] = mapped_column(ForeignKey("books.id", ondelete="CASCADE"))
+    author_name: Mapped[str] = mapped_column(String(150))
+    author_email: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    body: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default=BookCommentStatus.PENDING.value)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    book: Mapped["Book"] = relationship(back_populates="comments")

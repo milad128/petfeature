@@ -125,6 +125,63 @@
     </div>
   </div>
 
+  <div class="book-engagement">
+    <div class="post-rating-card" id="rating">
+      <div>
+        <div class="post-rating-label">این کتاب چقدر به‌دردت خورد؟</div>
+        {% if book.rating_count %}
+        <div class="post-rating-stat">میانگین امتیاز: {{ book.average_rating | fa_digits }} از ۵ · بر اساس {{ book.rating_count | fa_digits }} رای</div>
+        {% else %}
+        <div class="post-rating-stat">هنوز رایی ثبت نشده</div>
+        {% endif %}
+      </div>
+      {% if has_rated %}
+      <div class="star-row star-row-done">
+        <span class="star-thanks">ممنون! ✓</span>
+      </div>
+      {% else %}
+      <form method="post" action="{{ url_for('book_rate', slug=book.slug) }}" class="star-row" id="star-form">
+        {% for n in [5, 4, 3, 2, 1] %}
+        <button type="submit" name="stars" value="{{ n }}" class="star-btn" aria-label="{{ n }} ستاره">★</button>
+        {% endfor %}
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="comments-section" id="comments">
+      <div class="comments-header">نظرها ({{ book.approved_comment_count | fa_digits }})</div>
+
+      {% if book.approved_comments %}
+      <div class="comments-list">
+        {% for c in book.approved_comments %}
+        <div class="comment-item">
+          <div class="comment-item-head">
+            <span class="comment-item-name">{{ c.author_name }}</span>
+            <span class="comment-item-date">{{ c.created_at | jalali }}</span>
+          </div>
+          <p class="comment-item-body">{{ c.body }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="form-hint">هنوز نظری ثبت نشده — اول نفر باش!</p>
+      {% endif %}
+
+      {% if request.query_params.get('commented') %}
+      <p class="form-success" role="status">نظرت ثبت شد و پس از بررسی منتشر می‌شه ✓</p>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('book_comment', slug=book.slug) }}" class="comment-form">
+        <div class="comment-form-title">نظر بدید</div>
+        <input type="text" name="website" class="comment-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="text" name="author_name" class="form-control" placeholder="اسم شما" required>
+        <input type="email" name="author_email" class="form-control" placeholder="ایمیل (اختیاری)">
+        <textarea name="body" class="form-control" rows="3" placeholder="نظرتون رو بنویسید…" required></textarea>
+        <button type="submit" class="btn btn-primary">ارسال نظر ←</button>
+      </form>
+    </div>
+  </div>
+
   {% else %}
   <div class="empty-state" style="padding: 3rem 0;">
     <p>محتوای این کتاب هنوز بارگذاری نشده است.</p>

@@ -1,6 +1,6 @@
 # Product Backlog — پت فیچر
 
-Unscheduled feature ideas and epics. Nothing here has a committed version or timeline. Items move into a versioned spec when they are prioritized and scoped.
+Unscheduled feature ideas and epics. **v1 Library, v2 Blog, v3 Tools, and v4 Book Engagement are shipped** — see [product-spec.md](./product-spec.md). Nothing here has a committed version or timeline. Items move into a versioned spec when they are prioritized and scoped.
 
 ---
 
@@ -61,27 +61,18 @@ Audience growth and reader-to-author communication.
 
 ## Epic: Book Engagement (Reactions + Comments)
 
-Let visitors express reactions and share thoughts on library books.
+**Shipped as v4** — see [product-spec-v4.md](./product-spec-v4.md).
 
+| Idea                              | Description                                                                             | Status |
+| --------------------------------- | --------------------------------------------------------------------------------------- | ------ |
+| **Book star rating**              | 1–5 stars; average + count shown; visitor-token dedup | **v4 — Shipped** |
+| **Read book comments**            | Approved comments shown chronologically below book content | **v4 — Shipped** |
+| **Post book comment**             | Form: نام، ایمیل (optional)، متن; pending queue by default | **v4 — Shipped** |
+| **Admin: Moderate book comments** | Approve / reject / delete; pending queue default view | **v4 — Shipped** |
+| **Book like**                     | Toggle button (♥); total like count; visitor-token dedup; no login required | Backlog (deferred from v4) |
 
-| Idea                              | Description                                                                             |
-| --------------------------------- | --------------------------------------------------------------------------------------- |
-| **Book like**                     | Toggle button (♥); total like count; visitor-token dedup; no login required             |
-| **Book star rating**              | 1–5 stars; average + count shown; visitor-token dedup; optional display on library grid |
-| **Read book comments**            | Approved comments shown chronologically below book content                              |
-| **Post book comment**             | Form: نام، (ایمیل TBD)، متن; pending queue by default                                   |
-| **Admin: Moderate book comments** | Approve / reject / delete; pending queue default view                                   |
-
-
-**Open questions when scoping:**
-
-- Who can comment — all visitors or logged-in users only?
-- Moderation policy — pre or post moderation?
-- Comment email field — required, optional, or hidden?
-- Show rating on library grid cards?
-- Show both like + rating, or pick one?
-
-**Data model:** `BookLike`, `BookRating`, `BookComment` (all keyed on book_id + visitor_token or author fields)
+**Data model (v4):** `BookRating`, `BookComment` — migration `008_add_book_engagement.py`
+**Deferred to backlog:** `BookLike`
 
 ---
 
@@ -90,6 +81,8 @@ Let visitors express reactions and share thoughts on library books.
 ## Epic: Visitor Analytics
 
 Give the admin visibility into traffic across all public pages.
+
+**Partial today:** Blog post view counts (`Post.view_count`) ship with v2. The items below are the full analytics epic — not yet built.
 
 
 | Idea                                      | Description                                                                            |
@@ -132,4 +125,4 @@ Give the admin visibility into traffic across all public pages.
 
 ---
 
-*Backlog last updated: July 2026*
+*Backlog last updated: July 2026 — v4 Book Engagement shipped; Newsletter + Contact is recommended next*

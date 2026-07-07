@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+  <div class="filter-strip">
+    <a href="{{ url_for('admin_book_comments') }}?status=pending" class="filter-pill {% if current_status == 'pending' %}active{% endif %}">در انتظار</a>
+    <a href="{{ url_for('admin_book_comments') }}?status=approved" class="filter-pill {% if current_status == 'approved' %}active{% endif %}">تأییدشده</a>
+    <a href="{{ url_for('admin_book_comments') }}?status=rejected" class="filter-pill {% if current_status == 'rejected' %}active{% endif %}">ردشده</a>
+  </div>
+</div>
+
+<div class="card">
+  {% if comments %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>کتاب</th>
+        <th>نویسنده</th>
+        <th>متن</th>
+        <th>تاریخ</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comment in comments %}
+      <tr>
+        <td>{{ comment.book.title if comment.book else '—' }}</td>
+        <td>{{ comment.author_name }}</td>
+        <td>{{ comment.body[:120] }}{% if comment.body | length > 120 %}…{% endif %}</td>
+        <td>{{ comment.created_at | jalali }}</td>
+        <td>
+          <div class="row-actions">
+            {% if comment.status != 'approved' %}
+            <form method="post" action="{{ url_for('admin_book_comment_approve', comment_id=comment.id) }}" style="display:inline">
+              <button type="submit" class="btn btn-ghost btn-sm">تأیید</button>
+            </form>
+            {% endif %}
+            {% if comment.status != 'rejected' %}
+            <form method="post" action="{{ url_for('admin_book_comment_reject', comment_id=comment.id) }}" style="display:inline">
+              <button type="submit" class="btn btn-ghost btn-sm">رد</button>
+            </form>
+            {% endif %}
+            <form method="post" action="{{ url_for('admin_book_comment_delete', comment_id=comment.id) }}" data-delete-form data-confirm="این نظر حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">💬</div>
+    <h3>نظری در این وضعیت نیست</h3>
+    <p>وضعیت دیگری را از بالا انتخاب کنید.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -9,9 +9,9 @@ from sqlalchemy import delete, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.book import Book, BookMediaLink, BookStatus, book_references
+from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, book_references
 from app.models.category import Category
-from app.schemas.book import BookForm, MediaLinkInput
+from app.schemas.book import BookCommentForm, BookForm, MediaLinkInput
 
 
 async def list_books(
@@ -23,6 +23,8 @@ async def list_books(
             selectinload(Book.media_links),
             selectinload(Book.referred_books),
             selectinload(Book.categories),
+            selectinload(Book.ratings),
+            selectinload(Book.comments),
         )
         .order_by(Book.updated_at.desc())
     )
@@ -49,6 +51,8 @@ async def get_book_by_slug(session: AsyncSession, slug: str) -> Optional[Book]:
             selectinload(Book.media_links),
             selectinload(Book.referred_books),
             selectinload(Book.categories),
+            selectinload(Book.ratings),
+            selectinload(Book.comments),
         )
         .where(Book.slug == slug)
     )
@@ -210,3 +214,70 @@ def parse_published_year(raw: str) -> Optional[int]:
         return int(raw)
     except ValueError:
         return None
+
+
+# ── Book engagement ────────────────────────────────────────────────────────
+
+
+async def rate_book(session: AsyncSession, book: Book, visitor_token: str, stars: int) -> None:
+    stmt = select(BookRating).where(
+        BookRating.book_id == book.id, BookRating.visitor_token == visitor_token
+    )
+    result = await session.execute(stmt)
+    existing = result.scalar_one_or_none()
+    if existing:
+        existing.stars = stars
+    else:
+        session.add(BookRating(book_id=book.id, visitor_token=visitor_token, stars=stars))
+    await session.commit()
+    await session.refresh(book, ["ratings"])
+
+
+def has_rated_book(book: Book, visitor_token: str) -> bool:
+    return any(r.visitor_token == visitor_token for r in book.ratings)
+
+
+async def add_book_comment(session: AsyncSession, book: Book, data: BookCommentForm) -> BookComment:
+    comment = BookComment(
+        book_id=book.id,
+        author_name=data.author_name,
+        author_email=data.author_email or None,
+        body=data.body,
+        status=BookCommentStatus.PENDING.value,
+    )
+    session.add(comment)
+    await session.commit()
+    await session.refresh(book, ["comments"])
+    return comment
+
+
+async def list_book_comments(session: AsyncSession, *, status: Optional[str] = None) -> list[BookComment]:
+    stmt = (
+        select(BookComment)
+        .options(selectinload(BookComment.book))
+        .order_by(BookComment.created_at.desc())
+    )
+    if status:
+        stmt = stmt.where(BookComment.status == status)
+    result = await session.execute(stmt)
+    return list(result.scalars().all())
+
+
+async def get_book_comment(session: AsyncSession, comment_id: int) -> Optional[BookComment]:
+    stmt = (
+        select(BookComment)
+        .options(selectinload(BookComment.book))
+        .where(BookComment.id == comment_id)
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+async def set_book_comment_status(session: AsyncSession, comment: BookComment, status: str) -> None:
+    comment.status = status
+    await session.commit()
+
+
+async def delete_book_comment(session: AsyncSession, comment: BookComment) -> None:
+    await session.delete(comment)
+    await session.commit()

@@ -8,6 +8,8 @@
 
 | Date | Change |
 |------|--------|
+| 2026-07-07 | Updated to reflect shipped v4 Book Engagement: BookRating/BookComment models, book engagement routes, admin book comments, migration 008 |
+| 2026-07-07 | Updated to reflect shipped v2 Blog and v3 Tools: models, routes, admin CMS, migrations 006–007 |
 | 2026-07-06 | Updated to reflect shipped v1: full models, admin CMS, upload service, category management |
 | 2026-06-24 | Initial structure: FastAPI + Jinja2 + PostgreSQL + Docker; Hamravesh Darkube deploy guide |
 
@@ -50,32 +52,42 @@ petfeature/
 │   │   ├── sqlite_migrations.py        # SQLite migration helper (local dev only)
 │   │   └── templates.py               # Jinja2 template environment setup
 │   ├── web/
-│   │   └── routes.py                   # Public pages: /, /library/, /library/{slug}/, /about/
+│   │   └── routes.py                   # Public pages: /, /library/, /blog/, /tools/, /about/
 │   ├── admin/
 │   │   ├── auth.py                     # Session-based admin authentication
-│   │   └── routes.py                   # Admin CMS: books, categories, about
+│   │   └── routes.py                   # Admin CMS: books, categories, posts, comments, tools, about
 │   ├── api/
 │   │   └── v1/
 │   │       └── router.py               # REST API (health check)
 │   ├── models/
-│   │   ├── book.py                     # Book, BookMediaLink, book_references, book_categories
+│   │   ├── book.py                     # Book, BookMediaLink, book_references, book_categories, BookRating, BookComment (v4)
 │   │   ├── category.py                 # Category, book_categories join table
-│   │   └── about.py                    # AboutPage (singleton)
+│   │   ├── about.py                    # AboutPage (singleton)
+│   │   ├── post.py                     # Post, PostRating, PostComment (v2)
+│   │   └── tool.py                     # Tool, ToolFile, tool_books, tool_posts (v3)
 │   ├── schemas/
 │   │   ├── book.py                     # BookForm, MediaLinkInput
 │   │   ├── category.py                 # CategoryForm
-│   │   └── about.py                    # AboutForm, LinkInput
+│   │   ├── about.py                    # AboutForm, LinkInput
+│   │   ├── post.py                     # PostForm (v2)
+│   │   └── tool.py                     # ToolForm (v3)
 │   ├── services/
-│   │   ├── books.py                    # Book CRUD, list, slug lookup, JSON parsers
+│   │   ├── books.py                    # Book CRUD, list, slug lookup, JSON parsers; rate_book, add_book_comment, list_book_comments, set_book_comment_status, delete_book_comment (v4)
 │   │   ├── categories.py               # Category CRUD, list
 │   │   ├── about.py                    # AboutPage get/update
-│   │   └── uploads.py                  # Cover and PDF upload resolution
+│   │   ├── posts.py                    # Post CRUD, ratings, comments, view counts (v2)
+│   │   ├── tools.py                    # Tool CRUD, file handling (v3)
+│   │   └── uploads.py                  # Cover, PDF, post-cover, tool-file uploads
 │   ├── templates/
 │   │   ├── base.html                   # Public layout (RTL, nav, footer)
 │   │   ├── pages/
 │   │   │   ├── home.html
 │   │   │   ├── library.html            # Grid + category filter
 │   │   │   ├── book_detail.html        # Full book detail
+│   │   │   ├── blog.html               # Blog list + featured (v2)
+│   │   │   ├── post_detail.html        # Post detail + rating + comments (v2)
+│   │   │   ├── tools.html              # Tools grid + category filter (v3)
+│   │   │   ├── tool_detail.html        # Tool detail + downloads (v3)
 │   │   │   └── about.html
 │   │   ├── admin/
 │   │   │   ├── base.html               # Admin layout
@@ -84,6 +96,12 @@ petfeature/
 │   │   │   ├── book_form.html          # Create/edit book (all fields)
 │   │   │   ├── categories_list.html
 │   │   │   ├── category_form.html
+│   │   │   ├── posts_list.html         # (v2)
+│   │   │   ├── post_form.html          # (v2)
+│   │   │   ├── post_comments_list.html # (v2)
+│   │   │   ├── tools_list.html         # (v3)
+│   │   │   ├── tool_form.html          # (v3)
+│   │   │   ├── book_comments_list.html # (v4)
 │   │   │   └── about_form.html
 │   │   └── partials/
 │   │       └── note_fonts.html
@@ -93,43 +111,61 @@ petfeature/
 │       │   └── admin.css               # Admin panel styles
 │       ├── js/
 │       │   ├── library.js              # Client-side category filtering
+│       │   ├── blog.js                 # Copy link, rating UI (v2)
+│       │   ├── tools.js                # Client-side category filtering (v3)
 │       │   └── admin.js                # Admin form JS (dynamic fields)
 │       └── uploads/
-│           ├── covers/                 # Uploaded book cover images
-│           └── downloads/              # Uploaded book PDF files
+│           ├── covers/                 # Book cover images
+│           ├── downloads/              # Book PDF files
+│           ├── post-covers/            # Post cover images (v2)
+│           ├── tool-covers/            # Tool cover images (v3)
+│           └── tool-files/             # Tool downloadable files (v3)
 └── docs/                               # Product specs + this file
 ```
 
 ---
 
-## 3. Routes (v1 — shipped)
+## 3. Routes (shipped — v1 + v2 + v3 + v4)
 
-| Route | Module | Description |
-|-------|--------|-------------|
-| `GET /` | `app/web/routes.py` | Home page |
-| `GET /library/` | `app/web/routes.py` | Book list (published + show_in_library only) |
-| `GET /library/{slug}/` | `app/web/routes.py` | Book detail (published only) |
-| `GET /about/` | `app/web/routes.py` | About page |
-| `GET /admin/` | `app/admin/routes.py` | Redirects to /admin/books/ |
-| `GET /admin/login/` | `app/admin/routes.py` | Admin login form |
-| `POST /admin/login/` | `app/admin/routes.py` | Admin login submit |
-| `GET /admin/logout/` | `app/admin/routes.py` | Admin logout |
-| `GET /admin/books/` | `app/admin/routes.py` | Books list (all statuses, searchable) |
-| `GET /admin/books/new/` | `app/admin/routes.py` | New book form |
-| `POST /admin/books/new/` | `app/admin/routes.py` | Create book |
-| `GET /admin/books/{slug}/edit/` | `app/admin/routes.py` | Edit book form |
-| `POST /admin/books/{slug}/edit/` | `app/admin/routes.py` | Update book |
-| `POST /admin/books/{slug}/delete/` | `app/admin/routes.py` | Delete book |
-| `GET /admin/categories/` | `app/admin/routes.py` | Categories list with book count |
-| `GET /admin/categories/new/` | `app/admin/routes.py` | New category form |
-| `POST /admin/categories/new/` | `app/admin/routes.py` | Create category |
-| `GET /admin/categories/{id}/edit/` | `app/admin/routes.py` | Edit category form |
-| `POST /admin/categories/{id}/edit/` | `app/admin/routes.py` | Update category |
-| `POST /admin/categories/{id}/delete/` | `app/admin/routes.py` | Delete category |
-| `GET /admin/about/` | `app/admin/routes.py` | About page edit form |
-| `POST /admin/about/` | `app/admin/routes.py` | Update about page |
-| `GET /api/v1/health` | `app/api/v1/router.py` | Health check for deploy |
-| `/static/*` | `app/main.py` | CSS, JS, uploaded files |
+### Public (`app/web/routes.py`)
+
+| Route | Description |
+|-------|-------------|
+| `GET /` | Home page |
+| `GET /library/` | Book list (published + show_in_library only) |
+| `GET /library/{slug}/` | Book detail (published only) |
+| `GET /about/` | About page |
+| `GET /blog/` | Blog list + featured post (v2) |
+| `GET /blog/{slug}/` | Post detail; increments view count (v2) |
+| `POST /blog/{slug}/rate/` | Star rating submit (v2) |
+| `POST /blog/{slug}/comment/` | Comment submit (v2) |
+| `GET /tools/` | Tools grid + category filter (v3) |
+| `GET /tools/{slug}/` | Tool detail + downloads (v3) |
+| `POST /library/{slug}/rate/` | Book star rating submit (v4) |
+| `POST /library/{slug}/comment/` | Book comment submit — goes to pending queue (v4) |
+
+### Admin (`app/admin/routes.py`, prefix `/admin`)
+
+| Route | Description |
+|-------|-------------|
+| `GET /` | Redirects to `/admin/books/` |
+| `GET/POST /login/`, `GET /logout/` | Session auth |
+| `GET/POST /books/`, `/books/new/`, `/books/{slug}/edit/`, `POST .../delete/` | Book CRUD (v1) |
+| `GET/POST /categories/`, CRUD | Category management (v1) |
+| `GET/POST /posts/`, CRUD | Post management (v2) |
+| `GET /posts/comments/`, approve/reject/delete | Comment moderation (v2) |
+| `GET/POST /tools/`, CRUD | Tool management (v3) |
+| `GET /books/comments/`, approve/reject/delete | Book comment moderation (v4) |
+| `GET/POST /about/` | About page CMS (v1) |
+
+### API & static
+
+| Route | Description |
+|-------|-------------|
+| `GET /api/v1/health` | Health check for deploy |
+| `/static/*` | CSS, JS, uploaded files |
+
+**Not yet built:** `/path/` (Roadmap), `/newsletter/`, `/contact/`, `/admin/analytics/`.
 
 ---
 
@@ -148,11 +184,13 @@ This layout matches that model:
 
 ### Layered folders = version build order
 
-| Phase | Folder | Status |
-|-------|--------|--------|
-| **v1** | `web/` + `admin/` + `models/` + `services/` + `templates/` + `static/` | Shipped |
-| **v2** | New models (Post, Subscriber, ContactMessage), new routes, new templates | Planned |
-| **v3** | New model (PathStep), new admin routes, new public template | Planned |
+| Phase | Scope | Status |
+|-------|-------|--------|
+| **v1** | Library + About + admin CMS (`Book`, `Category`, `AboutPage`) | **Shipped** |
+| **v2** | Blog (`Post`, `PostRating`, `PostComment`), post admin + comment moderation | **Shipped** |
+| **v3** | Tools (`Tool`, `ToolFile`), tool admin, cross-links to books/posts | **Shipped** |
+| **v4** | Book Engagement (`BookRating`, `BookComment`), rating widget, comment moderation | **Shipped** |
+| **Backlog** | Roadmap (`PathStep`), newsletter/contact, analytics dashboard | Unscheduled |
 
 Routes stay thin; logic lives in `services/` so web and admin do not duplicate code.
 
@@ -292,10 +330,11 @@ CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --proxy-headers
 |-----|---------|
 | [product-spec.md](./product-spec.md) | Product overview and version roadmap |
 | [product-spec-v1.md](./product-spec-v1.md) | v1 scope: library + about (shipped) |
-| [product-spec-v2.md](./product-spec-v2.md) | v2 scope: blog + newsletter + contact |
-| [product-spec-v3.md](./product-spec-v3.md) | v3 scope: product road |
+| [product-spec-v2.md](./product-spec-v2.md) | v2 scope: blog (shipped) |
+| [product-spec-v3.md](./product-spec-v3.md) | v3 scope: tools (shipped) |
+| [product backlog.md](./product%20backlog.md) | Unscheduled: roadmap, newsletter, analytics |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
 
 ---
 
-*Last updated: 2026-07-06*
+*Last updated: 2026-07-07*

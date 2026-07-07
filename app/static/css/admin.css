@@ -142,7 +142,7 @@ button { font-family: var(--font); }
 }
 .admin-sidebar-brand small { display: block; color: var(--muted); font-size: 0.68rem; font-weight: 400; margin-top: 1px; }
 
-.admin-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.admin-nav { display: flex; flex-direction: column; gap: 0; flex: 1; }
 .admin-nav a {
   display: flex;
   align-items: center;
@@ -157,6 +157,17 @@ button { font-family: var(--font); }
 .admin-nav a:hover { background: var(--bg); color: var(--text); text-decoration: none; }
 .admin-nav a.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
 .admin-nav .nav-icon { font-size: 1rem; width: 1.2rem; text-align: center; flex-shrink: 0; }
+
+.admin-nav-group { margin-bottom: 0.25rem; }
+.admin-nav-group-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 0.6rem 12px 0.2rem;
+  opacity: 0.7;
+}
+.admin-nav-sub { padding-right: 24px !important; font-size: 0.85rem !important; }
 
 .admin-nav-footer { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem; }
 .admin-nav-footer a { color: var(--muted); }

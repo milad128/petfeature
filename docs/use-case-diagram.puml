@@ -9,7 +9,7 @@ skinparam actor {
   BorderColor #333333
 }
 
-title petfeature.ir — Use Case Diagram (v1 Library · v2 Blog · v3 Tools)
+title petfeature.ir — Use Case Diagram (v1 Library · v2 Blog · v3 Tools · v4 Book Engagement)
 
 actor "بازدیدکننده\n(Visitor)" as Visitor
 actor "مدیر\n(Milad Mirzaei)" as Admin
@@ -34,6 +34,10 @@ rectangle "petfeature.ir" {
   usecase "مرور ابزارها\n(Browse Tools)" as UC_Tools <<v3>>
   usecase "استفاده از ابزار\n(Use a Tool)" as UC_UseTool <<v3>>
 
+  ' --- v4: Book Engagement ---
+  usecase "امتیازدهی به کتاب\n(Rate a Book)" as UC_RateBook <<v4>>
+  usecase "ثبت نظر روی کتاب\n(Comment on a Book)" as UC_CommentBook <<v4>>
+
   ' --- v1: Admin ---
   usecase "مدیریت محتوای کتاب‌ها\n(Manage Library Content)" as UC_ManageBooks
   usecase "مدیریت درباره نویسنده\n(Manage About Author Content)" as UC_ManageAbout
@@ -44,6 +48,9 @@ rectangle "petfeature.ir" {
 
   ' --- v3: Admin ---
   usecase "مدیریت ابزارها\n(Manage Tools)" as UC_ManageTools <<v3>>
+
+  ' --- v4: Admin ---
+  usecase "مدیریت نظرات کتاب\n(Moderate Book Comments)" as UC_ModerateBookComments <<v4>>
 }
 
 ' --- Visitor: v1 ---
@@ -58,6 +65,8 @@ Visitor --> UC_Tools
 
 ' --- Browse library includes ---
 UC_Library ..> UC_BookDetail : <<include>>
+UC_Library ..> UC_RateBook : <<include>>
+UC_Library ..> UC_CommentBook : <<include>>
 
 ' --- Browse blog includes ---
 UC_Blog ..> UC_ReadPost : <<include>>
@@ -83,6 +92,9 @@ Admin --> UC_ModeratePostComments
 ' --- Admin: v3 ---
 Admin --> UC_ManageTools
 
+' --- Admin: v4 ---
+Admin --> UC_ModerateBookComments
+
 note right of UC_Library
   v1 — shipped:
   browse + detail,
@@ -91,7 +103,7 @@ note right of UC_Library
 end note
 
 note right of UC_Blog
-  v2 — blog:
+  v2 — shipped:
   read posts (یادداشت),
   star rating, comments,
   share + copy link,
@@ -99,16 +111,24 @@ note right of UC_Blog
 end note
 
 note right of UC_Tools
-  v3 — tools:
+  v3 — shipped:
   downloadable PM templates,
   usage guides, cross-linked
   to books and posts
 end note
 
+note right of UC_RateBook
+  v4 — shipped:
+  1–5 star rating, average shown,
+  visitor-token dedup,
+  moderated book comments
+end note
+
 legend right
   |= Stereotype |= Meaning |
-  | <<v2>> | Planned for version 2 |
-  | <<v3>> | Planned for version 3 |
+  | <<v2>> | Blog epic (shipped) |
+  | <<v3>> | Tools epic (shipped) |
+  | <<v4>> | Book Engagement epic (shipped) |
   | <<include>> | Always part of parent use case |
   | <<system>> | External actor / system |
 endlegend

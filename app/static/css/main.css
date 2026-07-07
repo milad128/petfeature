@@ -60,6 +60,7 @@ body {
   line-height: 1.8;
   direction: rtl;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -613,6 +614,12 @@ main { padding: 0; }
 ───────────────────────────────────────────── */
 .book-detail-page { padding: 34px 0 80px; }
 
+.book-engagement {
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+  padding-top: 44px;
+}
+
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -700,6 +707,7 @@ main { padding: 0; }
 }
 
 
+.richtext-content { overflow-wrap: break-word; word-break: break-word; }
 .richtext-content p          { margin-bottom: 1.1rem; }
 .richtext-content p:last-child { margin-bottom: 0; }
 .richtext-content ul,

@@ -1,0 +1,1 @@
+- [v4 Book Engagement Shipped](project-v4-shipped.md) — BookRating/BookComment shipped July 2026; next priority is Newsletter + Contact

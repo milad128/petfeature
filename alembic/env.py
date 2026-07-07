@@ -10,7 +10,10 @@ from app.core.database import Base
 
 # Import models here so Alembic sees metadata:
 from app.models.about import AboutPage  # noqa: F401
-from app.models.book import Book, BookMediaLink  # noqa: F401
+from app.models.book import Book, BookComment, BookMediaLink, BookRating  # noqa: F401
+from app.models.category import Category  # noqa: F401
+from app.models.post import Post, PostComment, PostRating  # noqa: F401
+from app.models.tool import Tool, ToolFile  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)

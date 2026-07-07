@@ -11,6 +11,7 @@ from app.core.database import get_db
 from app.core.rate_limit import is_rate_limited
 from app.core.templates import templates
 from app.core.visitor import ensure_visitor_cookie, peek_visitor_token
+from app.schemas.book import BookCommentForm
 from app.schemas.post import CommentForm
 from app.services import about as about_service
 from app.services import books as book_service
@@ -46,11 +47,64 @@ async def book_detail(request: Request, slug: str, db: AsyncSession = Depends(ge
     book = await book_service.get_book_by_slug(db, slug)
     if book is not None and book.status != "published":
         book = None
-    return templates.TemplateResponse(
+
+    visitor_token = peek_visitor_token(request)
+    has_rated = book_service.has_rated_book(book, visitor_token) if book else False
+
+    response = templates.TemplateResponse(
         request,
         "pages/book_detail.html",
-        {"page_title": book.title if book else slug, "slug": slug, "book": book},
+        {"page_title": book.title if book else slug, "slug": slug, "book": book, "has_rated": has_rated},
     )
+    if book:
+        ensure_visitor_cookie(request, response, visitor_token)
+    return response
+
+
+@router.post("/library/{slug}/rate/", name="book_rate")
+async def book_rate(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    stars: int = Form(...),
+):
+    book = await book_service.get_book_by_slug(db, slug)
+    if book is None or book.status != "published":
+        return RedirectResponse(url=request.url_for("library"), status_code=303)
+
+    response = RedirectResponse(url=f"/library/{slug}/#rating", status_code=303)
+    visitor_token = peek_visitor_token(request)
+    if 1 <= stars <= 5 and not post_service.is_crawler_user_agent(request.headers.get("user-agent")):
+        await book_service.rate_book(db, book, visitor_token, stars)
+    ensure_visitor_cookie(request, response, visitor_token)
+    return response
+
+
+@router.post("/library/{slug}/comment/", name="book_comment")
+async def book_comment(
+    request: Request,
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+    author_name: str = Form(""),
+    author_email: str = Form(""),
+    body: str = Form(""),
+    website: str = Form(""),
+):
+    book = await book_service.get_book_by_slug(db, slug)
+    if book is None or book.status != "published":
+        return RedirectResponse(url=request.url_for("library"), status_code=303)
+
+    client_ip = request.client.host if request.client else "unknown"
+    if website.strip() or is_rate_limited("book_comment", client_ip, max_hits=5, window_seconds=3600):
+        return RedirectResponse(url=f"/library/{slug}/#comments", status_code=303)
+
+    try:
+        data = BookCommentForm(author_name=author_name, author_email=author_email, body=body)
+    except ValidationError:
+        return RedirectResponse(url=f"/library/{slug}/#comments", status_code=303)
+
+    await book_service.add_book_comment(db, book, data)
+    return RedirectResponse(url=f"/library/{slug}/?commented=1#comments", status_code=303)
 
 
 @router.get("/about/", name="about")
