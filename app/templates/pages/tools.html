@@ -2,43 +2,71 @@
 
 {% block content %}
 
-<section class="library-hero tools-hero">
-  <div class="container">
-    <div style="display:inline-flex; align-items:center; gap:8px; color:var(--accent); font-size:12.5px; font-weight:600; margin-bottom:14px;">
-      <span style="width:20px; height:1.5px; background:var(--accent);"></span>مستقیم قابل استفاده
-    </div>
-    <h1>ابزارهای پت فیچر</h1>
-    <p class="library-hero-desc">قالب‌ها و چارچوب‌های آماده‌ی مدیریت محصول — رزومه، PRD، روم‌مپ، ماتریس اولویت‌بندی و متریک — برای استفاده‌ی مستقیم در کارت.</p>
+{# ── Hero ─────────────────────────────────────── #}
+<section class="tools-hero">
+  <div class="tools-hero-glow" aria-hidden="true"></div>
+  <div class="tools-hero-inner">
 
-    <div class="lib-filter-row">
-      {% if tools %}
-      <span class="library-stat">
-        <span>🛠</span>
-        <span>{{ tools | length | fa_digits }} ابزار</span>
-      </span>
-      <span class="lib-filter-divider"></span>
-      {% endif %}
-      {% if categories %}
-      <div class="filter-strip" id="tools-filter" role="list" aria-label="دسته‌بندی‌ها">
-        <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
-        {% for cat in categories %}
-        <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
-        {% endfor %}
-      </div>
-      {% endif %}
+    <div>
+      <h1>جعبه‌ابزار</h1>
+      <p class="tools-hero-desc">قالب‌ها و چک‌لیست‌هایی که خودم در کار روزمره استفاده می‌کنم؛ از دل همان کتاب‌های روی میز بیرون آمده‌اند و همه رایگان‌اند.</p>
     </div>
+
+    {# Lamp on a side table — reuses blog lamp CSS #}
+    <div class="blog-lamp-scene" aria-hidden="true">
+      <button class="blog-lamp-btn" id="lamp-toggle-tools" title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ">
+        <span class="blog-lamp-cone"></span>
+        <span class="blog-lamp-shade"></span>
+        <span class="blog-lamp-pole"></span>
+        <span class="blog-lamp-foot"></span>
+      </button>
+      <div class="blog-side-table">
+        <div class="blog-side-table-surface"></div>
+        <div class="blog-side-table-legs">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
+{# ── Filter bar ───────────────────────────────── #}
+{% if categories %}
+<div class="lib-filter-sticky">
+  <div class="container">
+    <div class="filter-strip" id="tools-filter" role="list" aria-label="دسته‌بندی‌ها">
+      <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
+      {% for cat in categories %}
+      <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# ── Grid ─────────────────────────────────────── #}
 <div class="library-body">
   <div class="container">
+
     <div class="tool-grid" id="tools-grid">
       {% if tools %}
         {% for tool in tools %}
         <a href="{{ url_for('tool_detail', slug=tool.slug) }}" class="tool-card" data-categories="{{ tool.category.name }}">
-          <span class="tag">{{ tool.category.name }}</span>
-          <div class="tool-card-title">{{ tool.title }}</div>
-          <div class="tool-card-desc">{{ tool.short_description }}</div>
+          <div class="tool-card-header">
+            <span class="tool-card-kind">{{ tool.category.name }}</span>
+            <span class="tool-card-num">{{ "%02d"|format(loop.index)|fa_digits }}</span>
+          </div>
+          <div class="tool-card-body">
+            <span class="tool-card-title">{{ tool.title }}</span>
+            {% if tool.short_description %}
+            <span class="tool-card-desc">{{ tool.short_description }}</span>
+            {% endif %}
+          </div>
+          {% if tool.files %}
+          <span class="tool-card-meta">{{ tool.files | length | fa_digits }} فایل</span>
+          {% endif %}
         </a>
         {% endfor %}
 
@@ -56,6 +84,7 @@
         </div>
       {% endif %}
     </div>
+
   </div>
 </div>
 

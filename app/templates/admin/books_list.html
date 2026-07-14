@@ -23,6 +23,7 @@
         <th>کتاب</th>
         <th>دسته‌بندی‌ها</th>
         <th>وضعیت</th>
+        <th>بازدید</th>
         <th></th>
       </tr>
     </thead>
@@ -65,6 +66,7 @@
             {% endif %}
           </div>
         </td>
+        <td>{{ (view_counts.get(book.id, 0) if view_counts else 0) | fa_digits }}</td>
         <td>
           <div class="row-actions">
             <a href="{{ url_for('admin_book_edit', slug=book.slug) }}" class="btn btn-ghost btn-sm">ویرایش</a>

@@ -78,6 +78,11 @@ async def update_tool(session: AsyncSession, tool: Tool, data: ToolForm) -> Tool
     return tool
 
 
+async def increment_download_count(session: AsyncSession, tool: Tool) -> None:
+    tool.download_count = (tool.download_count or 0) + 1
+    await session.commit()
+
+
 async def delete_tool(session: AsyncSession, tool: Tool) -> None:
     from app.services import uploads as upload_service
 

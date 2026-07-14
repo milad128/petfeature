@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{# ── top glow ──────────────────────────────────────────────── #}
+<div class="ct-top-glow" aria-hidden="true"></div>
+
+<div class="ct-outer">
+  <div class="ct-layout">
+
+    {# ── FORM ─────────────────────────────────────────────────── #}
+    <main class="ct-main">
+
+      <div class="ab-eyebrow">
+        <span class="ab-eyebrow-line" aria-hidden="true"></span>
+        <span class="ab-eyebrow-label">تماس</span>
+      </div>
+
+      <h1 class="ct-title">بنویسید، می‌خوانم.</h1>
+      <p class="ct-desc">پیشنهاد کتاب، سوال درباره‌ی ابزارها، یا هر حرف دیگری — پیام‌تان مستقیم به صندوق خود من می‌رسد و معمولاً ظرف چند روز جواب می‌دهم.</p>
+
+      {% if success %}
+      <div class="ct-feedback ct-feedback--ok" role="status">
+        پیام شما رسید — ممنون! به‌زودی جواب می‌دهم.
+      </div>
+      {% else %}
+
+      {% if error %}
+      <div class="ct-feedback ct-feedback--err" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('contact_post') }}" class="ct-form" novalidate>
+        {# honeypot #}
+        <input type="text" name="website" class="comment-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="ct-row-2">
+          <input type="text" name="name" class="ct-input" placeholder="نام"
+                 value="{{ form.name if form else '' }}">
+          <input type="email" name="email" class="ct-input ct-input-ltr" placeholder="ایمیل"
+                 value="{{ form.email if form else '' }}" required>
+        </div>
+
+        <input type="text" name="subject" class="ct-input" placeholder="موضوع"
+               value="{{ form.subject if form else '' }}">
+
+        <textarea name="message" class="ct-input ct-textarea" rows="7"
+                  placeholder="پیام شما…" required>{{ form.message if form else '' }}</textarea>
+
+        <div class="ct-submit-row">
+          <button type="submit" class="ct-submit-btn">ارسال پیام</button>
+        </div>
+      </form>
+
+      {% endif %}
+    </main>
+
+    {# ── SIDEBAR ───────────────────────────────────────────────── #}
+    <aside class="ct-aside">
+
+      <div class="ct-channels-card">
+        <span class="ct-channels-title">راه‌های مستقیم</span>
+        <div class="ct-channels-list">
+          <a href="mailto:hello@petfeature.ir" class="ct-channel-row">
+            <span class="ct-channel-label">ایمیل</span>
+            <span class="ct-channel-value" dir="ltr">hello@petfeature.ir</span>
+          </a>
+          <a href="https://www.linkedin.com/in/milad-hajmirzaei/" target="_blank" rel="noopener" class="ct-channel-row">
+            <span class="ct-channel-label">لینکدین</span>
+            <span class="ct-channel-value" dir="ltr">milad-hajmirzaei</span>
+          </a>
+          <a href="https://t.me/petfeature" target="_blank" rel="noopener" class="ct-channel-row ct-channel-row--last">
+            <span class="ct-channel-label">تلگرام</span>
+            <span class="ct-channel-value" dir="ltr">@petfeature</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="ct-note-card">
+        <p class="ct-note-text">اگر درباره‌ی یک کتاب خاص سرنخ یا منبعی دارید، همان صفحه‌ی کتاب هم دکمه‌ی «پیشنهاد» دارد؛ پیام‌تان با آن کتاب گره می‌خورد.</p>
+      </div>
+
+    </aside>
+
+  </div>
+</div>
+
+{% endblock %}

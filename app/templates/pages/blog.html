@@ -2,67 +2,69 @@
 
 {% block content %}
 
+{# ── Hero ─────────────────────────────────────── #}
 <section class="blog-hero">
-  <div class="container">
-    <div class="blog-hero-eyebrow"><span></span>یادداشت‌های پت فیچر</div>
-    <h1>بلاگ</h1>
-    <p class="blog-hero-desc">یادداشت‌ها و برداشت‌های شخصی درباره‌ی مدیریت محصول — چیزهایی که بین خواندن کتاب‌ها و کار روزمره کشف می‌کنم.</p>
-    <span class="library-stat">
-      <span>✍️</span>
-      <span>{{ post_count | fa_digits }} یادداشت</span>
-    </span>
+  <div class="blog-hero-glow" aria-hidden="true"></div>
+  <div class="blog-hero-inner">
+
+    <div>
+      <h1>بلاگ</h1>
+      <p class="blog-hero-desc">یادداشت‌هایی که به یک کتاب خاص گره نخورده‌اند؛ درباره‌ی روش یادداشت‌برداری، تجربه‌های مدیریت محصول و هر چیزی که زیر نور این چراغ نوشته می‌شود.</p>
+    </div>
+
+    {# Lamp on a side table (hidden on mobile) #}
+    <div class="blog-lamp-scene" aria-hidden="true">
+      <button class="blog-lamp-btn" id="lamp-toggle-blog" title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ">
+        <span class="blog-lamp-cone"></span>
+        <span class="blog-lamp-shade"></span>
+        <span class="blog-lamp-pole"></span>
+        <span class="blog-lamp-foot"></span>
+      </button>
+      <div class="blog-side-table">
+        <div class="blog-side-table-surface"></div>
+        <div class="blog-side-table-legs">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
+{# ── Post list ────────────────────────────────── #}
 <div class="blog-body">
   <div class="container">
 
-    {% if featured %}
-    <a href="{{ url_for('post_detail', slug=featured.slug) }}" class="blog-featured">
-      <div class="blog-featured-text">
-        <span class="blog-featured-badge">مطلب ویژه</span>
-        <div class="blog-featured-title">{{ featured.title }}</div>
-        <div class="blog-featured-excerpt">{{ featured.excerpt }}</div>
-        <div class="blog-post-meta">
-          <span>{{ featured.published_date | jalali }}</span><span>·</span>
-          <span>{{ featured.read_time_minutes | fa_digits }} دقیقه مطالعه</span><span>·</span>
-          <span>👁 {{ featured.view_count | fa_digits }}</span>
-        </div>
-      </div>
-      <div class="blog-featured-cover">
-        {% if featured.cover %}
-        <img src="{{ featured.cover }}" alt="{{ featured.title }}">
-        {% else %}
-        <span class="book-cover-icon" aria-hidden="true">✍️</span>
-        {% endif %}
-      </div>
-    </a>
-    {% endif %}
+    {% if posts or featured %}
+    <div class="blog-post-list">
 
-    {% if posts %}
-    <div class="blog-list">
+      {# Featured post appears first in the list #}
+      {% if featured %}
+      <a href="{{ url_for('post_detail', slug=featured.slug) }}" class="blog-post-row">
+        <span class="blog-post-date">{{ featured.published_date | jalali }}</span>
+        <span class="blog-post-body">
+          <span class="blog-post-title">{{ featured.title }}</span>
+          {% if featured.excerpt %}<span class="blog-post-excerpt">{{ featured.excerpt }}</span>{% endif %}
+        </span>
+        <span class="blog-post-tag">{{ featured.read_time_minutes | fa_digits }} دقیقه</span>
+      </a>
+      {% endif %}
+
       {% for post in posts %}
-      <a href="{{ url_for('post_detail', slug=post.slug) }}" class="blog-post-card">
-        <div class="blog-post-cover">
-          {% if post.cover %}
-          <img src="{{ post.cover }}" alt="{{ post.title }}" loading="lazy">
-          {% else %}
-          <span class="book-cover-icon" aria-hidden="true">✍️</span>
-          {% endif %}
-        </div>
-        <div class="blog-post-info">
-          <div class="blog-post-title">{{ post.title }}</div>
-          <div class="blog-post-excerpt">{{ post.excerpt }}</div>
-        </div>
-        <div class="blog-post-meta blog-post-meta-side">
-          <span>{{ post.published_date | jalali }}</span>
-          <span>{{ post.read_time_minutes | fa_digits }} دقیقه</span>
-          <span>👁 {{ post.view_count | fa_digits }}</span>
-        </div>
+      <a href="{{ url_for('post_detail', slug=post.slug) }}" class="blog-post-row">
+        <span class="blog-post-date">{{ post.published_date | jalali }}</span>
+        <span class="blog-post-body">
+          <span class="blog-post-title">{{ post.title }}</span>
+          {% if post.excerpt %}<span class="blog-post-excerpt">{{ post.excerpt }}</span>{% endif %}
+        </span>
+        <span class="blog-post-tag">{{ post.read_time_minutes | fa_digits }} دقیقه</span>
       </a>
       {% endfor %}
+
     </div>
-    {% elif not featured %}
+
+    {% else %}
     <div class="empty-state">
       <span class="empty-icon" aria-hidden="true">✍️</span>
       <h3>هنوز یادداشتی منتشر نشده</h3>

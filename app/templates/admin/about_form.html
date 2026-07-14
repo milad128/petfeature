@@ -15,6 +15,8 @@
 
 <form id="about-form" method="post" action="{{ url_for('admin_about_update') }}" data-admin-form>
   <input type="hidden" id="links-hidden" name="links" value='{{ (about.links if about else []) | tojson }}'>
+  <input type="hidden" id="jobs-hidden" name="jobs" value='{{ (about.jobs if about else []) | tojson }}'>
+  <input type="hidden" id="camps-hidden" name="camps" value='{{ (about.camps if about else []) | tojson }}'>
 
   <div class="card">
     <div class="card-section">
@@ -67,6 +69,25 @@
       </div>
       <button type="button" class="btn btn-ghost btn-sm" id="add-link-btn">+ افزودن لینک</button>
     </div>
+
+    <div class="card-section">
+      <div class="card-section-title">تجربه‌های کاری (JSON)</div>
+      <div class="form-group">
+        <label class="form-label" for="jobs-editor">لیست موقعیت‌های شغلی — هر آیتم: <code>{"years":"…","role":"…","company":"…","desc":"…"}</code></label>
+        <textarea class="form-control tall" id="jobs-editor" dir="ltr" rows="10" placeholder='[&#10;  {"years":"۱۴۰۲ — اکنون","role":"مدیر ارشد محصول","company":"نام شرکت","desc":"توضیح"}&#10;]'>{{ (about.jobs if about else []) | tojson(indent=2) }}</textarea>
+        <span class="form-hint">فرمت JSON — آرایه‌ای از آبجکت. فیلدها: years, role, company, desc</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">بوت‌کمپ‌ها (JSON)</div>
+      <div class="form-group">
+        <label class="form-label" for="camps-editor">لیست بوت‌کمپ‌ها — هر آیتم: <code>{"kind":"…","name":"…","status":"…","desc":"…","url":"…"}</code></label>
+        <textarea class="form-control tall" id="camps-editor" dir="ltr" rows="10" placeholder='[&#10;  {"kind":"بوت‌کمپ","name":"نام دوره","status":"در حال ثبت‌نام","desc":"توضیح","url":"https://..."}&#10;]'>{{ (about.camps if about else []) | tojson(indent=2) }}</textarea>
+        <span class="form-hint">فرمت JSON — آرایه‌ای از آبجکت. فیلدها: kind, name, status, desc, url</span>
+      </div>
+    </div>
+
   </div>
 
   <div class="form-actions">
@@ -81,4 +102,18 @@
   </div>
 
 </form>
+
+<script>
+// Sync jobs and camps textarea → hidden inputs before submit
+(function () {
+  const form = document.getElementById('about-form');
+  if (!form) return;
+  form.addEventListener('submit', function () {
+    const jobsEl = document.getElementById('jobs-editor');
+    const campsEl = document.getElementById('camps-editor');
+    document.getElementById('jobs-hidden').value = jobsEl ? jobsEl.value : '[]';
+    document.getElementById('camps-hidden').value = campsEl ? campsEl.value : '[]';
+  });
+})();
+</script>
 {% endblock %}

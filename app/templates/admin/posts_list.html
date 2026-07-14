@@ -18,7 +18,8 @@
         <th>یادداشت</th>
         <th>وضعیت</th>
         <th>تاریخ</th>
-        <th>بازدید</th>
+        <th>بازدید (جدید)</th>
+        <th>بازدید (قدیمی)</th>
         <th>امتیاز</th>
         <th>نظرها</th>
         <th></th>
@@ -54,6 +55,7 @@
           </div>
         </td>
         <td>{{ post.published_date | jalali if post.published_date else '—' }}</td>
+        <td>{{ (view_counts.get(post.id, 0) if view_counts else 0) | fa_digits }}</td>
         <td>{{ post.view_count | fa_digits }}</td>
         <td>{% if post.rating_count %}{{ post.average_rating | fa_digits }} ({{ post.rating_count | fa_digits }}){% else %}—{% endif %}</td>
         <td>{{ post.approved_comment_count | fa_digits }} تأییدشده{% if post.pending_comment_count %} · {{ post.pending_comment_count | fa_digits }} در انتظار{% endif %}</td>

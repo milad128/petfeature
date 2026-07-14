@@ -46,7 +46,9 @@ flowchart LR
   v1["v1 ✓\nLibrary"] --> v2["v2 ✓\nBlog"]
   v2 --> v3["v3 ✓\nTools"]
   v3 --> v4["v4 ✓\nBook Engagement"]
-  v4 --> vN["...\nBacklog"]
+  v4 --> v5["v5 📋\nAbout + Contact"]
+  v5 --> v6["v6 📋\nAnalytics"]
+  v6 --> vN["...\nBacklog"]
 ```
 
 | Version | Document | Epic | Scope | Status |
@@ -55,7 +57,9 @@ flowchart LR
 | **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, view counts, star ratings, comments, social sharing | **Shipped** |
 | **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | **Shipped** |
 | **v4** | [Product Spec v4](./product-spec-v4.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
-| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter, contact, book like, analytics | Unscheduled |
+| **v5** | [Product Spec v5](./product-spec-v5.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Planned** |
+| **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Planned** |
+| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter, book like | Unscheduled |
 
 ---
 
@@ -63,7 +67,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** Library, blog, tools, and book engagement are all live. Next: the backlog epics — Newsletter + Contact is the recommended next priority, followed by Roadmap and analytics.
+**Admin:** Library, blog, tools, book engagement, and the About redesign + Contact page (v5, planned) complete the core personal site. Next priorities from the backlog: Newsletter → Analytics → Roadmap.
 
 ---
 
@@ -76,9 +80,12 @@ flowchart LR
 | [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic (shipped) |
 | [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic (shipped) |
 | [product-spec-v4.md](./product-spec-v4.md) | PRD for Book Engagement epic (shipped) |
-| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter, contact, book like, analytics |
+| [product-spec-v5.md](./product-spec-v5.md) | PRD for About Redesign + Contact Page (planned) |
+| [product-spec-v6.md](./product-spec-v6.md) | PRD for Visitor Analytics (planned) |
+| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter, book like, analytics |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3 + v4) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
+| [admin-panel-design-spec.md](./admin-panel-design-spec.md) | Admin CMS design spec — all pages, fields, actions, constraints (redesign handoff) |
 
 ---
 
@@ -102,6 +109,15 @@ flowchart LR
 - Comment on a Book → Read approved comments
 - Admin: Moderate Book Comments
 
+### v5 — About Redesign + Contact (planned)
+- View About page with personal bio, work timeline, bootcamp listings
+- Send Contact message via form
+- Admin: Read/manage contact messages; Edit About content (experience, bootcamps)
+
+### v6 — Visitor Analytics (planned)
+- Admin: View traffic dashboard (period filters, summary cards, top books/posts/tools, daily table, referrers)
+- All dates in Jalali; bot-filtered; visitor dedup via existing cookie
+
 ### Backlog — Roadmap epic
 - Browse Roadmap → View Path Steps (linked to books and posts)
 - Admin: Manage Path Steps
@@ -120,4 +136,4 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*July 2026 · Updated to reflect shipped v4 Book Engagement*
+*July 2026 · Updated to reflect v5 About + Contact planned; backlog re-prioritized*

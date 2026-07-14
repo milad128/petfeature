@@ -1,60 +1,116 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <div class="about-wrap">
-    <h1>درباره من</h1>
-    <p class="about-lead">آشنایی با پت فیچر، داستان این سایت، و نویسنده‌اش.</p>
 
-    <section class="about-section">
-      <h2>پت فیچر چیست؟</h2>
-      {% if about and about.pet_feature_body %}
-        {% for paragraph in about.pet_feature_body.split('\n\n') if paragraph.strip() %}
-        <p>{{ paragraph }}</p>
+{# ── top glow ──────────────────────────────────────────────── #}
+<div class="ab-top-glow" aria-hidden="true"></div>
+
+<div class="ab-wrap">
+
+  {# ── HERO ─────────────────────────────────────────────────── #}
+  <section class="ab-hero">
+
+    <div class="ab-hero-text">
+      {# eyebrow #}
+      <div class="ab-eyebrow">
+        <span class="ab-eyebrow-line" aria-hidden="true"></span>
+        <span class="ab-eyebrow-label">درباره من</span>
+      </div>
+
+      {# headline — author_name from DB #}
+      <h1 class="ab-hero-h1">
+        {{ about.author_name if about else 'میلاد میرزایی' }} هستم؛<br>
+        <span class="ab-hero-muted">مدیر محصول و مدرس.</span>
+      </h1>
+
+      {# bio paragraphs — split on double newline #}
+      {% if about and about.author_bio %}
+        {% set paras = about.author_bio.split('\n\n') %}
+        {% for para in paras %}
+          {% if para.strip() %}
+          <p class="ab-hero-bio">{{ para.strip() }}</p>
+          {% endif %}
         {% endfor %}
       {% else %}
-      <p>
-        «پت فیچر» (Pet Feature) اصطلاحی در مدیریت محصول است برای ویژگی‌ای که یک مدیر محصول
-        به‌خاطر علاقه شخصی — نه داده یا نیاز کاربر — به آن دلبسته است.
-      </p>
+      <p class="ab-hero-bio">بیش از یک دهه است که در تیم‌های محصول کار می‌کنم — از استارتاپ‌های چندنفره تا سازمان‌های بزرگ. پت فیچر دفترچه‌ی عمومی من است: هر چه از کتاب‌ها، تجربه‌ها و شکست‌ها یاد می‌گیرم، این‌جا با جزئیات می‌نویسم.</p>
       {% endif %}
-    </section>
 
-    <section class="about-section">
-      <h2>درباره این سایت</h2>
-      {% if about and about.site_story_body %}
-        {% for paragraph in about.site_story_body.split('\n\n') if paragraph.strip() %}
-        <p>{{ paragraph }}</p>
-        {% endfor %}
-      {% else %}
-      <p>
-        پت فیچر یک دانشنامه شخصی مدیریت محصول است — کتاب‌هایی که خوانده‌ام،
-        یادداشت‌هایی که نوشته‌ام، و منابعی که به درک عمیق‌تر کمک کرده‌اند.
-      </p>
-      {% endif %}
-    </section>
-
-    <section class="about-section">
-      <h2>نویسنده</h2>
-      {% if about and about.author_photo %}
-      <img src="{{ about.author_photo }}" alt="{{ about.author_name }}" class="about-author-photo">
-      {% endif %}
-      <p>
-        {% if about and about.author_bio %}
-          {{ about.author_bio }}
-        {% else %}
-          میلاد میرزایی — مدیر محصول. این سایت جایی است که یادداشت‌هایم را
-          منظم می‌کنم و به اشتراک می‌گذارم.
+      {# CTAs: contact button + first link (LinkedIn) #}
+      <div class="ab-hero-cta">
+        <a href="{{ url_for('contact') }}" class="ab-btn-contact">تماس با من</a>
+        {% if about and about.links %}
+          {% set lk = about.links[0] %}
+        <a href="{{ lk.url }}" target="_blank" rel="noopener" class="ab-hero-link">{{ lk.title }} ↗</a>
         {% endif %}
-      </p>
-      {% if about and about.links %}
-      <ul class="about-links">
-        {% for link in about.links %}
-        <li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.title }}</a></li>
-        {% endfor %}
-      </ul>
+      </div>
+    </div>
+
+    {# portrait #}
+    <div class="ab-portrait">
+      {% if about and about.author_photo %}
+      <img src="{{ about.author_photo }}" alt="{{ about.author_name }}" class="ab-portrait-img">
+      {% else %}
+      <div class="ab-portrait-placeholder" aria-hidden="true"></div>
       {% endif %}
-    </section>
-  </div>
+    </div>
+
+  </section>
+
+  {# ── EXPERIENCE ───────────────────────────────────────────── #}
+  {% if about and about.jobs %}
+  <section class="ab-exp">
+    <div class="ab-eyebrow">
+      <span class="ab-eyebrow-line" aria-hidden="true"></span>
+      <span class="ab-eyebrow-label">تجربه‌ی کاری</span>
+    </div>
+
+    <div class="ab-exp-list">
+      {% for job in about.jobs %}
+      <div class="ab-exp-row">
+        <span class="ab-exp-years">{{ job.years }}</span>
+        <div class="ab-exp-body">
+          <div class="ab-exp-title-row">
+            <span class="ab-exp-role">{{ job.role }}</span>
+            <span class="ab-exp-company">{{ job.company }}</span>
+          </div>
+          {% if job.desc %}
+          <p class="ab-exp-desc">{{ job.desc }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── BOOTCAMPS ─────────────────────────────────────────────── #}
+  {% if about and about.camps %}
+  <section class="ab-camps-section">
+    <div class="ab-eyebrow">
+      <span class="ab-eyebrow-line" aria-hidden="true"></span>
+      <span class="ab-eyebrow-label">تدریس — بوت‌کمپ‌های مدیریت محصول</span>
+    </div>
+    <p class="ab-camps-intro">در این بوت‌کمپ‌ها مدیریت محصول درس می‌دهم. اگر می‌خواهید این مسیر را جدی شروع کنید، از همین‌جا سر بزنید.</p>
+
+    <div class="ab-camps-grid">
+      {% for camp in about.camps %}
+      <a href="{{ camp.url if camp.url else '#' }}" target="_blank" rel="noopener" class="ab-camp-card">
+        <div class="ab-camp-top">
+          <span class="ab-camp-kind">{{ camp.kind }}</span>
+          <span class="ab-camp-status">{{ camp.status }}</span>
+        </div>
+        <div class="ab-camp-mid">
+          <span class="ab-camp-name">{{ camp.name }}</span>
+          {% if camp.desc %}
+          <span class="ab-camp-desc">{{ camp.desc }}</span>
+          {% endif %}
+        </div>
+        <span class="ab-camp-cta">اطلاعات دوره ←</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
 </div>
 {% endblock %}

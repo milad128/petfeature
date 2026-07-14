@@ -21,6 +21,8 @@ class AboutPage(Base):
     pet_feature_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     site_story_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     links: Mapped[list] = mapped_column(JSON, default=list)
+    jobs: Mapped[list] = mapped_column(JSON, default=list)
+    camps: Mapped[list] = mapped_column(JSON, default=list)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

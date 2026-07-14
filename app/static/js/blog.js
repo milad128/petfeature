@@ -6,12 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function initStarHoverPreview() {
   const form = document.getElementById("star-form");
   if (!form) return;
-  const buttons = [...form.querySelectorAll(".star-btn")]; // DOM order: 5,4,3,2,1
+  const buttons = [...form.querySelectorAll(".bd2-star-btn")]; // DOM order: 1,2,3,4,5
 
   const paint = (level) => {
     buttons.forEach((btn) => {
       const value = parseInt(btn.value, 10);
-      btn.classList.toggle("is-hover", level > 0 && value <= level);
+      btn.classList.toggle("filled", level > 0 && value <= level);
     });
   };
 

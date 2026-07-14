@@ -9,6 +9,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin.routes import router as admin_router
 from app.api.v1.router import router as api_v1_router
+from app.core.analytics import AnalyticsMiddleware
 from app.core.config import settings
 from app.web.routes import router as web_router
 
@@ -28,6 +29,8 @@ async def lifespan(app: FastAPI):
             Book,
             BookMediaLink,
             Category,
+            ContactMessage,
+            PageView,
             Post,
             PostComment,
             PostRating,
@@ -47,7 +50,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Session middleware must be first (outermost)
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
+# Analytics middleware — runs after session, before routing
+app.add_middleware(AnalyticsMiddleware)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

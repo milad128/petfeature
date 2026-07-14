@@ -7,6 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const emptyState = document.getElementById("library-filter-empty");
   const pills = [...strip.querySelectorAll(".filter-pill")];
 
+  const countEl = document.getElementById("lib-count");
+
+  // Helper: convert digits to Persian
+  function toFa(n) {
+    return String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+  }
+
   strip.addEventListener("click", (e) => {
     const pill = e.target.closest(".filter-pill");
     if (!pill) return;
@@ -23,5 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (emptyState) emptyState.hidden = visibleCount > 0;
+    if (countEl) countEl.textContent = toFa(visibleCount) + " کتاب";
   });
 });

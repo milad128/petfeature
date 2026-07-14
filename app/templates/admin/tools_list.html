@@ -19,6 +19,7 @@
         <th>دسته‌بندی</th>
         <th>فایل‌ها</th>
         <th>وضعیت</th>
+        <th>بازدید</th>
         <th></th>
       </tr>
     </thead>
@@ -48,6 +49,7 @@
           <span class="badge badge-draft">پیش‌نویس</span>
           {% endif %}
         </td>
+        <td>{{ (view_counts.get(tool.id, 0) if view_counts else 0) | fa_digits }}</td>
         <td>
           <div class="row-actions">
             <a href="{{ url_for('admin_tool_edit', slug=tool.slug) }}" class="btn btn-ghost btn-sm">ویرایش</a>

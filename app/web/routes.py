@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
+from app.schemas.contact import ContactForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -16,6 +17,7 @@ from app.schemas.post import CommentForm
 from app.services import about as about_service
 from app.services import books as book_service
 from app.services import categories as category_service
+from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
 
@@ -23,11 +25,19 @@ router = APIRouter()
 
 
 @router.get("/", name="home")
-async def home(request: Request):
+async def home(request: Request, db: AsyncSession = Depends(get_db)):
+    books = await book_service.list_books(db, published_only=True, library_only=True)
+    posts = (await post_service.list_posts(db, published_only=True))[:4]
+    tools = (await tool_service.list_tools(db, published_only=True))[:3]
     return templates.TemplateResponse(
         request,
         "pages/home.html",
-        {"page_title": "خانه"},
+        {
+            "page_title": "خانه",
+            "books": books,
+            "recent_posts": posts,
+            "recent_tools": tools,
+        },
     )
 
 
@@ -227,4 +237,96 @@ async def tool_detail(request: Request, slug: str, db: AsyncSession = Depends(ge
         request,
         "pages/tool_detail.html",
         {"page_title": tool.title if tool else slug, "slug": slug, "tool": tool},
+    )
+
+
+@router.get("/tools/{slug}/download/{file_id}/", name="tool_download")
+async def tool_download(
+    request: Request, slug: str, file_id: int, db: AsyncSession = Depends(get_db)
+):
+    from app.models.tool import ToolFile
+    from sqlalchemy import select
+
+    tool = await tool_service.get_tool_by_slug(db, slug)
+    if tool is None or tool.status != "published":
+        return RedirectResponse(url=request.url_for("tools"), status_code=302)
+
+    stmt = select(ToolFile).where(ToolFile.id == file_id, ToolFile.tool_id == tool.id)
+    result = await db.execute(stmt)
+    file = result.scalar_one_or_none()
+    if file is None:
+        return RedirectResponse(url=request.url_for("tool_detail", slug=slug), status_code=302)
+
+    await tool_service.increment_download_count(db, tool)
+    return RedirectResponse(url=file.file, status_code=302)
+
+
+@router.get("/contact/", name="contact")
+async def contact_get(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "pages/contact.html",
+        {"page_title": "تماس", "success": False, "error": "", "form": {}},
+    )
+
+
+@router.post("/contact/", name="contact_post")
+async def contact_post(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    name: str = Form(""),
+    email: str = Form(""),
+    subject: str = Form(""),
+    message: str = Form(""),
+    website: str = Form(""),  # honeypot
+):
+    # Honeypot check
+    if website.strip():
+        return RedirectResponse(url="/contact/", status_code=303)
+
+    form_vals = {"name": name, "email": email, "subject": subject, "message": message}
+
+    if not email.strip():
+        return templates.TemplateResponse(
+            request,
+            "pages/contact.html",
+            {
+                "page_title": "تماس",
+                "success": False,
+                "error": "ایمیل را بنویسید تا بتوانم جواب بدهم.",
+                "form": form_vals,
+            },
+        )
+
+    if not message.strip():
+        return templates.TemplateResponse(
+            request,
+            "pages/contact.html",
+            {
+                "page_title": "تماس",
+                "success": False,
+                "error": "متن پیام خالی است.",
+                "form": form_vals,
+            },
+        )
+
+    try:
+        data = ContactForm(name=name, email=email, subject=subject, message=message)
+    except ValidationError:
+        return templates.TemplateResponse(
+            request,
+            "pages/contact.html",
+            {
+                "page_title": "تماس",
+                "success": False,
+                "error": "اطلاعات وارد شده معتبر نیست.",
+                "form": form_vals,
+            },
+        )
+
+    await contact_service.save_message(db, data)
+    return templates.TemplateResponse(
+        request,
+        "pages/contact.html",
+        {"page_title": "تماس", "success": True, "error": "", "form": {}},
     )

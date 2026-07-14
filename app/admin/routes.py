@@ -28,8 +28,10 @@ from app.schemas.category import CategoryForm
 from app.schemas.post import PostForm
 from app.schemas.tool import ToolFileInput, ToolForm
 from app.services import about as about_service
+from app.services import analytics as analytics_service
 from app.services import books as book_service
 from app.services import categories as category_service
+from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
 from app.services import uploads as upload_service
@@ -109,6 +111,7 @@ async def admin_books_list(
             if query in b.title.lower()
             or any(query in author.lower() for author in (b.authors or []))
         ]
+    book_view_counts = await analytics_service.view_counts_by_type(db, "book")
     return templates.TemplateResponse(
         request,
         "admin/books_list.html",
@@ -118,6 +121,7 @@ async def admin_books_list(
             active_nav="books",
             books=books,
             search_query=q,
+            view_counts=book_view_counts,
         ),
     )
 
@@ -418,10 +422,17 @@ async def admin_posts_list(request: Request, db: AsyncSession = Depends(get_db))
     if redirect := _guard_admin(request):
         return redirect
     posts = await post_service.list_posts(db)
+    post_view_counts = await analytics_service.view_counts_by_type(db, "post")
     return templates.TemplateResponse(
         request,
         "admin/posts_list.html",
-        _admin_context(request, page_title="یادداشت‌ها", active_nav="posts", posts=posts),
+        _admin_context(
+            request,
+            page_title="یادداشت‌ها",
+            active_nav="posts",
+            posts=posts,
+            view_counts=post_view_counts,
+        ),
     )
 
 
@@ -895,10 +906,17 @@ async def admin_tools_list(request: Request, db: AsyncSession = Depends(get_db))
     if redirect := _guard_admin(request):
         return redirect
     tools = await tool_service.list_tools(db)
+    tool_view_counts = await analytics_service.view_counts_by_type(db, "tool")
     return templates.TemplateResponse(
         request,
         "admin/tools_list.html",
-        _admin_context(request, page_title="ابزارها", active_nav="tools", tools=tools),
+        _admin_context(
+            request,
+            page_title="ابزارها",
+            active_nav="tools",
+            tools=tools,
+            view_counts=tool_view_counts,
+        ),
     )
 
 
@@ -1236,6 +1254,8 @@ async def admin_about_post(
     pet_feature_body: str = Form(""),
     site_story_body: str = Form(""),
     links: str = Form("[]"),
+    jobs: str = Form("[]"),
+    camps: str = Form("[]"),
 ):
     if redirect := _guard_admin(request):
         return redirect
@@ -1247,6 +1267,8 @@ async def admin_about_post(
         pet_feature_body=pet_feature_body,
         site_story_body=site_story_body,
         links=about_service.parse_links(links),
+        jobs=about_service.parse_jobs(jobs),
+        camps=about_service.parse_camps(camps),
     )
     try:
         AboutForm.model_validate(form_data.model_dump())
@@ -1648,6 +1670,8 @@ class _FormAboutPreview:
         self.pet_feature_body = data.pet_feature_body
         self.site_story_body = data.site_story_body
         self.links = [link.model_dump() for link in data.links]
+        self.jobs = [job.model_dump() for job in data.jobs]
+        self.camps = [camp.model_dump() for camp in data.camps]
 
 
 def _form_as_about_preview(data: AboutForm) -> _FormAboutPreview:
@@ -1707,3 +1731,90 @@ async def admin_book_comment_delete(request: Request, comment_id: int, db: Async
     if comment:
         await book_service.delete_book_comment(db, comment)
     return RedirectResponse(url="/admin/books/comments/?status=pending", status_code=303)
+
+
+# ── Contact messages ───────────────────────────────────────────────────────
+
+
+@router.get("/contact/", name="admin_contact")
+async def admin_contact_list(request: Request, db: AsyncSession = Depends(get_db)):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    messages = await contact_service.list_messages(db)
+    unread = sum(1 for m in messages if not m.is_read)
+    return templates.TemplateResponse(
+        request,
+        "admin/contact_list.html",
+        _admin_context(
+            request,
+            page_title="پیام‌های تماس",
+            active_nav="contact",
+            messages=messages,
+            unread_count=unread,
+        ),
+    )
+
+
+@router.post("/contact/{message_id}/read/", name="admin_contact_toggle_read")
+async def admin_contact_toggle_read(
+    request: Request, message_id: int, db: AsyncSession = Depends(get_db)
+):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    msg = await contact_service.get_message(db, message_id)
+    if msg:
+        await contact_service.toggle_read(db, msg)
+    return RedirectResponse(url="/admin/contact/", status_code=303)
+
+
+@router.post("/contact/{message_id}/delete/", name="admin_contact_delete")
+async def admin_contact_delete(
+    request: Request, message_id: int, db: AsyncSession = Depends(get_db)
+):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    msg = await contact_service.get_message(db, message_id)
+    if msg:
+        await contact_service.delete_message(db, msg)
+    return RedirectResponse(url="/admin/contact/", status_code=303)
+
+
+# ── Analytics dashboard ────────────────────────────────────────────────────
+
+VALID_PERIODS = {"today", "7d", "30d", "all"}
+
+
+@router.get("/analytics/", name="admin_analytics")
+async def admin_analytics(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    period: str = "7d",
+):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    if period not in VALID_PERIODS:
+        period = "7d"
+
+    summary = await analytics_service.get_summary(db, period)
+    books   = await analytics_service.top_books(db, period)
+    posts   = await analytics_service.top_posts(db, period)
+    tools   = await analytics_service.top_tools(db, period)
+    daily   = await analytics_service.daily_traffic(db, period)
+    refs    = await analytics_service.top_referrers(db, period)
+
+    return templates.TemplateResponse(
+        request,
+        "admin/analytics.html",
+        _admin_context(
+            request,
+            page_title="آنالیتیکس",
+            active_nav="analytics",
+            period=period,
+            summary=summary,
+            top_books=books,
+            top_posts=posts,
+            top_tools=tools,
+            daily_traffic=daily,
+            top_referrers=refs,
+        ),
+    )

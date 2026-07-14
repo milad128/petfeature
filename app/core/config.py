@@ -21,8 +21,8 @@ class Settings(BaseSettings):
 
     @property
     def database_url_sync(self) -> str:
-        """Sync URL for Alembic migrations."""
-        return self.database_url.replace("+asyncpg", "")
+        """Sync URL for Alembic migrations (strips async driver prefixes)."""
+        return self.database_url.replace("+asyncpg", "").replace("+aiosqlite", "")
 
 
 @lru_cache

@@ -1,1 +1,3 @@
+- [Language Preference](feedback-language.md) — Always respond in English; Persian only inside specs/code strings
 - [v4 Book Engagement Shipped](project-v4-shipped.md) — BookRating/BookComment shipped July 2026; next priority is Newsletter + Contact
+- [v5 About + Contact Planned](project-v5-planned.md) — Spec written July 2026; About redesign (CMS jobs/camps) + Contact form → DB inbox; no email service

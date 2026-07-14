@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.about import AboutPage
-from app.schemas.about import AboutForm, LinkInput
+from app.schemas.about import AboutForm, CampInput, JobInput, LinkInput
 
 DEFAULT_ABOUT = AboutForm(
     author_name="میلاد میرزایی",
@@ -36,6 +36,8 @@ async def get_about_page(session: AsyncSession) -> AboutPage:
             pet_feature_body=DEFAULT_ABOUT.pet_feature_body,
             site_story_body=DEFAULT_ABOUT.site_story_body,
             links=[link.model_dump() for link in DEFAULT_ABOUT.links],
+            jobs=[],
+            camps=[],
         )
         session.add(about)
         await session.commit()
@@ -50,6 +52,8 @@ async def update_about_page(session: AsyncSession, about: AboutPage, data: About
     about.pet_feature_body = data.pet_feature_body or None
     about.site_story_body = data.site_story_body or None
     about.links = [link.model_dump() for link in data.links if link.title.strip()]
+    about.jobs = [job.model_dump() for job in data.jobs if job.role.strip()]
+    about.camps = [camp.model_dump() for camp in data.camps if camp.name.strip()]
     await session.commit()
     await session.refresh(about)
     return about
@@ -63,6 +67,32 @@ def parse_links(raw: str) -> list[LinkInput]:
         parsed = json.loads(raw)
         if isinstance(parsed, list):
             return [LinkInput.model_validate(item) for item in parsed if item.get("title", "").strip()]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return []
+
+
+def parse_jobs(raw: str) -> list[JobInput]:
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [JobInput.model_validate(item) for item in parsed if item.get("role", "").strip()]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return []
+
+
+def parse_camps(raw: str) -> list[CampInput]:
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [CampInput.model_validate(item) for item in parsed if item.get("name", "").strip()]
     except (json.JSONDecodeError, ValueError):
         pass
     return []

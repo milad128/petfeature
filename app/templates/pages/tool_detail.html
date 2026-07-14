@@ -5,118 +5,153 @@
 {% endblock %}
 
 {% block content %}
-<div class="container tool-detail-page">
-  <nav class="breadcrumb" aria-label="مسیر">
-    <a href="{{ url_for('tools') }}">ابزارها</a>
-    <span aria-hidden="true">‹</span>
-    <span>{{ tool.title if tool else slug }}</span>
-  </nav>
+<div class="td2-page">
+  <div class="td2-page-glow" aria-hidden="true"></div>
 
-  {% if tool %}
-  <div class="tool-detail-layout">
-    <aside class="tool-detail-aside">
-      <div class="tool-cover-lg">
-        {% if tool.cover %}
-        <img src="{{ tool.cover }}" alt="{{ tool.title }}">
-        {% else %}
-        <span class="book-cover-icon" aria-hidden="true">🛠</span>
-        {% endif %}
-      </div>
-    </aside>
+  <div class="td2-inner">
 
-    <div class="tool-detail-body">
-      <header class="tool-detail-header">
-        <span class="tag">{{ tool.category.name }}</span>
-        <h1>{{ tool.title }}</h1>
-        {% if tool.short_description %}
-        <p class="tool-detail-subtitle">{{ tool.short_description }}</p>
-        {% endif %}
-      </header>
+    <nav class="breadcrumb" aria-label="مسیر">
+      <a href="{{ url_for('tools') }}">ابزارها</a>
+      <span aria-hidden="true">‹</span>
+      <span>{{ tool.title if tool else slug }}</span>
+    </nav>
 
-      {% if tool.files %}
-      <section class="book-section">
-        <div class="book-section-label">دریافت ابزار</div>
-        <div class="tool-file-list">
-          {% for file in tool.files %}
-          <div class="tool-file-item">
-            <span class="resource-icon" aria-hidden="true">📄</span>
-            <div class="tool-file-info">
-              <div class="tool-file-name">{{ file.name }}</div>
-              {% if file.description %}
-              <div class="tool-file-desc">{{ file.description }}</div>
-              {% endif %}
-            </div>
-            <a href="{{ file.file }}" class="btn btn-primary" target="_blank" rel="noopener" download>دانلود <span>↓</span></a>
-          </div>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
+    {% if tool %}
+    <div class="td2-layout">
 
-      {% if tool.body %}
-      <section class="book-section">
-        <div class="book-section-label">راهنمای استفاده</div>
-        <div class="richtext-content">
-          {% if '<' in tool.body %}
-          {{ tool.body | safe }}
+      {# ── Main content ──────────────────────────── #}
+      <main>
+
+        <header style="margin-bottom:30px;">
+          <div class="td2-eyebrow">{{ tool.category.name }}</div>
+          <h1 class="td2-title">{{ tool.title }}</h1>
+          {% if tool.short_description %}
+          <p class="td2-desc">{{ tool.short_description }}</p>
+          {% endif %}
+        </header>
+
+        {# Preview / cover #}
+        <div class="td2-preview">
+          {% if tool.cover %}
+          <img src="{{ tool.cover }}" alt="{{ tool.title }}">
           {% else %}
-          {{ tool.body | replace('\n', '<br>') | safe }}
+          <div class="td2-preview-placeholder">
+            <span>پیش‌نمایش ابزار</span>
+          </div>
           {% endif %}
         </div>
-      </section>
-      {% endif %}
 
-      {% if tool.related_books %}
-      <section class="book-section tool-related">
-        <div class="book-section-label">کتاب‌های مرتبط</div>
-        <div class="referred-books-grid">
-          {% for book in tool.related_books %}
-          <a href="{{ url_for('book_detail', slug=book.slug) }}" class="referred-book-card">
-            <div class="referred-book-cover">
-              {% if book.cover %}
-              <img src="{{ book.cover }}" alt="{{ book.title }}">
-              {% else %}
-              <span>📖</span>
-              {% endif %}
+        {# How to use — body richtext #}
+        {% if tool.body %}
+        <section class="book-section">
+          <div class="book-section-label">راهنمای استفاده</div>
+          <div class="richtext-content" style="font-weight:300; line-height:2.1;">
+            {% if '<' in tool.body %}
+            {{ tool.body | safe }}
+            {% else %}
+            {{ tool.body | replace('\n', '<br>') | safe }}
+            {% endif %}
+          </div>
+        </section>
+        {% endif %}
+
+        {# Related books — same card style as book_detail referred books #}
+        {% if tool.related_books %}
+        <section class="book-section referred-section">
+          <div class="book-section-label">کتاب‌های مرتبط</div>
+          <div class="referred-books-grid">
+            {% for book in tool.related_books %}
+            <a href="{{ url_for('book_detail', slug=book.slug) }}" class="referred-book-card">
+              <div class="referred-book-cover">
+                {% if book.cover %}
+                <img src="{{ book.cover }}" alt="{{ book.title }}">
+                {% endif %}
+              </div>
+              <span>
+                <span class="referred-book-title">{{ book.title }}</span>
+                {% if book.authors_display %}
+                <span class="referred-book-author">{{ book.authors_display }}</span>
+                {% endif %}
+              </span>
+            </a>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {# Related posts #}
+        {% if tool.related_posts %}
+        <section class="book-section">
+          <div class="book-section-label">یادداشت‌های مرتبط</div>
+          <div class="tool-related-posts">
+            {% for post in tool.related_posts %}
+            <a href="{{ url_for('post_detail', slug=post.slug) }}" class="tool-related-post-card">
+              <span class="tool-related-post-title">{{ post.title }}</span>
+              <span class="tool-related-post-link">مطالعه ←</span>
+            </a>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        <div class="post-footer-nav">
+          <a href="{{ url_for('tools') }}" class="post-back-link">→ همه‌ی ابزارها</a>
+        </div>
+
+      </main>
+
+      {# ── Aside: download card ──────────────────── #}
+      <aside class="td2-aside">
+        <div class="td2-dl-card">
+
+          {# Meta rows #}
+          <div class="td2-meta-rows">
+            <div class="td2-meta-row">
+              <span class="td2-meta-key">مجموع دانلود</span>
+              <span class="td2-meta-val">{{ tool.download_count | fa_digits }}</span>
             </div>
-            <span>
-              <span class="referred-book-title">{{ book.title }}</span>
-              {% if book.authors_display %}
-              <span class="referred-book-author">{{ book.authors_display }}</span>
-              {% endif %}
-            </span>
-          </a>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
+          </div>
 
-      {% if tool.related_posts %}
-      <section class="book-section">
-        <div class="book-section-label">یادداشت‌های مرتبط</div>
-        <div class="tool-related-posts">
-          {% for post in tool.related_posts %}
-          <a href="{{ url_for('post_detail', slug=post.slug) }}" class="tool-related-post-card">
-            <span class="tool-related-post-icon" aria-hidden="true">✍️</span>
-            <span class="tool-related-post-title">{{ post.title }}</span>
-            <span class="tool-related-post-link">مطالعه ←</span>
-          </a>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
+          {# Files label #}
+          <div class="td2-files-label">
+            <span style="width:18px; height:1px; background:var(--accent); display:block;"></span>
+            <span style="font-size:11.5px; font-weight:600; letter-spacing:.1em; color:var(--accent);">فایل‌های این ابزار</span>
+          </div>
 
-      <div class="post-footer-nav">
-        <a href="{{ url_for('tools') }}" class="post-back-link">→ همه‌ی ابزارها</a>
-      </div>
+          {% if tool.files %}
+          <div class="td2-file-list">
+            {% for file in tool.files %}
+            {% set ext = file.file.split('.')[-1].upper() %}
+            <a href="{{ url_for('tool_download', slug=tool.slug, file_id=file.id) }}"
+               class="td2-file-item" rel="noopener">
+              <span class="td2-file-ext">{{ ext }}</span>
+              <span class="td2-file-info">
+                <span class="td2-file-name">{{ file.name }}</span>
+                {% if file.description %}
+                <span class="td2-file-desc">{{ file.description }}</span>
+                {% endif %}
+              </span>
+              <span class="td2-file-dl">↓</span>
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p style="font-size:.84rem; color:var(--faint); padding:12px 0;">فایلی هنوز اضافه نشده.</p>
+          {% endif %}
+
+          <p class="td2-license">استفاده و بازنشر با ذکر منبع آزاد است.</p>
+        </div>
+      </aside>
+
     </div>
-  </div>
 
-  {% else %}
-  <div class="empty-state" style="padding: 3rem 0;">
-    <p>این ابزار هنوز منتشر نشده است.</p>
-    <a href="{{ url_for('tools') }}" class="btn btn-ghost" style="margin-top: 1rem;">بازگشت به ابزارها</a>
+    {% else %}
+    <div class="empty-state" style="padding: 3rem 0;">
+      <p>این ابزار هنوز منتشر نشده است.</p>
+      <a href="{{ url_for('tools') }}" class="btn btn-ghost" style="margin-top: 1rem;">بازگشت به ابزارها</a>
+    </div>
+    {% endif %}
+
   </div>
-  {% endif %}
 </div>
 {% endblock %}

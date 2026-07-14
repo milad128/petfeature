@@ -1,0 +1,162 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block content %}
+
+{# ── Period filter ─────────────────────────────────────── #}
+<div class="toolbar" style="margin-bottom:24px;">
+  <div class="filter-strip">
+    <a href="{{ url_for('admin_analytics') }}?period=today"
+       class="filter-pill {% if period == 'today' %}active{% endif %}">امروز</a>
+    <a href="{{ url_for('admin_analytics') }}?period=7d"
+       class="filter-pill {% if period == '7d' %}active{% endif %}">۷ روز اخیر</a>
+    <a href="{{ url_for('admin_analytics') }}?period=30d"
+       class="filter-pill {% if period == '30d' %}active{% endif %}">۳۰ روز اخیر</a>
+    <a href="{{ url_for('admin_analytics') }}?period=all"
+       class="filter-pill {% if period == 'all' %}active{% endif %}">همه‌وقت</a>
+  </div>
+</div>
+
+{# ── Summary cards ─────────────────────────────────────── #}
+<div class="an-cards">
+  <div class="an-card">
+    <span class="an-card-label">کل بازدید</span>
+    <span class="an-card-value">{{ summary.total_views | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">بازدیدکننده‌های یکتا</span>
+    <span class="an-card-value">{{ summary.unique_visitors | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">پربازدیدترین روز</span>
+    <span class="an-card-value an-card-value--sm">{{ summary.busiest_day or '—' }}</span>
+  </div>
+</div>
+
+{# ── Top content ───────────────────────────────────────── #}
+<div class="an-top-row">
+
+  {# Top Books #}
+  <div class="card">
+    <div class="card-section-title" style="padding:18px 20px 0;">📚 پربازدیدترین کتاب‌ها</div>
+    {% if top_books %}
+    <table class="admin-table">
+      <thead>
+        <tr><th>کتاب</th><th>بازدید</th><th>یکتا</th></tr>
+      </thead>
+      <tbody>
+        {% for b in top_books %}
+        <tr>
+          <td><a href="{{ url_for('book_detail', slug=b.slug) }}" target="_blank" style="color:inherit;">{{ b.title }}</a></td>
+          <td>{{ b.views | fa_digits }}</td>
+          <td>{{ b.unique_views | fa_digits }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+    {% endif %}
+  </div>
+
+  {# Top Posts #}
+  <div class="card">
+    <div class="card-section-title" style="padding:18px 20px 0;">✍️ پربازدیدترین یادداشت‌ها</div>
+    {% if top_posts %}
+    <table class="admin-table">
+      <thead>
+        <tr><th>یادداشت</th><th>بازدید</th><th>یکتا</th><th style="color:var(--muted);font-size:.75rem;">قدیمی</th></tr>
+      </thead>
+      <tbody>
+        {% for p in top_posts %}
+        <tr>
+          <td><a href="{{ url_for('post_detail', slug=p.slug) }}" target="_blank" style="color:inherit;">{{ p.title }}</a></td>
+          <td>{{ p.views | fa_digits }}</td>
+          <td>{{ p.unique_views | fa_digits }}</td>
+          <td style="color:var(--muted);">{{ p.old_view_count | fa_digits }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+    {% endif %}
+  </div>
+
+  {# Top Tools #}
+  <div class="card">
+    <div class="card-section-title" style="padding:18px 20px 0;">🛠️ پربازدیدترین ابزارها</div>
+    {% if top_tools %}
+    <table class="admin-table">
+      <thead>
+        <tr><th>ابزار</th><th>بازدید</th><th>یکتا</th></tr>
+      </thead>
+      <tbody>
+        {% for t in top_tools %}
+        <tr>
+          <td><a href="{{ url_for('tool_detail', slug=t.slug) }}" target="_blank" style="color:inherit;">{{ t.title }}</a></td>
+          <td>{{ t.views | fa_digits }}</td>
+          <td>{{ t.unique_views | fa_digits }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+    {% endif %}
+  </div>
+
+</div>
+
+{# ── Daily traffic + Referrers ─────────────────────────── #}
+<div class="an-bottom-row">
+
+  {# Daily breakdown #}
+  <div class="card">
+    <div class="card-section-title" style="padding:18px 20px 0;">📅 ترافیک روزانه{% if period == 'all' %} (۹۰ روز اخیر){% endif %}</div>
+    {% if daily_traffic %}
+    <table class="admin-table">
+      <thead>
+        <tr><th>تاریخ</th><th>بازدید</th><th>بازدیدکننده‌ی یکتا</th></tr>
+      </thead>
+      <tbody>
+        {% for row in daily_traffic %}
+        <tr>
+          <td>{{ row.day }}</td>
+          <td>{{ row.views | fa_digits }}</td>
+          <td>{{ row.unique_views | fa_digits }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+    {% endif %}
+  </div>
+
+  {# Top referrers #}
+  <div class="card">
+    <div class="card-section-title" style="padding:18px 20px 0;">🔗 منابع ترافیک</div>
+    {% if top_referrers %}
+    <table class="admin-table">
+      <thead>
+        <tr><th>منبع</th><th>بازدید</th></tr>
+      </thead>
+      <tbody>
+        {% for ref in top_referrers %}
+        <tr>
+          <td dir="ltr" style="text-align:right;">{{ ref.domain }}</td>
+          <td>{{ ref.views | fa_digits }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

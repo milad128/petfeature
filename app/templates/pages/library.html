@@ -2,75 +2,76 @@
 
 {% block content %}
 
-{# ── Library hero band ───────────────────────── #}
+{# ── Library hero ─────────────────────────────── #}
 <section class="library-hero">
-  <div class="container">
-    <div class="lib-hero-grid">
-      <div>
-        <h1>کتابخانه</h1>
-        <p class="library-hero-desc">
-          سبک کتاب خوندن مورد علاقه من شبیه به <span class="hero-title-accent">کاراگاه‌های جنایی</span> هست!
-          که مفاهیم یک کتاب رو با نخِ موضوعات به سایر منابع مثل ویدیو، پادکست، مقاله و کتاب‌های مرتبط
-          وصل می‌کنم. این‌جا هم همین سبک رو برای جزییات هر کتاب پیش می‌گیرم، پس لیست کتاب‌ها و همچنین
-          جزییات هر کتاب به مرور تکمیل می‌شود.
-        </p>
-        <div class="lib-tip-callout">
-          <span class="lib-tip-icon">🧵</span>
-          <span>اگه سرنخی دارید که به کتابی وصل می‌شه، <a href="{{ url_for('about') }}">به من خبر بدین</a>.</span>
+  <div class="lib-hero-glow" aria-hidden="true"></div>
+  <div class="lib-hero-grid container">
+
+    {# Copy #}
+    <div class="lib-hero-copy">
+      <h1>کتابخانه</h1>
+      <p class="library-hero-desc">یادداشت کامل هر کتابی که خوانده‌ام؛ با برداشت شخصی و منابع مرتبط — ویدیو، پادکست و مقاله. این میز همیشه شلوغ است و لیست به مرور کامل می‌شود.</p>
+      <p class="lib-suggest-line">کتابی برای این قفسه سراغ دارید؟ <a href="{{ url_for('about') }}">پیشنهاد بدهید</a></p>
+    </div>
+
+    {# Desk scene (hidden on mobile via CSS) #}
+    <div class="lib-desk-scene" aria-hidden="true">
+      <div class="lib-desk-items">
+
+        {# Desk lamp — also a toggle button #}
+        <button class="lib-desk-lamp" id="lamp-toggle-desk" title="روشن/خاموش کردن چراغ">
+          <span class="lib-lamp-cone"></span>
+          <span class="lib-lamp-shade"></span>
+          <span class="lib-lamp-pole"></span>
+          <span class="lib-lamp-foot"></span>
+        </button>
+
+        {# Book stack #}
+        <div class="lib-book-stack">
+          <span style="width:132px; height:20px; background:#3a2a1d;"></span>
+          <span style="width:118px; height:18px; background:#4a3323; margin-inline-start:10px;"></span>
+          <span style="width:126px; height:19px; background:#2e2318; margin-inline-end:6px;"></span>
+          <span style="width:104px; height:17px; background:#5c3f28;"></span>
         </div>
+
       </div>
-      <div class="lib-thread-visual">
-        <div class="lib-thread-node lib-thread-node-main">
-          <span class="lib-thread-icon lib-thread-icon-main">📕</span>
-          <span class="lib-thread-label lib-thread-label-main">یک کتاب</span>
-        </div>
-        <div class="lib-thread-line"></div>
-        <div class="lib-thread-node">
-          <span class="lib-thread-icon">🎬</span>
-          <span class="lib-thread-label">ویدیوی مرتبط</span>
-        </div>
-        <div class="lib-thread-line lib-thread-line-sm"></div>
-        <div class="lib-thread-node">
-          <span class="lib-thread-icon">🎧</span>
-          <span class="lib-thread-label">پادکست</span>
-        </div>
-        <div class="lib-thread-line lib-thread-line-sm"></div>
-        <div class="lib-thread-node">
-          <span class="lib-thread-icon">📄</span>
-          <span class="lib-thread-label">مقاله و کتاب دیگر</span>
-        </div>
+      <div class="lib-desk-surface"></div>
+      <div class="lib-desk-legs">
+        <span></span>
+        <span></span>
       </div>
     </div>
 
-    <div class="lib-filter-row">
-      {% if books %}
-      <span class="library-stat">
-        <span>📚</span>
-        <span>{{ books | length }} کتاب</span>
-      </span>
-      <span class="lib-filter-divider"></span>
-      {% endif %}
-      {% if categories %}
-      {# Category filter pills — client-side filter by book category #}
-      <div class="filter-strip" id="library-filter" role="list" aria-label="دسته‌بندی‌ها">
-        <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
-        {% for cat in categories %}
-        <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
   </div>
 </section>
 
-{# ── Grid body ───────────────────────────────── #}
+{# ── Sticky filter bar ────────────────────────── #}
+<div class="lib-filter-sticky">
+  <div class="container">
+    {% if books %}
+    <span class="lib-count" id="lib-count">{{ books | length }} کتاب</span>
+    {% endif %}
+    {% if categories %}
+    <div class="filter-strip" id="library-filter" role="list" aria-label="دسته‌بندی‌ها">
+      <button type="button" class="filter-pill active" data-filter="همه" role="listitem">همه</button>
+      {% for cat in categories %}
+      <button type="button" class="filter-pill" data-filter="{{ cat.name }}" role="listitem">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Book grid ────────────────────────────────── #}
 <div class="library-body">
   <div class="container">
-
     <div class="book-grid" id="library-book-grid">
       {% if books %}
         {% for book in books %}
-        <a href="{{ url_for('book_detail', slug=book.slug) }}" class="lib-book-card" aria-label="{{ book.title }}" data-categories="{{ book.category_names | join('|') }}">
+        <a href="{{ url_for('book_detail', slug=book.slug) }}"
+           class="lib-book-card"
+           aria-label="{{ book.title }}"
+           data-categories="{{ book.category_names | join('|') }}">
           <div class="lib-book-cover">
             {% if book.cover %}
               <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy">
@@ -79,10 +80,10 @@
             {% endif %}
           </div>
           <div class="lib-book-info">
-            <h2 class="lib-book-title">{{ book.title }}</h2>
-            <p class="lib-book-author">{{ book.authors_display }}</p>
+            <div class="lib-book-title">{{ book.title }}</div>
+            <div class="lib-book-author">{{ book.authors_display }}</div>
             {% if book.categories %}
-            <div class="book-tags" aria-label="دسته‌بندی‌ها">
+            <div class="book-tags" aria-label="دسته‌بندی‌ها" style="margin-top:auto; padding-top:10px;">
               {% for cat in book.categories %}
               <span class="tag">{{ cat.name }}</span>
               {% endfor %}
@@ -106,7 +107,6 @@
         </div>
       {% endif %}
     </div>
-
   </div>
 </div>
 

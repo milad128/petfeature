@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block content %}
+
+{% if unread_count %}
+<p class="form-hint" style="margin-bottom:16px;">{{ unread_count }} پیام خوانده‌نشده</p>
+{% endif %}
+
+<div class="card">
+  {% if messages %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>تاریخ</th>
+        <th>نام</th>
+        <th>ایمیل</th>
+        <th>موضوع</th>
+        <th>پیام</th>
+        <th>وضعیت</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for msg in messages %}
+      <tr class="{% if not msg.is_read %}ct-row-unread{% endif %}">
+        <td style="white-space:nowrap;">{{ msg.created_at | jalali }}</td>
+        <td>{{ msg.name or '—' }}</td>
+        <td dir="ltr" style="font-size:.85rem;">{{ msg.email }}</td>
+        <td>{{ msg.subject or '—' }}</td>
+        <td>{{ msg.message[:100] }}{% if msg.message | length > 100 %}…{% endif %}</td>
+        <td>
+          {% if msg.is_read %}
+          <span class="badge badge-muted">خوانده‌شده</span>
+          {% else %}
+          <span class="badge badge-accent">جدید</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="row-actions">
+            <form method="post" action="{{ url_for('admin_contact_toggle_read', message_id=msg.id) }}" style="display:inline">
+              <button type="submit" class="btn btn-ghost btn-sm">
+                {% if msg.is_read %}خوانده‌نشده{% else %}خوانده‌شد{% endif %}
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('admin_contact_delete', message_id=msg.id) }}"
+                  data-delete-form data-confirm="این پیام حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">✉️</div>
+    <h3>هنوز پیامی دریافت نشده</h3>
+    <p>وقتی کسی فرم تماس را پر کند، اینجا می‌بینید.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -6,6 +6,8 @@
 
 {% block content %}
 <div class="container book-detail-page">
+
+  {# Breadcrumb #}
   <nav class="breadcrumb" aria-label="مسیر">
     <a href="{{ url_for('library') }}">کتابخانه</a>
     <span aria-hidden="true">‹</span>
@@ -14,27 +16,68 @@
 
   {% if book %}
   <div class="book-detail-layout">
+
+    {# ── Aside: shelf card ─────────────────────── #}
     <aside class="book-detail-aside">
-      <div class="book-cover-lg">
-        {% if book.cover %}
-          <img src="{{ book.cover }}" alt="{{ book.title }}">
-        {% else %}
-          📖
+      <div class="bd2-shelf">
+        <div class="bd2-shelf-glow" aria-hidden="true"></div>
+        <div class="bd2-shelf-items">
+
+          {# Standing book cover #}
+          <div class="bd2-book-standing">
+            {% if book.cover %}
+              <img src="{{ book.cover }}" alt="{{ book.title }}">
+            {% else %}
+              <span class="book-cover-icon" aria-hidden="true">📖</span>
+            {% endif %}
+          </div>
+
+          {# Small desk lamp — also a toggle #}
+          <button class="bd2-shelf-lamp" id="lamp-toggle-shelf" title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ">
+            <span class="bd2-lamp-cone"></span>
+            <span class="bd2-lamp-shade"></span>
+            <span class="bd2-lamp-pole"></span>
+            <span class="bd2-lamp-foot"></span>
+          </button>
+
+        </div>
+        <div class="bd2-shelf-surface"></div>
+      </div>
+
+      {# Meta list below shelf #}
+      <div class="bd2-meta-list">
+        {% if book.published_year %}
+        <div class="bd2-meta-row">
+          <span class="bd2-meta-key">سال انتشار</span>
+          <span>{{ book.published_year }}</span>
+        </div>
+        {% endif %}
+        {% if book.categories %}
+        <div class="bd2-meta-row">
+          <span class="bd2-meta-key">دسته</span>
+          <span>{{ book.categories | map(attribute='name') | join(' · ') }}</span>
+        </div>
+        {% endif %}
+        {% if book.authors %}
+        <div class="bd2-meta-row">
+          <span class="bd2-meta-key">نویسنده</span>
+          <span>{{ book.authors_display }}</span>
+        </div>
         {% endif %}
       </div>
-      {% if book.published_year %}
-      <p class="book-meta-item">سال انتشار: {{ book.published_year }}</p>
-      {% endif %}
     </aside>
 
-    <div class="book-detail-body">
+    {# ── Main content ──────────────────────────── #}
+    <main>
+
+      {# Book header #}
       <header class="book-detail-header">
         <h1>{{ book.title }}</h1>
         {% if book.subtitle %}
         <p class="book-detail-subtitle">{{ book.subtitle }}</p>
         {% endif %}
         {% if book.authors %}
-        <p class="book-detail-author">نویسنده: <strong>{{ book.authors_display }}</strong></p>
+        <p class="book-detail-author">نوشته‌ی <strong>{{ book.authors_display }}</strong></p>
         {% endif %}
         {% if book.categories %}
         <div class="book-detail-tags">
@@ -45,17 +88,41 @@
         {% endif %}
       </header>
 
-      {% if book.buy_link_title or book.buy_link_url or book.download_file %}
+      {# Actions row: buy + download + inline rating #}
       <div class="book-actions">
         {% if book.buy_link_url %}
-        <a href="{{ book.buy_link_url }}" class="btn btn-primary" target="_blank" rel="noopener">{{ book.buy_link_title or "خرید کتاب" }} <span>↗</span></a>
+        <a href="{{ book.buy_link_url }}" class="bd2-btn-buy" target="_blank" rel="noopener">
+          {{ book.buy_link_title or "خرید کتاب" }} ↗
+        </a>
         {% endif %}
         {% if book.download_file %}
-        <a href="{{ book.download_file }}" class="btn btn-ghost" target="_blank" rel="noopener" download>دانلود PDF <span>↓</span></a>
+        <a href="{{ book.download_file }}" class="bd2-btn-download" target="_blank" rel="noopener" download>
+          دانلود یادداشت (PDF) ↓
+        </a>
         {% endif %}
-      </div>
-      {% endif %}
 
+        {# Inline star rating #}
+        <div class="bd2-rating-inline">
+          {% if has_rated %}
+          <span class="bd2-rating-label">ممنون! ✓</span>
+          {% else %}
+          <form method="post" action="{{ url_for('book_rate', slug=book.slug) }}" class="bd2-stars" id="star-form" title="امتیاز بدهید">
+            {% for n in [1, 2, 3, 4, 5] %}
+            <button type="submit" name="stars" value="{{ n }}" class="bd2-star-btn" aria-label="{{ n }} ستاره">★</button>
+            {% endfor %}
+          </form>
+          {% endif %}
+          <span class="bd2-rating-label">
+            {% if book.rating_count %}
+            میانگین {{ book.average_rating | fa_digits }} · {{ book.rating_count | fa_digits }} رای
+            {% else %}
+            هنوز رایی نیست
+            {% endif %}
+          </span>
+        </div>
+      </div>
+
+      {# Note #}
       {% if book.note %}
       <section class="book-section">
         <div class="book-section-label">یادداشت پت فیچر</div>
@@ -67,48 +134,46 @@
       </section>
       {% endif %}
 
+      {# Quotes #}
       {% if book.quotes %}
       <section class="book-section">
         <div class="book-section-label">نقل‌قول</div>
         <ul class="quote-list">
           {% for quote in book.quotes %}
-          <li class="quote-item">«{{ quote }}»</li>
+          <li class="quote-item">{{ quote }}</li>
           {% endfor %}
         </ul>
       </section>
       {% endif %}
 
+      {# Media / resources #}
       {% if book.media_links %}
       <section class="book-section">
         <div class="book-section-label">ویدیو و پادکست</div>
         <ul class="resource-list">
           {% for link in book.media_links %}
-          <li class="resource-item">
-            <span class="resource-icon" aria-hidden="true">
-              {% if link.type == 'video' %}🎬{% else %}🎙{% endif %}
-            </span>
-            <span class="resource-title">{{ link.title or ('ویدیو' if link.type == 'video' else 'پادکست') }}</span>
-            <a href="{{ link.url }}" class="resource-link" target="_blank" rel="noopener">مشاهده ←</a>
+          <li>
+            <a href="{{ link.url }}" class="resource-item" target="_blank" rel="noopener">
+              <span class="resource-kind">{{ 'ویدیو' if link.type == 'video' else 'پادکست' }}</span>
+              <span class="resource-title">{{ link.title or ('ویدیو مرتبط' if link.type == 'video' else 'پادکست مرتبط') }}</span>
+              <span class="resource-link">مشاهده ←</span>
+            </a>
           </li>
           {% endfor %}
         </ul>
       </section>
       {% endif %}
 
+      {# Referred books #}
       {% if book.referred_books %}
       <section class="referred-section">
-        <div class="referred-section-label">
-          <span>🧵</span>
-          <span>کتاب‌های ارجاع‌شده — دنبال سرنخ بگرد</span>
-        </div>
+        <div class="book-section-label">کتاب‌های مرتبط از همین قفسه</div>
         <div class="referred-books-grid">
           {% for ref in book.referred_books %}
           <a href="{{ url_for('book_detail', slug=ref.slug) }}" class="referred-book-card">
             <div class="referred-book-cover">
               {% if ref.cover %}
                 <img src="{{ ref.cover }}" alt="{{ ref.title }}">
-              {% else %}
-                <span>📖</span>
               {% endif %}
             </div>
             <span>
@@ -122,64 +187,44 @@
         </div>
       </section>
       {% endif %}
-    </div>
-  </div>
 
-  <div class="book-engagement">
-    <div class="post-rating-card" id="rating">
-      <div>
-        <div class="post-rating-label">این کتاب چقدر به‌دردت خورد؟</div>
-        {% if book.rating_count %}
-        <div class="post-rating-stat">میانگین امتیاز: {{ book.average_rating | fa_digits }} از ۵ · بر اساس {{ book.rating_count | fa_digits }} رای</div>
-        {% else %}
-        <div class="post-rating-stat">هنوز رایی ثبت نشده</div>
-        {% endif %}
-      </div>
-      {% if has_rated %}
-      <div class="star-row star-row-done">
-        <span class="star-thanks">ممنون! ✓</span>
-      </div>
-      {% else %}
-      <form method="post" action="{{ url_for('book_rate', slug=book.slug) }}" class="star-row" id="star-form">
-        {% for n in [5, 4, 3, 2, 1] %}
-        <button type="submit" name="stars" value="{{ n }}" class="star-btn" aria-label="{{ n }} ستاره">★</button>
-        {% endfor %}
-      </form>
-      {% endif %}
-    </div>
+      {# Comments #}
+      <section class="book-section" id="comments" style="padding-top:32px; border-top:1px solid var(--border);">
+        <div class="book-section-label">دیدگاه‌ها — {{ book.approved_comment_count | fa_digits }}</div>
 
-    <div class="comments-section" id="comments">
-      <div class="comments-header">نظرها ({{ book.approved_comment_count | fa_digits }})</div>
-
-      {% if book.approved_comments %}
-      <div class="comments-list">
-        {% for c in book.approved_comments %}
-        <div class="comment-item">
-          <div class="comment-item-head">
-            <span class="comment-item-name">{{ c.author_name }}</span>
-            <span class="comment-item-date">{{ c.created_at | jalali }}</span>
+        {% if book.approved_comments %}
+        <div style="display:flex; flex-direction:column; gap:22px; margin-bottom:34px;">
+          {% for c in book.approved_comments %}
+          <div class="bd2-comment-item">
+            <div class="bd2-comment-head">
+              <span class="bd2-comment-name">{{ c.author_name }}</span>
+              <span class="bd2-comment-date">{{ c.created_at | jalali }}</span>
+            </div>
+            <p class="bd2-comment-body">{{ c.body }}</p>
           </div>
-          <p class="comment-item-body">{{ c.body }}</p>
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="form-hint">هنوز نظری ثبت نشده — اول نفر باش!</p>
-      {% endif %}
+        {% else %}
+        <p class="form-hint" style="margin-bottom:24px;">هنوز نظری ثبت نشده — اول نفر باش!</p>
+        {% endif %}
 
-      {% if request.query_params.get('commented') %}
-      <p class="form-success" role="status">نظرت ثبت شد و پس از بررسی منتشر می‌شه ✓</p>
-      {% endif %}
+        {% if request.query_params.get('commented') %}
+        <p class="form-success" role="status">نظرت ثبت شد و پس از بررسی منتشر می‌شه ✓</p>
+        {% endif %}
 
-      <form method="post" action="{{ url_for('book_comment', slug=book.slug) }}" class="comment-form">
-        <div class="comment-form-title">نظر بدید</div>
-        <input type="text" name="website" class="comment-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <input type="text" name="author_name" class="form-control" placeholder="اسم شما" required>
-        <input type="email" name="author_email" class="form-control" placeholder="ایمیل (اختیاری)">
-        <textarea name="body" class="form-control" rows="3" placeholder="نظرتون رو بنویسید…" required></textarea>
-        <button type="submit" class="btn btn-primary">ارسال نظر ←</button>
-      </form>
-    </div>
+        <div class="comment-form">
+          <span class="comment-form-title">دیدگاه شما</span>
+          <form method="post" action="{{ url_for('book_comment', slug=book.slug) }}" style="display:contents;">
+            <input type="text" name="website" class="comment-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <input type="text" name="author_name" class="form-control" placeholder="نام (اختیاری)">
+            <input type="email" name="author_email" class="form-control" placeholder="ایمیل (اختیاری)">
+            <textarea name="body" class="form-control" rows="4" placeholder="نظرتان درباره‌ی این کتاب یا یادداشت…" required></textarea>
+            <button type="submit" class="btn btn-primary">ثبت دیدگاه</button>
+          </form>
+        </div>
+      </section>
+
+    </main>
   </div>
 
   {% else %}
@@ -188,5 +233,33 @@
     <a href="{{ url_for('library') }}" class="btn btn-ghost" style="margin-top: 1rem;">بازگشت به کتابخانه</a>
   </div>
   {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  var form = document.getElementById("star-form");
+  if (!form) return;
+
+  var stars = Array.from(form.querySelectorAll(".bd2-star-btn"));
+
+  function highlight(upToValue) {
+    stars.forEach(function (s) {
+      s.classList.toggle("filled", parseInt(s.value) <= upToValue);
+    });
+  }
+
+  stars.forEach(function (star) {
+    star.addEventListener("mouseenter", function () {
+      highlight(parseInt(this.value));
+    });
+  });
+
+  form.addEventListener("mouseleave", function () {
+    highlight(0); // reset all to unfilled
+  });
+})();
+</script>
 {% endblock %}
