@@ -536,10 +536,77 @@ function initRichTextEditors() {
       hidden.value = editor.innerHTML;
     });
 
+    // Image upload: one hidden file input per editor, shared via closure
+    const imageInput = wrap.closest("form")
+      ? wrap.closest("form").querySelector("#editor-image-input")
+      : null;
+    let _savedRange = null;
+
+    if (imageInput) {
+      imageInput.addEventListener("change", async () => {
+        const file = imageInput.files[0];
+        imageInput.value = "";
+        if (!file) return;
+
+        // Restore cursor so insertImage lands in the right place
+        editor.focus();
+        if (_savedRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(_savedRange);
+          _savedRange = null;
+        }
+
+        // Show a temporary loading indicator inside the editor
+        const placeholder = document.createElement("span");
+        placeholder.textContent = "…در حال آپلود…";
+        placeholder.style.color = "var(--muted)";
+        placeholder.style.fontSize = ".85rem";
+        document.execCommand("insertHTML", false, placeholder.outerHTML);
+
+        try {
+          const fd = new FormData();
+          fd.append("file", file);
+          const resp = await fetch("/admin/upload/image/", { method: "POST", body: fd });
+          const data = await resp.json();
+
+          if (data.url) {
+            // Remove the loading placeholder then insert the real image
+            // Simplest: re-focus and use execCommand
+            const img = `<img src="${data.url}" style="max-width:100%; height:auto; border-radius:6px; margin:8px 0;" alt="">`;
+            // Replace last placeholder span
+            hidden.value = editor.innerHTML.replace(placeholder.outerHTML, img);
+            editor.innerHTML = hidden.value;
+          } else {
+            hidden.value = editor.innerHTML.replace(placeholder.outerHTML, "");
+            editor.innerHTML = hidden.value;
+            alert(data.error || "آپلود تصویر ناموفق بود.");
+          }
+        } catch {
+          hidden.value = editor.innerHTML.replace(placeholder.outerHTML, "");
+          editor.innerHTML = hidden.value;
+          alert("خطا در آپلود تصویر. اتصال اینترنت را بررسی کنید.");
+        }
+
+        hidden.value = editor.innerHTML;
+      });
+    }
+
     wrap.querySelectorAll(".richtext-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        editor.focus();
         const command = btn.dataset.command;
+
+        if (command === "insertImage") {
+          // Save cursor before the file picker opens (it steals focus)
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            _savedRange = sel.getRangeAt(0).cloneRange();
+          }
+          if (imageInput) imageInput.click();
+          return; // do NOT call editor.focus() or execCommand here
+        }
+
+        editor.focus();
         if (command === "createLink") {
           const url = window.prompt("آدرس لینک را وارد کنید:", "https://");
           if (!url) return;

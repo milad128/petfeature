@@ -19,6 +19,8 @@ TOOL_COVERS_DIR = Path(__file__).parent.parent / "static" / "uploads" / "tool-co
 TOOL_COVERS_URL_PREFIX = "/static/uploads/tool-covers/"
 TOOL_FILES_DIR = Path(__file__).parent.parent / "static" / "uploads" / "tool-files"
 TOOL_FILES_URL_PREFIX = "/static/uploads/tool-files/"
+POST_IMAGES_DIR = Path(__file__).parent.parent / "static" / "uploads" / "post-images"
+POST_IMAGES_URL_PREFIX = "/static/uploads/post-images/"
 
 ALLOWED_COVER_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 ALLOWED_DOWNLOAD_EXTENSIONS = {".pdf"}
@@ -32,6 +34,7 @@ def ensure_upload_dirs() -> None:
     COVERS_DIR.mkdir(parents=True, exist_ok=True)
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     POST_COVERS_DIR.mkdir(parents=True, exist_ok=True)
+    POST_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     TOOL_COVERS_DIR.mkdir(parents=True, exist_ok=True)
     TOOL_FILES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -130,6 +133,27 @@ async def resolve_tool_file(
             delete_local_tool_file(old_file)
         return new_path
     return existing_file.strip()
+
+
+async def save_post_image_upload(file: UploadFile) -> str:
+    """Save an inline image uploaded from the post body editor. Returns the static URL."""
+    if not file.filename:
+        raise ValueError("فایل تصویر انتخاب نشده است.")
+
+    ext = Path(file.filename).suffix.lower()
+    if ext not in ALLOWED_COVER_EXTENSIONS:
+        raise ValueError("فرمت تصویر مجاز نیست. از JPG، PNG یا WebP استفاده کنید.")
+
+    content = await file.read()
+    if not content:
+        raise ValueError("فایل تصویر خالی است.")
+    if len(content) > MAX_COVER_BYTES:
+        raise ValueError("حجم تصویر نباید بیشتر از ۵ مگابایت باشد.")
+
+    ensure_upload_dirs()
+    filename = f"{uuid.uuid4().hex}{ext}"
+    (POST_IMAGES_DIR / filename).write_bytes(content)
+    return f"{POST_IMAGES_URL_PREFIX}{filename}"
 
 
 def is_local_post_cover(path: Optional[str]) -> bool:

@@ -120,9 +120,11 @@
             <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">☷</button>
             <span class="richtext-sep" aria-hidden="true"></span>
             <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
+            <button type="button" class="richtext-btn richtext-btn--image" data-command="insertImage" title="آپلود تصویر">🖼</button>
             <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
           </div>
           <div class="richtext-editor" id="body-editor" contenteditable="true" data-placeholder="متن یادداشت..."></div>
+          <input type="file" id="editor-image-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden aria-hidden="true">
         </div>
         <textarea id="body-hidden" name="body" hidden>{{ post.body if post else '' }}</textarea>
       </div>

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -1818,3 +1818,22 @@ async def admin_analytics(
             top_referrers=refs,
         ),
     )
+
+
+# ── Editor image upload ────────────────────────────────────────────────────
+
+@router.post("/upload/image/", name="admin_upload_image")
+async def admin_upload_image(
+    request: Request,
+    file: UploadFile = File(...),
+):
+    """AJAX endpoint: upload an inline image from the post body editor.
+    Returns JSON {"url": "..."} on success or {"error": "..."} on failure.
+    """
+    if not is_admin_authenticated(request):
+        return JSONResponse({"error": "احراز هویت نشده"}, status_code=403)
+    try:
+        url = await upload_service.save_post_image_upload(file)
+        return JSONResponse({"url": url})
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
