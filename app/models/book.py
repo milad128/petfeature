@@ -166,5 +166,7 @@ class BookComment(Base):
     body: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(20), default=BookCommentStatus.PENDING.value)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    reply: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    reply_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     book: Mapped["Book"] = relationship(back_populates="comments")

@@ -521,12 +521,83 @@ function syncAboutLinksHidden(container, hidden) {
   hidden.value = JSON.stringify(links);
 }
 
+// ── Rich text editor helpers ─────────────────────────────────────────────────
+
+function _rtBuildVideoEmbed(url) {
+  url = url.trim();
+  // YouTube
+  const ytMatch = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  if (ytMatch) {
+    return (
+      `<div class="richtext-video">` +
+      `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}" ` +
+      `frameborder="0" allowfullscreen loading="lazy" ` +
+      `allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">` +
+      `</iframe></div>`
+    );
+  }
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    return (
+      `<div class="richtext-video">` +
+      `<iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" ` +
+      `frameborder="0" allowfullscreen loading="lazy">` +
+      `</iframe></div>`
+    );
+  }
+  // Direct video file
+  if (/\.(mp4|webm|ogg)(\?|$)/i.test(url)) {
+    return (
+      `<div class="richtext-video">` +
+      `<video controls style="width:100%;border-radius:8px;"><source src="${url}"></video>` +
+      `</div>`
+    );
+  }
+  // Generic iframe fallback
+  return (
+    `<div class="richtext-video">` +
+    `<iframe src="${url}" frameborder="0" allowfullscreen loading="lazy"></iframe>` +
+    `</div>`
+  );
+}
+
+function _rtBuildTable(rows, cols) {
+  let html =
+    `<table style="width:100%;border-collapse:collapse;margin:1rem 0;direction:rtl;">`;
+  for (let r = 0; r < rows; r++) {
+    html += "<tr>";
+    for (let c = 0; c < cols; c++) {
+      const tag = r === 0 ? "th" : "td";
+      const content =
+        r === 0
+          ? `عنوان ${_rtFaDigits(c + 1)}`
+          : `ردیف ${_rtFaDigits(r)} · ستون ${_rtFaDigits(c + 1)}`;
+      html +=
+        `<${tag} style="border:1px solid var(--border,#3a3026);` +
+        `padding:8px 12px;text-align:right;">${content}</${tag}>`;
+    }
+    html += "</tr>";
+  }
+  html += "</table>";
+  return html;
+}
+
+function _rtFaDigits(n) {
+  return String(n).replace(/[0-9]/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[+d]);
+}
+
+// ── Main initialiser ─────────────────────────────────────────────────────────
+
 function initRichTextEditors() {
   document.querySelectorAll("[data-richtext]").forEach((wrap) => {
     const hidden = document.getElementById(wrap.dataset.target);
     const editor = wrap.querySelector(".richtext-editor");
     if (!hidden || !editor) return;
 
+    // Populate editor from the hidden textarea on load
     const initial = hidden.value || "";
     editor.innerHTML = initial.includes("<")
       ? initial
@@ -536,11 +607,9 @@ function initRichTextEditors() {
       hidden.value = editor.innerHTML;
     });
 
-    // Image upload: one hidden file input per editor, shared via closure
-    const imageInput = wrap.closest("form")
-      ? wrap.closest("form").querySelector("#editor-image-input")
-      : null;
-    let _savedRange = null;
+    // ── Image upload ───────────────────────────────────────────────────────
+    const imageInput = wrap.querySelector(".richtext-image-input");
+    let _savedRange = null; // used to restore cursor after image/select dialogs
 
     if (imageInput) {
       imageInput.addEventListener("change", async () => {
@@ -548,7 +617,6 @@ function initRichTextEditors() {
         imageInput.value = "";
         if (!file) return;
 
-        // Restore cursor so insertImage lands in the right place
         editor.focus();
         if (_savedRange) {
           const sel = window.getSelection();
@@ -557,7 +625,6 @@ function initRichTextEditors() {
           _savedRange = null;
         }
 
-        // Show a temporary loading indicator inside the editor
         const placeholder = document.createElement("span");
         placeholder.textContent = "…در حال آپلود…";
         placeholder.style.color = "var(--muted)";
@@ -571,10 +638,9 @@ function initRichTextEditors() {
           const data = await resp.json();
 
           if (data.url) {
-            // Remove the loading placeholder then insert the real image
-            // Simplest: re-focus and use execCommand
-            const img = `<img src="${data.url}" style="max-width:100%; height:auto; border-radius:6px; margin:8px 0;" alt="">`;
-            // Replace last placeholder span
+            const img =
+              `<img src="${data.url}" ` +
+              `style="max-width:100%;height:auto;border-radius:6px;margin:8px 0;" alt="">`;
             hidden.value = editor.innerHTML.replace(placeholder.outerHTML, img);
             editor.innerHTML = hidden.value;
           } else {
@@ -587,59 +653,114 @@ function initRichTextEditors() {
           editor.innerHTML = hidden.value;
           alert("خطا در آپلود تصویر. اتصال اینترنت را بررسی کنید.");
         }
-
         hidden.value = editor.innerHTML;
       });
     }
 
+    // ── Toolbar buttons ────────────────────────────────────────────────────
     wrap.querySelectorAll(".richtext-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const command = btn.dataset.command;
 
         if (command === "insertImage") {
-          // Save cursor before the file picker opens (it steals focus)
+          // Save cursor position before file picker steals focus
           const sel = window.getSelection();
-          if (sel && sel.rangeCount > 0) {
-            _savedRange = sel.getRangeAt(0).cloneRange();
-          }
+          if (sel && sel.rangeCount > 0) _savedRange = sel.getRangeAt(0).cloneRange();
           if (imageInput) imageInput.click();
-          return; // do NOT call editor.focus() or execCommand here
+          return;
+        }
+
+        if (command === "toggleFullscreen") {
+          wrap.classList.toggle("richtext--fullscreen");
+          btn.title = wrap.classList.contains("richtext--fullscreen")
+            ? "خروج از تمام‌صفحه"
+            : "تمام‌صفحه";
+          return;
         }
 
         editor.focus();
+
         if (command === "createLink") {
           const url = window.prompt("آدرس لینک را وارد کنید:", "https://");
           if (!url) return;
           document.execCommand("createLink", false, url);
-        } else if (command === "formatBlock") {
+
+        } else if (command === "insertVideo") {
+          const url = window.prompt(
+            "آدرس ویدیو (YouTube, Vimeo, mp4):",
+            "https://www.youtube.com/watch?v="
+          );
+          if (!url) return;
+          document.execCommand("insertHTML", false, _rtBuildVideoEmbed(url));
+
+        } else if (command === "insertTable") {
+          const rows = parseInt(window.prompt("تعداد ردیف (شامل سرستون):", "3"), 10) || 3;
+          const cols = parseInt(window.prompt("تعداد ستون:", "3"), 10) || 3;
+          document.execCommand(
+            "insertHTML",
+            false,
+            _rtBuildTable(
+              Math.min(Math.max(rows, 1), 20),
+              Math.min(Math.max(cols, 1), 10)
+            )
+          );
+
+        } else if (command === "insertHorizontalRule") {
+          document.execCommand("insertHTML", false, "<hr>");
+
+        } else if (command === "formatBlock" && btn.dataset.value) {
           document.execCommand("formatBlock", false, btn.dataset.value);
+
         } else {
           document.execCommand(command, false, null);
         }
+
         hidden.value = editor.innerHTML;
       });
     });
 
-    const fontSelect = wrap.querySelector(".richtext-font-select");
-    if (fontSelect) {
-      fontSelect.addEventListener("change", () => {
+    // ── Selects: save selection on mousedown, restore on change ───────────
+    // (Selects steal focus when their dropdown opens, so we snapshot beforehand)
+    function _attachSelect(selector, execFn) {
+      const sel = wrap.querySelector(selector);
+      if (!sel) return;
+      sel.addEventListener("mousedown", () => {
+        const s = window.getSelection();
+        if (s && s.rangeCount > 0) _savedRange = s.getRangeAt(0).cloneRange();
+      });
+      sel.addEventListener("change", () => {
+        if (!sel.value) return;
         editor.focus();
-        if (fontSelect.value) {
-          document.execCommand("fontName", false, fontSelect.value);
+        if (_savedRange) {
+          const s = window.getSelection();
+          s.removeAllRanges();
+          s.addRange(_savedRange);
+          _savedRange = null;
         }
+        execFn(sel.value);
         hidden.value = editor.innerHTML;
-        fontSelect.value = "";
+        sel.value = "";
       });
     }
 
-    const colorInput = wrap.querySelector(".richtext-color-input");
-    if (colorInput) {
+    _attachSelect(".richtext-block-select", (v) =>
+      document.execCommand("formatBlock", false, v)
+    );
+    _attachSelect(".richtext-font-select", (v) =>
+      document.execCommand("fontName", false, v)
+    );
+    _attachSelect(".richtext-size-select", (v) =>
+      document.execCommand("fontSize", false, v)
+    );
+
+    // ── Color inputs (foreColor + hiliteColor) ────────────────────────────
+    wrap.querySelectorAll(".richtext-color-input").forEach((colorInput) => {
       colorInput.addEventListener("input", () => {
         editor.focus();
-        document.execCommand("foreColor", false, colorInput.value);
+        document.execCommand(colorInput.dataset.command, false, colorInput.value);
         hidden.value = editor.innerHTML;
       });
-    }
+    });
   });
 }
 
@@ -663,34 +784,38 @@ function initDeleteForms() {
 }
 
 function syncFormsBeforeSubmit() {
-  document.querySelectorAll("form[data-admin-form]").forEach((form) => {
+  document.querySelectorAll("form").forEach((form) => {
     form.addEventListener("submit", () => {
-      document.querySelectorAll(".tag-input-box[data-hidden]").forEach((box) => {
-        const hidden = document.getElementById(box.dataset.hidden);
-        syncChipHidden(box, hidden);
-      });
+      if (!form.hasAttribute("data-admin-form") && !form.querySelector("[data-richtext]")) return;
 
-      const mediaContainer = document.getElementById("media-link-rows");
-      const mediaHidden = document.getElementById("media-links-hidden");
-      if (mediaContainer && mediaHidden) syncMediaLinksHidden(mediaContainer, mediaHidden);
+      if (form.hasAttribute("data-admin-form")) {
+        document.querySelectorAll(".tag-input-box[data-hidden]").forEach((box) => {
+          const hidden = document.getElementById(box.dataset.hidden);
+          syncChipHidden(box, hidden);
+        });
 
-      const referredSelected = document.getElementById("referred-books-selected");
-      const referredHidden = document.getElementById("referred-books-hidden");
-      if (referredSelected && referredHidden) syncReferredBooksHidden(referredSelected, referredHidden);
+        const mediaContainer = document.getElementById("media-link-rows");
+        const mediaHidden = document.getElementById("media-links-hidden");
+        if (mediaContainer && mediaHidden) syncMediaLinksHidden(mediaContainer, mediaHidden);
 
-      const categoryPicker = document.getElementById("category-picker");
-      const categoryHidden = document.getElementById("category-ids-hidden");
-      if (categoryPicker && categoryHidden) syncCategoryIdsHidden(categoryPicker, categoryHidden);
+        const referredSelected = document.getElementById("referred-books-selected");
+        const referredHidden = document.getElementById("referred-books-hidden");
+        if (referredSelected && referredHidden) syncReferredBooksHidden(referredSelected, referredHidden);
 
-      const linkContainer = document.getElementById("link-rows");
-      const linksHidden = document.getElementById("links-hidden");
-      if (linkContainer && linksHidden) syncAboutLinksHidden(linkContainer, linksHidden);
+        const categoryPicker = document.getElementById("category-picker");
+        const categoryHidden = document.getElementById("category-ids-hidden");
+        if (categoryPicker && categoryHidden) syncCategoryIdsHidden(categoryPicker, categoryHidden);
 
-      const toolFileContainer = document.getElementById("tool-file-rows");
-      const toolFilesHidden = document.getElementById("tool-files-hidden");
-      if (toolFileContainer && toolFilesHidden) syncToolFilesHidden(toolFileContainer, toolFilesHidden);
+        const linkContainer = document.getElementById("link-rows");
+        const linksHidden = document.getElementById("links-hidden");
+        if (linkContainer && linksHidden) syncAboutLinksHidden(linkContainer, linksHidden);
 
-      syncRichTextEditors();
+        const toolFileContainer = document.getElementById("tool-file-rows");
+        const toolFilesHidden = document.getElementById("tool-files-hidden");
+        if (toolFileContainer && toolFilesHidden) syncToolFilesHidden(toolFileContainer, toolFilesHidden);
+      }
+
+      if (form.querySelector("[data-richtext]")) syncRichTextEditors();
     });
   });
 }

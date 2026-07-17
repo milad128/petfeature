@@ -730,6 +730,18 @@ async def admin_post_comment_delete(request: Request, comment_id: int, db: Async
     return RedirectResponse(url="/admin/posts/comments/", status_code=303)
 
 
+@router.post("/posts/comments/{comment_id}/reply/", name="admin_post_comment_reply")
+async def admin_post_comment_reply(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if redirect := _guard_admin(request):
+        return redirect
+    comment = await post_service.get_comment(db, comment_id)
+    if comment:
+        form = await request.form()
+        reply_text = str(form.get("reply", "")).strip()
+        await post_service.save_comment_reply(db, comment, reply_text)
+    return RedirectResponse(url="/admin/posts/comments/?status=approved", status_code=303)
+
+
 @router.get("/categories/", name="admin_categories")
 async def admin_categories_list(request: Request, db: AsyncSession = Depends(get_db)):
     if redirect := _guard_admin(request):
@@ -1731,6 +1743,18 @@ async def admin_book_comment_delete(request: Request, comment_id: int, db: Async
     if comment:
         await book_service.delete_book_comment(db, comment)
     return RedirectResponse(url="/admin/books/comments/?status=pending", status_code=303)
+
+
+@router.post("/books/comments/{comment_id}/reply/", name="admin_book_comment_reply")
+async def admin_book_comment_reply(request: Request, comment_id: int, db: AsyncSession = Depends(get_db)):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    comment = await book_service.get_book_comment(db, comment_id)
+    if comment:
+        form = await request.form()
+        reply_text = str(form.get("reply", "")).strip()
+        await book_service.save_book_comment_reply(db, comment, reply_text)
+    return RedirectResponse(url="/admin/books/comments/?status=approved", status_code=303)
 
 
 # ── Contact messages ───────────────────────────────────────────────────────

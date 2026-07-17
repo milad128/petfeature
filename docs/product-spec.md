@@ -48,7 +48,8 @@ flowchart LR
   v3 --> v4["v4 ✓\nBook Engagement"]
   v4 --> v5["v5 📋\nAbout + Contact"]
   v5 --> v6["v6 📋\nAnalytics"]
-  v6 --> vN["...\nBacklog"]
+  v6 --> v7["v7 📋\nPost Replies"]
+  v7 --> vN["...\nBacklog"]
 ```
 
 | Version | Document | Epic | Scope | Status |
@@ -59,6 +60,7 @@ flowchart LR
 | **v4** | [Product Spec v4](./product-spec-v4.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
 | **v5** | [Product Spec v5](./product-spec-v5.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Planned** |
 | **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Planned** |
+| **v7** | [Product Spec v7](./product-spec-v7.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Planned** |
 | **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter, book like | Unscheduled |
 
 ---

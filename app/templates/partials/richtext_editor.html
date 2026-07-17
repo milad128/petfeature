@@ -1,0 +1,107 @@
+{# Rich text editor (full toolbar — same as new post form).
+   Set before include: rt_editor_id, rt_hidden_id, rt_name, rt_value, rt_placeholder
+   Optional: rt_label, rt_label_for, rt_image_upload (default true) #}
+{% set rt_label_for = rt_label_for | default(rt_editor_id) %}
+{% set rt_value = rt_value | default('') %}
+{% set rt_placeholder = rt_placeholder | default('') %}
+{% set rt_image_upload = rt_image_upload if rt_image_upload is defined else true %}
+{% if rt_label is defined and rt_label %}
+<div class="form-group">
+  <label class="form-label" for="{{ rt_label_for }}">{{ rt_label }}</label>
+{% endif %}
+  <div class="richtext" data-richtext data-target="{{ rt_hidden_id }}">
+    <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
+
+      <select class="richtext-select richtext-block-select" title="قالب متن">
+        <option value="">قالب</option>
+        <option value="p">معمولی</option>
+        <option value="h1">عنوان ۱</option>
+        <option value="h2">عنوان ۲</option>
+        <option value="h3">عنوان ۳</option>
+        <option value="h4">عنوان ۴</option>
+        <option value="blockquote">نقل‌قول</option>
+        <option value="pre">کد</option>
+      </select>
+
+      <select class="richtext-font-select" data-command="fontName" title="فونت">
+        <option value="">فونت</option>
+        <option value="Vazirmatn">وزیرمتن</option>
+        <option value="Vazir">وزیر</option>
+        <option value="Sahel">ساحل</option>
+        <option value="Samim">صمیم</option>
+        <option value="Shabnam">شبنم</option>
+        <option value="Tanha">تنها</option>
+        <option value="Gandom">گندم</option>
+        <option value="Nahid">ناهید</option>
+        <option value="Parastoo">پرستو</option>
+      </select>
+
+      <select class="richtext-select richtext-size-select" title="اندازه قلم">
+        <option value="">اندازه</option>
+        <option value="1">بسیار کوچک</option>
+        <option value="2">کوچک</option>
+        <option value="3">معمولی</option>
+        <option value="4">بزرگ</option>
+        <option value="5">خیلی بزرگ</option>
+        <option value="6">عنوان</option>
+        <option value="7">بزرگ‌ترین</option>
+      </select>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn" data-command="bold" title="ضخیم (Ctrl+B)"><b>B</b></button>
+      <button type="button" class="richtext-btn" data-command="italic" title="مورب (Ctrl+I)"><i>I</i></button>
+      <button type="button" class="richtext-btn" data-command="underline" title="زیرخط (Ctrl+U)"><u>U</u></button>
+      <button type="button" class="richtext-btn" data-command="strikeThrough" title="خط‌خورده"><s>S</s></button>
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="superscript" title="بالانوشت">x²</button>
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="subscript" title="پایین‌نوشت">x₂</button>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <input type="color" class="richtext-color-input" data-command="foreColor" title="رنگ متن" value="#ece5dc">
+      <input type="color" class="richtext-color-input" data-command="hiliteColor" title="پس‌زمینه متن" value="#facc15">
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="justifyRight" title="راست‌چین">⬜R</button>
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="justifyCenter" title="وسط‌چین">C</button>
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="justifyLeft" title="چپ‌چین">L⬜</button>
+      <button type="button" class="richtext-btn richtext-btn--sm" data-command="justifyFull" title="تراز دو طرف">⬛</button>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">•≡</button>
+      <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">1≡</button>
+      <button type="button" class="richtext-btn" data-command="outdent" title="کاهش تورفتگی">⇤</button>
+      <button type="button" class="richtext-btn" data-command="indent" title="افزایش تورفتگی">⇥</button>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn" data-command="undo" title="بازگردانی (Ctrl+Z)">↩</button>
+      <button type="button" class="richtext-btn" data-command="redo" title="اعمال مجدد (Ctrl+Y)">↪</button>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
+      {% if rt_image_upload %}
+      <button type="button" class="richtext-btn richtext-btn--image" data-command="insertImage" title="آپلود تصویر">🖼</button>
+      {% endif %}
+      <button type="button" class="richtext-btn" data-command="insertVideo" title="افزودن ویدیو (YouTube / Vimeo)">▶</button>
+      <button type="button" class="richtext-btn" data-command="insertTable" title="جدول">⊞</button>
+      <button type="button" class="richtext-btn" data-command="insertHorizontalRule" title="خط جداکننده">—</button>
+
+      <span class="richtext-sep" aria-hidden="true"></span>
+
+      <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
+      <button type="button" class="richtext-btn richtext-btn--fullscreen" data-command="toggleFullscreen" title="تمام‌صفحه">⛶</button>
+    </div>
+
+    <div class="richtext-editor" id="{{ rt_editor_id }}" contenteditable="true" data-placeholder="{{ rt_placeholder }}"></div>
+    {% if rt_image_upload %}
+    <input type="file" class="richtext-image-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden aria-hidden="true">
+    {% endif %}
+  </div>
+  <textarea id="{{ rt_hidden_id }}" name="{{ rt_name }}" hidden>{{ rt_value }}</textarea>
+{% if rt_label is defined and rt_label %}
+</div>
+{% endif %}

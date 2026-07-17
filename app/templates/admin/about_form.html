@@ -1,5 +1,9 @@
 {% extends "admin/base.html" %}
 
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% endblock %}
+
 {% block topbar_actions %}
 <button type="submit" form="about-form" class="btn btn-primary">ذخیره</button>
 {% endblock %}
@@ -33,26 +37,35 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="author_bio">بیوگرافی نویسنده</label>
-        <textarea class="form-control" id="author_bio" name="author_bio" placeholder="چند خط درباره‌ی خودتان...">{{ about.author_bio if about else '' }}</textarea>
-      </div>
+      {% set rt_editor_id = 'author-bio-editor' %}
+      {% set rt_hidden_id = 'author-bio-hidden' %}
+      {% set rt_name = 'author_bio' %}
+      {% set rt_value = about.author_bio if about else '' %}
+      {% set rt_placeholder = 'چند خط درباره‌ی خودتان...' %}
+      {% set rt_label = 'بیوگرافی نویسنده' %}
+      {% include "partials/richtext_editor.html" %}
     </div>
 
     <div class="card-section">
       <div class="card-section-title">پت فیچر چیست؟</div>
-      <div class="form-group">
-        <label class="form-label" for="pet_feature_body">متن این بخش</label>
-        <textarea class="form-control tall" id="pet_feature_body" name="pet_feature_body">{{ about.pet_feature_body if about else '' }}</textarea>
-      </div>
+      {% set rt_editor_id = 'pet-feature-editor' %}
+      {% set rt_hidden_id = 'pet-feature-hidden' %}
+      {% set rt_name = 'pet_feature_body' %}
+      {% set rt_value = about.pet_feature_body if about else '' %}
+      {% set rt_placeholder = 'متن بخش «پت فیچر چیست؟»...' %}
+      {% set rt_label = 'متن این بخش' %}
+      {% include "partials/richtext_editor.html" %}
     </div>
 
     <div class="card-section">
       <div class="card-section-title">درباره‌ی سایت</div>
-      <div class="form-group">
-        <label class="form-label" for="site_story_body">متن این بخش</label>
-        <textarea class="form-control tall" id="site_story_body" name="site_story_body">{{ about.site_story_body if about else '' }}</textarea>
-      </div>
+      {% set rt_editor_id = 'site-story-editor' %}
+      {% set rt_hidden_id = 'site-story-hidden' %}
+      {% set rt_name = 'site_story_body' %}
+      {% set rt_value = about.site_story_body if about else '' %}
+      {% set rt_placeholder = 'متن بخش «درباره‌ی سایت»...' %}
+      {% set rt_label = 'متن این بخش' %}
+      {% include "partials/richtext_editor.html" %}
     </div>
 
     <div class="card-section">

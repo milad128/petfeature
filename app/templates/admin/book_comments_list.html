@@ -2,6 +2,10 @@
 
 {% block content_width %}wide{% endblock %}
 
+{% block extra_head %}
+{% include "partials/note_fonts.html" %}
+{% endblock %}
+
 {% block content %}
 
 <div class="toolbar">
@@ -14,44 +18,56 @@
 
 <div class="card">
   {% if comments %}
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>کتاب</th>
-        <th>نویسنده</th>
-        <th>متن</th>
-        <th>تاریخ</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for comment in comments %}
-      <tr>
-        <td>{{ comment.book.title if comment.book else '—' }}</td>
-        <td>{{ comment.author_name }}</td>
-        <td>{{ comment.body[:120] }}{% if comment.body | length > 120 %}…{% endif %}</td>
-        <td>{{ comment.created_at | jalali }}</td>
-        <td>
-          <div class="row-actions">
-            {% if comment.status != 'approved' %}
-            <form method="post" action="{{ url_for('admin_book_comment_approve', comment_id=comment.id) }}" style="display:inline">
-              <button type="submit" class="btn btn-ghost btn-sm">تأیید</button>
-            </form>
+  <div class="comment-mod-list">
+    {% for comment in comments %}
+    <div class="comment-mod-item">
+      <div class="comment-mod-meta">
+        <span class="comment-mod-post">{{ comment.book.title if comment.book else '—' }}</span>
+        <span class="comment-mod-author">{{ comment.author_name }}</span>
+        <span class="comment-mod-date">{{ comment.created_at | jalali }}</span>
+      </div>
+      <p class="comment-mod-body">{{ comment.body }}</p>
+
+      <div class="row-actions">
+        {% if comment.status != 'approved' %}
+        <form method="post" action="{{ url_for('admin_book_comment_approve', comment_id=comment.id) }}" style="display:inline">
+          <button type="submit" class="btn btn-ghost btn-sm">تأیید</button>
+        </form>
+        {% endif %}
+        {% if comment.status != 'rejected' %}
+        <form method="post" action="{{ url_for('admin_book_comment_reject', comment_id=comment.id) }}" style="display:inline">
+          <button type="submit" class="btn btn-ghost btn-sm">رد</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('admin_book_comment_delete', comment_id=comment.id) }}" data-delete-form data-confirm="این نظر حذف شود؟" style="display:inline">
+          <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+        </form>
+      </div>
+
+      {% if comment.status == 'approved' %}
+      <div class="comment-reply-form">
+        <form method="post" action="{{ url_for('admin_book_comment_reply', comment_id=comment.id) }}">
+          {% set rt_editor_id = 'reply-editor-' ~ comment.id %}
+          {% set rt_hidden_id = 'reply-hidden-' ~ comment.id %}
+          {% set rt_name = 'reply' %}
+          {% set rt_value = comment.reply or '' %}
+          {% set rt_placeholder = 'پاسخ بنویسید…' %}
+          {% set rt_label = 'پاسخ شما (اختیاری)' %}
+          {% include "partials/richtext_editor.html" %}
+          <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+            <button type="submit" class="btn btn-ghost btn-sm">
+              {% if comment.reply %}ویرایش پاسخ{% else %}ذخیره پاسخ{% endif %}
+            </button>
+            {% if comment.reply_at %}
+            <span class="form-hint">پاسخ داده شده — {{ comment.reply_at | jalali }}</span>
             {% endif %}
-            {% if comment.status != 'rejected' %}
-            <form method="post" action="{{ url_for('admin_book_comment_reject', comment_id=comment.id) }}" style="display:inline">
-              <button type="submit" class="btn btn-ghost btn-sm">رد</button>
-            </form>
-            {% endif %}
-            <form method="post" action="{{ url_for('admin_book_comment_delete', comment_id=comment.id) }}" data-delete-form data-confirm="این نظر حذف شود؟" style="display:inline">
-              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
-            </form>
           </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
   {% else %}
   <div class="admin-empty">
     <div class="empty-icon" aria-hidden="true">💬</div>

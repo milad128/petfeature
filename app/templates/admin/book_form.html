@@ -125,39 +125,13 @@
     <div class="card-section">
       <div class="card-section-title">محتوا</div>
 
-      <div class="form-group">
-        <label class="form-label" for="note-editor">یادداشت پت فیچر</label>
-        <div class="richtext" data-richtext data-target="note-hidden">
-          <div class="richtext-toolbar" role="toolbar" aria-label="ابزار قالب‌بندی متن">
-            <select class="richtext-font-select" data-command="fontName" title="فونت">
-              <option value="">فونت پیش‌فرض</option>
-              <option value="Vazirmatn">وزیرمتن</option>
-              <option value="Vazir">وزیر</option>
-              <option value="Sahel">ساحل</option>
-              <option value="Samim">صمیم</option>
-              <option value="Shabnam">شبنم</option>
-              <option value="Tanha">تنها</option>
-              <option value="Gandom">گندم</option>
-              <option value="Nahid">ناهید</option>
-              <option value="Parastoo">پرستو</option>
-            </select>
-            <span class="richtext-sep" aria-hidden="true"></span>
-            <button type="button" class="richtext-btn" data-command="bold" title="ضخیم"><b>B</b></button>
-            <button type="button" class="richtext-btn" data-command="italic" title="مورب"><i>I</i></button>
-            <button type="button" class="richtext-btn" data-command="underline" title="زیرخط‌دار"><u>U</u></button>
-            <input type="color" class="richtext-color-input" data-command="foreColor" title="رنگ متن" value="#c2410c">
-            <span class="richtext-sep" aria-hidden="true"></span>
-            <button type="button" class="richtext-btn" data-command="formatBlock" data-value="blockquote" title="نقل‌قول">”</button>
-            <button type="button" class="richtext-btn" data-command="insertUnorderedList" title="لیست نشانه‌دار">☰</button>
-            <button type="button" class="richtext-btn" data-command="insertOrderedList" title="لیست شماره‌دار">☷</button>
-            <span class="richtext-sep" aria-hidden="true"></span>
-            <button type="button" class="richtext-btn" data-command="createLink" title="افزودن لینک">🔗</button>
-            <button type="button" class="richtext-btn" data-command="removeFormat" title="حذف قالب‌بندی">✕</button>
-          </div>
-          <div class="richtext-editor" id="note-editor" contenteditable="true" data-placeholder="یادداشت شخصی شما درباره این کتاب..."></div>
-        </div>
-        <textarea id="note-hidden" name="note" hidden>{{ book.note if book else '' }}</textarea>
-      </div>
+      {% set rt_editor_id = 'note-editor' %}
+      {% set rt_hidden_id = 'note-hidden' %}
+      {% set rt_name = 'note' %}
+      {% set rt_value = book.note if book else '' %}
+      {% set rt_placeholder = 'یادداشت شخصی شما درباره این کتاب...' %}
+      {% set rt_label = 'یادداشت پت فیچر' %}
+      {% include "partials/richtext_editor.html" %}
 
       <div class="form-group">
         <label class="form-label" for="quotes-input">نقل‌قول</label>

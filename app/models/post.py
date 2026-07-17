@@ -104,5 +104,7 @@ class PostComment(Base):
     body: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(20), default=CommentStatus.PENDING.value)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    reply: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    reply_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     post: Mapped["Post"] = relationship(back_populates="comments")

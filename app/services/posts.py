@@ -191,6 +191,23 @@ async def delete_comment(session: AsyncSession, comment: PostComment) -> None:
     await session.commit()
 
 
+async def save_comment_reply(
+    session: AsyncSession,
+    comment: PostComment,
+    reply_text: str,  # already stripped; empty string means clear
+) -> PostComment:
+    if reply_text:
+        comment.reply = reply_text
+        if comment.reply_at is None:
+            comment.reply_at = datetime.now(timezone.utc)
+    else:
+        comment.reply = None
+        comment.reply_at = None
+    await session.commit()
+    await session.refresh(comment)
+    return comment
+
+
 def parse_published_date(raw: str) -> Optional[datetime]:
     raw = raw.strip()
     if not raw:

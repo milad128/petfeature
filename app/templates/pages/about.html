@@ -25,12 +25,16 @@
 
       {# bio paragraphs — split on double newline #}
       {% if about and about.author_bio %}
+        {% if '<' in about.author_bio %}
+        <div class="ab-hero-bio richtext-content">{{ about.author_bio | safe }}</div>
+        {% else %}
         {% set paras = about.author_bio.split('\n\n') %}
         {% for para in paras %}
           {% if para.strip() %}
           <p class="ab-hero-bio">{{ para.strip() }}</p>
           {% endif %}
         {% endfor %}
+        {% endif %}
       {% else %}
       <p class="ab-hero-bio">بیش از یک دهه است که در تیم‌های محصول کار می‌کنم — از استارتاپ‌های چندنفره تا سازمان‌های بزرگ. پت فیچر دفترچه‌ی عمومی من است: هر چه از کتاب‌ها، تجربه‌ها و شکست‌ها یاد می‌گیرم، این‌جا با جزئیات می‌نویسم.</p>
       {% endif %}

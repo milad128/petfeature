@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import delete, insert, select
@@ -281,3 +282,20 @@ async def set_book_comment_status(session: AsyncSession, comment: BookComment, s
 async def delete_book_comment(session: AsyncSession, comment: BookComment) -> None:
     await session.delete(comment)
     await session.commit()
+
+
+async def save_book_comment_reply(
+    session: AsyncSession,
+    comment: BookComment,
+    reply_text: str,
+) -> BookComment:
+    if reply_text:
+        comment.reply = reply_text
+        if comment.reply_at is None:
+            comment.reply_at = datetime.now(timezone.utc)
+    else:
+        comment.reply = None
+        comment.reply_at = None
+    await session.commit()
+    await session.refresh(comment)
+    return comment

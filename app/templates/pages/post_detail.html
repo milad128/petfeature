@@ -94,6 +94,21 @@
             <span class="bd2-comment-date">{{ c.created_at | jalali }}</span>
           </div>
           <p class="bd2-comment-body">{{ c.body }}</p>
+          {% if c.reply %}
+          <div class="comment-reply">
+            <div class="comment-reply-head">
+              <span class="comment-reply-author">میلاد</span>
+              <span class="comment-reply-date">{{ c.reply_at | jalali }}</span>
+            </div>
+            <div class="comment-reply-body richtext-content">
+              {% if '<' in c.reply %}
+              {{ c.reply | safe }}
+              {% else %}
+              {{ c.reply | replace('\n', '<br>') | safe }}
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
         </div>
         {% endfor %}
       </div>
