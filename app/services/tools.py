@@ -103,6 +103,7 @@ def _sync_files(tool: Tool, files: list[ToolFileInput]) -> None:
                 name=item.name.strip() or "فایل",
                 description=item.description.strip() or None,
                 file=file_path,
+                item_type=item.item_type if item.item_type in ("file", "link") else "file",
                 sort_order=i,
             )
         )
@@ -143,6 +144,7 @@ def parse_tool_files(raw: str) -> list[ToolFileInput]:
                         name=name,
                         description=str(item.get("description", "")).strip(),
                         file=str(item.get("file", "")).strip(),
+                        item_type=str(item.get("item_type", "file")).strip() or "file",
                     )
                 )
             return files

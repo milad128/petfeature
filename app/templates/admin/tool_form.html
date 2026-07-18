@@ -99,10 +99,18 @@
     </div>
 
     <div class="card-section">
-      <div class="card-section-title">فایل‌های قابل دانلود</div>
+      <div class="card-section-title">فایل‌ها و لینک‌های قابل دانلود</div>
       <div id="tool-file-rows">
         {% for file in (tool.files_data if tool else []) %}
-        <div class="resource-row tool-file-row" data-existing-file="{{ file.file }}">
+        {% if file.item_type == 'link' %}
+        <div class="resource-row tool-file-row tool-link-row" data-existing-file="{{ file.file }}" data-item-type="link">
+          <input class="form-control" type="text" placeholder="نام لینک" value="{{ file.name }}">
+          <input class="form-control" type="text" placeholder="توضیح کوتاه" value="{{ file.description or '' }}">
+          <input class="form-control" type="text" placeholder="https://..." dir="ltr" value="{{ file.file }}">
+          <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
+        </div>
+        {% else %}
+        <div class="resource-row tool-file-row" data-existing-file="{{ file.file }}" data-item-type="file">
           <input class="form-control" type="text" placeholder="نام نسخه (مثلاً نسخه‌ی PDF)" value="{{ file.name }}">
           <input class="form-control" type="text" placeholder="توضیح کوتاه" value="{{ file.description or '' }}">
           <input class="form-control" type="file" name="tool_file_uploads" accept=".pdf,.xlsx,.docx,.pptx,.csv">
@@ -111,9 +119,13 @@
           {% endif %}
           <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
         </div>
+        {% endif %}
         {% endfor %}
       </div>
-      <button type="button" class="btn btn-ghost btn-sm" id="add-tool-file-btn">+ افزودن فایل</button>
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost btn-sm" id="add-tool-file-btn">+ افزودن فایل</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="add-tool-link-btn">+ افزودن لینک</button>
+      </div>
       <span class="form-hint" style="display:block; margin-top:0.5rem;">PDF، Excel، Word، PowerPoint یا CSV — حداکثر ۲۵ مگابایت هر فایل</span>
     </div>
 

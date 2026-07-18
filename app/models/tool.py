@@ -71,7 +71,12 @@ class Tool(Base):
     @property
     def files_data(self) -> list[dict[str, str]]:
         return [
-            {"name": f.name, "description": f.description or "", "file": f.file}
+            {
+                "name": f.name,
+                "description": f.description or "",
+                "file": f.file,
+                "item_type": f.item_type,
+            }
             for f in self.files
         ]
 
@@ -84,6 +89,7 @@ class ToolFile(Base):
     name: Mapped[str] = mapped_column(String(300))
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     file: Mapped[str] = mapped_column(String(1000))
+    item_type: Mapped[str] = mapped_column(String(10), default="file", server_default="file")
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
     tool: Mapped["Tool"] = relationship(back_populates="files")

@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.models.book import Book
 from app.models.post import CommentStatus, Post, PostComment, PostRating, PostStatus
 from app.schemas.post import CommentForm, PostForm
 
@@ -56,7 +57,11 @@ async def list_posts(session: AsyncSession, *, published_only: bool = False) -> 
 async def get_post_by_slug(session: AsyncSession, slug: str) -> Optional[Post]:
     stmt = (
         select(Post)
-        .options(selectinload(Post.ratings), selectinload(Post.comments))
+        .options(
+            selectinload(Post.ratings),
+            selectinload(Post.comments),
+            selectinload(Post.related_books),
+        )
         .where(Post.slug == slug)
     )
     result = await session.execute(stmt)
@@ -66,7 +71,11 @@ async def get_post_by_slug(session: AsyncSession, slug: str) -> Optional[Post]:
 async def get_post_by_id(session: AsyncSession, post_id: int) -> Optional[Post]:
     stmt = (
         select(Post)
-        .options(selectinload(Post.ratings), selectinload(Post.comments))
+        .options(
+            selectinload(Post.ratings),
+            selectinload(Post.comments),
+            selectinload(Post.related_books),
+        )
         .where(Post.id == post_id)
     )
     result = await session.execute(stmt)
@@ -86,8 +95,10 @@ async def create_post(session: AsyncSession, data: PostForm) -> Post:
         published_date=_resolve_published_date(data),
     )
     session.add(post)
+    await session.flush()  # get post.id before syncing relationships
+    await _sync_related_books(session, post, data.related_book_ids)
     await session.commit()
-    await session.refresh(post, ["ratings", "comments"])
+    await session.refresh(post, ["ratings", "comments", "related_books"])
     return post
 
 
@@ -101,8 +112,9 @@ async def update_post(session: AsyncSession, post: Post, data: PostForm) -> Post
     post.is_featured = data.is_featured
     post.read_time_minutes = calculate_read_time(data.body)
     post.published_date = _resolve_published_date(data, existing=post.published_date)
+    await _sync_related_books(session, post, data.related_book_ids)
     await session.commit()
-    await session.refresh(post, ["ratings", "comments"])
+    await session.refresh(post, ["ratings", "comments", "related_books"])
     return post
 
 
@@ -206,6 +218,30 @@ async def save_comment_reply(
     await session.commit()
     await session.refresh(comment)
     return comment
+
+
+async def _sync_related_books(session: AsyncSession, post: Post, book_ids: list[int]) -> None:
+    if not book_ids:
+        post.related_books = []
+        return
+    stmt = select(Book).where(Book.id.in_(book_ids))
+    result = await session.execute(stmt)
+    post.related_books = list(result.scalars().all())
+
+
+def parse_id_list(raw: str) -> list[int]:
+    import json
+
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [int(item) for item in parsed if str(item).isdigit()]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return []
 
 
 def parse_published_date(raw: str) -> Optional[datetime]:

@@ -206,6 +206,7 @@ function createMediaLinkRow() {
     <select class="form-control" aria-label="نوع">
       <option value="video" selected>ویدیو</option>
       <option value="podcast">پادکست</option>
+      <option value="website">وبسایت</option>
     </select>
     <input class="form-control" type="text" placeholder="عنوان">
     <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr">
@@ -331,6 +332,7 @@ function syncReferredBooksHidden(container, hidden) {
 function initToolFileRows() {
   const container = document.getElementById("tool-file-rows");
   const addBtn = document.getElementById("add-tool-file-btn");
+  const addLinkBtn = document.getElementById("add-tool-link-btn");
   const hidden = document.getElementById("tool-files-hidden");
   if (!container || !hidden) return;
 
@@ -343,16 +345,37 @@ function initToolFileRows() {
     syncToolFilesHidden(container, hidden);
   });
 
+  addLinkBtn?.addEventListener("click", () => {
+    const row = createToolLinkRow();
+    container.appendChild(row);
+    bindToolFileRow(row, container, hidden);
+    syncToolFilesHidden(container, hidden);
+  });
+
   syncToolFilesHidden(container, hidden);
 }
 
 function createToolFileRow() {
   const row = document.createElement("div");
   row.className = "resource-row tool-file-row";
+  row.dataset.itemType = "file";
   row.innerHTML = `
     <input class="form-control" type="text" placeholder="نام نسخه (مثلاً نسخه‌ی PDF)">
     <input class="form-control" type="text" placeholder="توضیح کوتاه">
     <input class="form-control" type="file" name="tool_file_uploads" accept=".pdf,.xlsx,.docx,.pptx,.csv">
+    <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
+  `;
+  return row;
+}
+
+function createToolLinkRow() {
+  const row = document.createElement("div");
+  row.className = "resource-row tool-file-row tool-link-row";
+  row.dataset.itemType = "link";
+  row.innerHTML = `
+    <input class="form-control" type="text" placeholder="نام لینک">
+    <input class="form-control" type="text" placeholder="توضیح کوتاه">
+    <input class="form-control" type="text" placeholder="https://..." dir="ltr">
     <button type="button" class="btn btn-ghost btn-icon remove-row" aria-label="حذف">🗑</button>
   `;
   return row;
@@ -371,14 +394,20 @@ function bindToolFileRow(row, container, hidden) {
 function syncToolFilesHidden(container, hidden) {
   const files = [...container.querySelectorAll(".tool-file-row")]
     .map((row) => {
+      const itemType = row.dataset.itemType || "file";
       const textInputs = row.querySelectorAll('input[type="text"]');
+      // For link rows: third text input is the URL; for file rows: use existingFile
+      const file = itemType === "link"
+        ? (textInputs[2]?.value.trim() || "")
+        : (row.dataset.existingFile || "");
       return {
         name: textInputs[0]?.value.trim() || "",
         description: textInputs[1]?.value.trim() || "",
-        file: row.dataset.existingFile || "",
+        file,
+        item_type: itemType,
       };
     })
-    .filter((file) => file.name);
+    .filter((f) => f.name);
   hidden.value = JSON.stringify(files);
 }
 

@@ -149,13 +149,21 @@
       {# Media / resources #}
       {% if book.media_links %}
       <section class="book-section">
-        <div class="book-section-label">ویدیو و پادکست</div>
+        <div class="book-section-label">لینک‌های مرتبط</div>
         <ul class="resource-list">
           {% for link in book.media_links %}
           <li>
-            <a href="{{ link.url }}" class="resource-item" target="_blank" rel="noopener">
-              <span class="resource-kind">{{ 'ویدیو' if link.type == 'video' else 'پادکست' }}</span>
-              <span class="resource-title">{{ link.title or ('ویدیو مرتبط' if link.type == 'video' else 'پادکست مرتبط') }}</span>
+            <a href="{{ link.url }}" class="resource-item" target="_blank" rel="noopener noreferrer">
+              {% if link.type == 'video' %}
+              <span class="resource-kind">ویدیو</span>
+              <span class="resource-title">{{ link.title or 'ویدیو مرتبط' }}</span>
+              {% elif link.type == 'podcast' %}
+              <span class="resource-kind">پادکست</span>
+              <span class="resource-title">{{ link.title or 'پادکست مرتبط' }}</span>
+              {% else %}
+              <span class="resource-kind">🌐 وبسایت</span>
+              <span class="resource-title">{{ link.title or 'وبسایت مرتبط' }}</span>
+              {% endif %}
               <span class="resource-link">مشاهده ←</span>
             </a>
           </li>

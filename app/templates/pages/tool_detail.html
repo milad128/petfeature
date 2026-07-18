@@ -121,17 +121,22 @@
           {% if tool.files %}
           <div class="td2-file-list">
             {% for file in tool.files %}
-            {% set ext = file.file.split('.')[-1].upper() %}
             <a href="{{ url_for('tool_download', slug=tool.slug, file_id=file.id) }}"
-               class="td2-file-item" rel="noopener">
+               class="td2-file-item" rel="noopener noreferrer"
+               {% if file.item_type == 'link' %}target="_blank"{% endif %}>
+              {% if file.item_type == 'link' %}
+              <span class="td2-file-ext" style="font-size:.65rem;">لینک</span>
+              {% else %}
+              {% set ext = file.file.split('.')[-1].upper() %}
               <span class="td2-file-ext">{{ ext }}</span>
+              {% endif %}
               <span class="td2-file-info">
                 <span class="td2-file-name">{{ file.name }}</span>
                 {% if file.description %}
                 <span class="td2-file-desc">{{ file.description }}</span>
                 {% endif %}
               </span>
-              <span class="td2-file-dl">↓</span>
+              <span class="td2-file-dl">{% if file.item_type == 'link' %}↗{% else %}↓{% endif %}</span>
             </a>
             {% endfor %}
           </div>

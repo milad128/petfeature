@@ -20,6 +20,7 @@ class PostForm(BaseModel):
     status: str = "draft"
     is_featured: bool = False
     published_date: Optional[datetime] = None
+    related_book_ids: list[int] = Field(default_factory=list)
 
 
 class CommentForm(BaseModel):

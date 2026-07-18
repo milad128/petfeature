@@ -8,10 +8,12 @@ from typing import Optional
 
 from sqlalchemy import (
     Boolean,
+    Column,
     DateTime,
     ForeignKey,
     Integer,
     String,
+    Table,
     Text,
     UniqueConstraint,
     func,
@@ -19,6 +21,14 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+
+
+post_books = Table(
+    "post_books",
+    Base.metadata,
+    Column("post_id", ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True),
+    Column("book_id", ForeignKey("books.id", ondelete="CASCADE"), primary_key=True),
+)
 
 
 class PostStatus(str, enum.Enum):
@@ -57,6 +67,13 @@ class Post(Base):
     comments: Mapped[list["PostComment"]] = relationship(
         back_populates="post", cascade="all, delete-orphan", order_by="PostComment.created_at"
     )
+    related_books: Mapped[list["Book"]] = relationship(  # noqa: F821
+        "Book", secondary=post_books, lazy="selectin"
+    )
+
+    @property
+    def related_book_ids(self) -> list[int]:
+        return [b.id for b in self.related_books]
 
     @property
     def average_rating(self) -> float:

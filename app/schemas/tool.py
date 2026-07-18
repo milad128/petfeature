@@ -9,6 +9,7 @@ class ToolFileInput(BaseModel):
     name: str = ""
     description: str = ""
     file: str = ""
+    item_type: str = "file"  # "file" or "link"
 
 
 class ToolForm(BaseModel):

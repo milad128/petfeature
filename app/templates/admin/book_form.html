@@ -177,13 +177,14 @@
     </div>
 
     <div class="card-section">
-      <div class="card-section-title">ویدیو و پادکست</div>
+      <div class="card-section-title">لینک‌های مرتبط</div>
       <div id="media-link-rows">
         {% for link in (book.media_links_data if book else []) %}
         <div class="resource-row media-link-row">
           <select class="form-control" aria-label="نوع">
             <option value="video" {% if link.type == 'video' %}selected{% endif %}>ویدیو</option>
             <option value="podcast" {% if link.type == 'podcast' %}selected{% endif %}>پادکست</option>
+            <option value="website" {% if link.type == 'website' %}selected{% endif %}>وبسایت</option>
           </select>
           <input class="form-control" type="text" placeholder="عنوان" value="{{ link.title }}">
           <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr" value="{{ link.url }}">

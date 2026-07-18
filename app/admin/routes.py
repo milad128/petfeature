@@ -437,9 +437,10 @@ async def admin_posts_list(request: Request, db: AsyncSession = Depends(get_db))
 
 
 @router.get("/posts/new/", name="admin_post_new")
-async def admin_post_new_get(request: Request):
+async def admin_post_new_get(request: Request, db: AsyncSession = Depends(get_db)):
     if redirect := _guard_admin(request):
         return redirect
+    all_books = await book_service.list_books_for_select(db)
     return templates.TemplateResponse(
         request,
         "admin/post_form.html",
@@ -449,6 +450,7 @@ async def admin_post_new_get(request: Request):
             active_nav="posts",
             post=None,
             form_error=None,
+            all_books=all_books,
         ),
     )
 
@@ -465,10 +467,12 @@ async def admin_post_new_post(
     status: str = Form(PostStatus.DRAFT.value),
     is_featured: str = Form("false"),
     published_date: str = Form(""),
+    related_book_ids: str = Form("[]"),
     cover_file: Optional[UploadFile] = File(None),
 ):
     if redirect := _guard_admin(request):
         return redirect
+    all_books = await book_service.list_books_for_select(db)
     form_data = _parse_post_form(
         title=title,
         slug=slug.strip().lower(),
@@ -478,6 +482,7 @@ async def admin_post_new_post(
         status=status,
         is_featured=is_featured,
         published_date=published_date,
+        related_book_ids=related_book_ids,
     )
     if isinstance(form_data, ValidationError):
         return templates.TemplateResponse(
@@ -491,6 +496,7 @@ async def admin_post_new_post(
                     title, slug, cover, body, excerpt, status, is_featured, published_date
                 ),
                 form_error=_format_validation_error(form_data),
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -506,6 +512,7 @@ async def admin_post_new_post(
                 active_nav="posts",
                 post=_form_as_post_preview(form_data),
                 form_error=upload_error,
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -521,6 +528,7 @@ async def admin_post_new_post(
                 active_nav="posts",
                 post=_form_as_post_preview(form_data),
                 form_error="این نامک (slug) قبلاً استفاده شده است.",
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -534,6 +542,7 @@ async def admin_post_new_post(
                 active_nav="posts",
                 post=_form_as_post_preview(form_data),
                 form_error="برای انتشار یادداشت، تصویر کاور الزامی است.",
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -554,6 +563,7 @@ async def admin_post_edit_get(
     post = await post_service.get_post_by_slug(db, slug)
     if post is None:
         return RedirectResponse(url="/admin/posts/", status_code=303)
+    all_books = await book_service.list_books_for_select(db)
     return templates.TemplateResponse(
         request,
         "admin/post_form.html",
@@ -564,6 +574,7 @@ async def admin_post_edit_get(
             post=post,
             form_error=None,
             saved=bool(saved),
+            all_books=all_books,
         ),
     )
 
@@ -581,6 +592,7 @@ async def admin_post_edit_post(
     status: str = Form(PostStatus.DRAFT.value),
     is_featured: str = Form("false"),
     published_date: str = Form(""),
+    related_book_ids: str = Form("[]"),
     cover_file: Optional[UploadFile] = File(None),
 ):
     if redirect := _guard_admin(request):
@@ -588,6 +600,7 @@ async def admin_post_edit_post(
     post = await post_service.get_post_by_slug(db, slug)
     if post is None:
         return RedirectResponse(url="/admin/posts/", status_code=303)
+    all_books = await book_service.list_books_for_select(db)
 
     form_data = _parse_post_form(
         title=title,
@@ -599,6 +612,7 @@ async def admin_post_edit_post(
         is_featured=is_featured,
         published_date=published_date,
         existing_published_date=post.published_date,
+        related_book_ids=related_book_ids,
     )
     if isinstance(form_data, ValidationError):
         return templates.TemplateResponse(
@@ -612,6 +626,7 @@ async def admin_post_edit_post(
                     title, slug_field, cover, body, excerpt, status, is_featured, published_date
                 ),
                 form_error=_format_validation_error(form_data),
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -629,6 +644,7 @@ async def admin_post_edit_post(
                 active_nav="posts",
                 post=_form_as_post_preview(form_data, form_data.slug),
                 form_error=upload_error,
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -645,6 +661,7 @@ async def admin_post_edit_post(
                     active_nav="posts",
                     post=_form_as_post_preview(form_data, form_data.slug),
                     form_error="این نامک (slug) قبلاً استفاده شده است.",
+                    all_books=all_books,
                 ),
                 status_code=422,
             )
@@ -658,6 +675,7 @@ async def admin_post_edit_post(
                 active_nav="posts",
                 post=_form_as_post_preview(form_data, form_data.slug),
                 form_error="برای انتشار یادداشت، تصویر کاور الزامی است.",
+                all_books=all_books,
             ),
             status_code=422,
         )
@@ -1477,6 +1495,7 @@ def _parse_post_form(
     is_featured: str,
     published_date: str,
     existing_published_date=None,
+    related_book_ids: str = "[]",
 ) -> Union[PostForm, ValidationError]:
     payload = {
         "title": title.strip(),
@@ -1487,6 +1506,7 @@ def _parse_post_form(
         "status": status if status in {PostStatus.DRAFT.value, PostStatus.PUBLISHED.value} else PostStatus.DRAFT.value,
         "is_featured": is_featured == "true",
         "published_date": post_service.parse_published_date(published_date) or existing_published_date,
+        "related_book_ids": post_service.parse_id_list(related_book_ids),
     }
     try:
         return PostForm.model_validate(payload)
@@ -1546,6 +1566,8 @@ class _FormPostPreview:
         self.is_featured = data.is_featured
         self.published_date = data.published_date
         self.read_time_minutes = post_service.calculate_read_time(data.body)
+        self.related_book_ids = data.related_book_ids
+        self.related_books: list = []
 
 
 def _form_as_post_preview(data: PostForm, slug: Optional[str] = None) -> _FormPostPreview:
