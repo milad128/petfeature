@@ -207,6 +207,8 @@ function createMediaLinkRow() {
       <option value="video" selected>ویدیو</option>
       <option value="podcast">پادکست</option>
       <option value="website">وبسایت</option>
+      <option value="article">مقاله</option>
+      <option value="book">کتاب</option>
     </select>
     <input class="form-control" type="text" placeholder="عنوان">
     <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr">

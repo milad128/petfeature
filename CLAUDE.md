@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-**petfeature.ir** — a personal PM encyclopedia (Product Management). **v1 Library, v2 Blog, and v3 Tools are shipped.** Deployed on [Hamravesh Darkube](https://hamravesh.com/darkube) (Kubernetes PaaS) as a single Docker container with a managed PostgreSQL addon.
+**petfeature.ir** — a personal PM encyclopedia (Product Management). **v1–v8 are all shipped.** Deployed on [Hamravesh Darkube](https://hamravesh.com/darkube) (Kubernetes PaaS) as a single Docker container with a managed PostgreSQL addon.
 
 ## Stack
 
@@ -46,10 +46,10 @@ app/
     visitor.py     # Visitor token for ratings/comments dedup
     jalali.py      # Jalali date formatting
     rate_limit.py  # Comment rate limiting
-  web/routes.py    # Public SSR: /, /library/, /blog/, /tools/, /about/
-  admin/routes.py  # Admin CMS: books, categories, posts, comments, tools, about
+  web/routes.py    # Public SSR: /, /library/, /blog/, /tools/, /about/, /contact/
+  admin/routes.py  # Admin CMS: books, categories, posts, comments, tools, about, contact, analytics
   api/v1/router.py # REST API (health only; future SPA/integrations)
-  models/          # Book, Category, AboutPage, Post, PostRating, PostComment, Tool, ToolFile
+  models/          # Book, Category, AboutPage, Post, PostRating, PostComment, Tool, ToolFile, ContactMessage, PageView
   schemas/         # Pydantic request/response schemas
   services/        # Business logic shared by web/, admin/, api/ — keeps routes thin
   templates/       # Jinja2 HTML; base.html + pages/*.html + admin/*
@@ -67,9 +67,15 @@ app/
 | v1 | Library + About + admin CMS | **Shipped** |
 | v2 | Blog (posts, ratings, comments, sharing) | **Shipped** |
 | v3 | Tools (template library) | **Shipped** |
-| Backlog | Roadmap, newsletter, book engagement, analytics | Unscheduled — see `docs/product backlog.md` |
+| v4 | Book Engagement (star ratings + comments on books) | **Shipped** |
+| v5 | About Redesign + Contact (jobs/camps CMS, contact form + admin inbox) | **Shipped** |
+| v6 | Visitor Analytics (PageView log, bot filtering, admin dashboard) | **Shipped** |
+| v7 | Post & Book Comment Replies (admin richtext reply, public display) | **Shipped** |
+| v8 | Content Enhancements (book website links, post related books, tool link downloads) | **Shipped** |
+| v9 | Media Library (admin file manager + URL copy) + Book link types article/book | **Planned** |
+| Backlog | Newsletter, Roadmap | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `v3`.
+Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v8.md`.
 
 ## Environment variables
 

@@ -16,6 +16,7 @@ from app.models.post import Post, PostComment, PostRating  # noqa: F401
 from app.models.contact import ContactMessage  # noqa: F401
 from app.models.page_view import PageView  # noqa: F401
 from app.models.tool import Tool, ToolFile  # noqa: F401
+from app.models.media_file import MediaFile  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)

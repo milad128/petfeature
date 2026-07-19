@@ -185,6 +185,8 @@
             <option value="video" {% if link.type == 'video' %}selected{% endif %}>ویدیو</option>
             <option value="podcast" {% if link.type == 'podcast' %}selected{% endif %}>پادکست</option>
             <option value="website" {% if link.type == 'website' %}selected{% endif %}>وبسایت</option>
+            <option value="article" {% if link.type == 'article' %}selected{% endif %}>مقاله</option>
+            <option value="book" {% if link.type == 'book' %}selected{% endif %}>کتاب</option>
           </select>
           <input class="form-control" type="text" placeholder="عنوان" value="{{ link.title }}">
           <input class="form-control" type="text" placeholder="آدرس URL" dir="ltr" value="{{ link.url }}">

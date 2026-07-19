@@ -22,6 +22,8 @@ class MediaLinkType(str, enum.Enum):
     VIDEO = "video"
     PODCAST = "podcast"
     WEBSITE = "website"
+    ARTICLE = "article"
+    BOOK = "book"
 
 
 class BookCommentStatus(str, enum.Enum):

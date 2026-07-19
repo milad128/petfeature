@@ -160,6 +160,12 @@
               {% elif link.type == 'podcast' %}
               <span class="resource-kind">پادکست</span>
               <span class="resource-title">{{ link.title or 'پادکست مرتبط' }}</span>
+              {% elif link.type == 'article' %}
+              <span class="resource-kind">مقاله</span>
+              <span class="resource-title">{{ link.title or 'مقاله مرتبط' }}</span>
+              {% elif link.type == 'book' %}
+              <span class="resource-kind">کتاب</span>
+              <span class="resource-title">{{ link.title or 'کتاب مرتبط' }}</span>
               {% else %}
               <span class="resource-kind">🌐 وبسایت</span>
               <span class="resource-title">{{ link.title or 'وبسایت مرتبط' }}</span>

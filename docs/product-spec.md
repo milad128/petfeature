@@ -31,9 +31,10 @@ Overview and index for petfeature.ir. Detailed requirements live in version-spec
 
 | Epic | Description | Status |
 |------|-------------|--------|
-| **Newsletter + Contact** | Subscription form, contact page, admin subscriber/message views | Backlog |
-| **Book Engagement** | Star ratings and comments on library books (book like deferred) | **Shipped** (v4) |
-| **Visitor Analytics** | Site-wide page-view tracking and admin dashboard | Partial — post view counts only (shipped with Blog) |
+| **Newsletter** | Email subscription form and admin subscriber management | Backlog |
+| **Book Engagement** | Star ratings and comments on library books | **Shipped** (v4) |
+| **Contact** | Contact page with form + admin inbox | **Shipped** (v5) |
+| **Visitor Analytics** | Site-wide page-view tracking and admin dashboard (all page types) | **Shipped** (v6) |
 
 See [Product Backlog](./product%20backlog.md) for feature detail.
 
@@ -46,11 +47,12 @@ flowchart LR
   v1["v1 ✓\nLibrary"] --> v2["v2 ✓\nBlog"]
   v2 --> v3["v3 ✓\nTools"]
   v3 --> v4["v4 ✓\nBook Engagement"]
-  v4 --> v5["v5 📋\nAbout + Contact"]
-  v5 --> v6["v6 📋\nAnalytics"]
-  v6 --> v7["v7 📋\nPost Replies"]
-  v7 --> v8["v8 📋\nContent Enhancements"]
-  v8 --> vN["...\nBacklog"]
+  v4 --> v5["v5 ✓\nAbout + Contact"]
+  v5 --> v6["v6 ✓\nAnalytics"]
+  v6 --> v7["v7 ✓\nPost Replies"]
+  v7 --> v8["v8 ✓\nContent Enhancements"]
+  v8 --> v9["v9 📋\nMedia Library"]
+  v9 --> vN["...\nBacklog"]
 ```
 
 | Version | Document | Epic | Scope | Status |
@@ -59,11 +61,12 @@ flowchart LR
 | **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, view counts, star ratings, comments, social sharing | **Shipped** |
 | **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | **Shipped** |
 | **v4** | [Product Spec v4](./product-spec-v4.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
-| **v5** | [Product Spec v5](./product-spec-v5.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Planned** |
-| **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Planned** |
-| **v7** | [Product Spec v7](./product-spec-v7.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Planned** |
-| **v8** | [Product Spec v8](./product-spec-v8.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links | **Planned** |
-| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter, book like | Unscheduled |
+| **v5** | [Product Spec v5](./product-spec-v5.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Shipped** |
+| **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Shipped** |
+| **v7** | [Product Spec v7](./product-spec-v7.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Shipped** |
+| **v8** | [Product Spec v8](./product-spec-v8.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
+| **v9** | [Product Spec v9](./product-spec-v9.md) | Media Library + Book Link Types | Admin media file manager (upload any file, get URL, delete); book link types "article" and "book" | **Planned** |
+| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter | Unscheduled |
 
 ---
 
@@ -71,7 +74,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** Library, blog, tools, book engagement, and the About redesign + Contact page (v5, planned) complete the core personal site. Next priorities from the backlog: Newsletter → Analytics → Roadmap.
+**Admin:** Library, blog, tools, book engagement, about redesign, contact, analytics, comment replies, and content enhancements are all shipped (v1–v8). Next priorities from the backlog: Newsletter → Roadmap.
 
 ---
 
@@ -84,12 +87,15 @@ flowchart LR
 | [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic (shipped) |
 | [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic (shipped) |
 | [product-spec-v4.md](./product-spec-v4.md) | PRD for Book Engagement epic (shipped) |
-| [product-spec-v5.md](./product-spec-v5.md) | PRD for About Redesign + Contact Page (planned) |
-| [product-spec-v6.md](./product-spec-v6.md) | PRD for Visitor Analytics (planned) |
-| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter, book like, analytics |
-| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3 + v4) |
+| [product-spec-v5.md](./product-spec-v5.md) | PRD for About Redesign + Contact Page (shipped) |
+| [product-spec-v6.md](./product-spec-v6.md) | PRD for Visitor Analytics (shipped) |
+| [product-spec-v7.md](./product-spec-v7.md) | PRD for Post Comment Replies (shipped) |
+| [product-spec-v8.md](./product-spec-v8.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
+| [product-spec-v9.md](./product-spec-v9.md) | PRD for Media Library + Book Link Types (planned) |
+| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter |
+| [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
-| [admin-panel-design-spec.md](./admin-panel-design-spec.md) | Admin CMS design spec — all pages, fields, actions, constraints (redesign handoff) |
+| [admin-panel-design-spec.md](./admin-panel-design-spec.md) | Admin CMS design spec — all pages, fields, actions, constraints |
 
 ---
 
@@ -105,7 +111,7 @@ flowchart LR
 - Admin: Manage Blog Posts, Moderate Post Comments
 
 ### v3 — Tools (shipped)
-- Browse Tools → Use a Tool
+- Browse Tools → Use a Tool (download file or open external link)
 - Admin: Manage Tools
 
 ### v4 — Book Engagement (shipped)
@@ -113,14 +119,32 @@ flowchart LR
 - Comment on a Book → Read approved comments
 - Admin: Moderate Book Comments
 
-### v5 — About Redesign + Contact (planned)
-- View About page with personal bio, work timeline, bootcamp listings
+### v5 — About Redesign + Contact (shipped)
+- View About page with personal bio, work experience timeline, bootcamp listings
 - Send Contact message via form
 - Admin: Read/manage contact messages; Edit About content (experience, bootcamps)
 
-### v6 — Visitor Analytics (planned)
+### v6 — Visitor Analytics (shipped)
 - Admin: View traffic dashboard (period filters, summary cards, top books/posts/tools, daily table, referrers)
-- All dates in Jalali; bot-filtered; visitor dedup via existing cookie
+- All dates in Jalali; bot-filtered; visitor dedup via cookie; tracks home, library, book, blog, post, tools, tool pages
+
+### v7 — Post Comment Replies (shipped)
+- Admin: Reply to approved blog post comments via richtext editor
+- Reader: View admin reply beneath the original comment on the post detail page
+- Same feature also applies to book comments
+
+### v8 — Content Enhancements (shipped)
+- Book detail: website-type media links rendered with distinct label alongside video/podcast
+- Post detail: related books section shown below the post body, linking into the library
+- Tool detail: external URL resources shown alongside file downloads; both count toward download count
+- Admin: book form supports "website" link type; post form has related books picker; tool form supports link-type downloadable resources
+
+### v9 — Media Library + Book Link Types (planned)
+- Admin: Upload any file (PDF, video, document, image) to a central media library at `/admin/files/`
+- Admin: Each uploaded file gets a permanent public URL with a copy-to-clipboard button
+- Admin: Delete media files from the library (removes from disk + DB)
+- Admin: Book form link type dropdown gains "مقاله" (article) and "کتاب" (book) options
+- Book detail: article and book link types render with distinct labels
 
 ### Backlog — Roadmap epic
 - Browse Roadmap → View Path Steps (linked to books and posts)
@@ -135,9 +159,8 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 | Item | Notes |
 |------|-------|
 | Home page library preview | Static hardcoded cards — not loaded from DB |
-| Book page analytics | v1 NFR mentions traffic on book pages; only post view counts exist today |
-| Site-wide analytics dashboard | Backlog epic — partial overlap with post view counts |
+| Newsletter | Email subscription form and admin subscriber list — backlog |
 
 ---
 
-*July 2026 · Updated to reflect v5 About + Contact planned; backlog re-prioritized*
+*July 2026 · v1–v8 all shipped. v9 (Media Library + Book Link Types) is next.*

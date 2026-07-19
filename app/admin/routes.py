@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Optional, Union
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -35,6 +35,7 @@ from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
 from app.services import uploads as upload_service
+from app.services.media import delete_media_file, get_media_files, human_size, upload_media_file
 
 router = APIRouter()
 
@@ -1883,3 +1884,80 @@ async def admin_upload_image(
         return JSONResponse({"url": url})
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+# ── Media Library ──────────────────────────────────────────────────────────
+
+@router.get("/files/", name="admin_files")
+async def admin_files_list(
+    request: Request,
+    page: int = 1,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    files, total = await get_media_files(db, page=page, per_page=50)
+    base_url = str(request.base_url).rstrip("/")
+    return templates.TemplateResponse(
+        request,
+        "admin/files_list.html",
+        _admin_context(
+            request,
+            page_title="کتابخانه رسانه",
+            active_nav="files",
+            files=files,
+            total=total,
+            page=page,
+            per_page=50,
+            base_url=base_url,
+            human_size=human_size,
+            error=None,
+            show_upload_form=False,
+        ),
+    )
+
+
+@router.post("/files/upload", name="admin_files_upload")
+async def admin_files_upload(
+    request: Request,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    try:
+        await upload_media_file(file, db)
+        return RedirectResponse("/admin/files/", status_code=303)
+    except HTTPException as exc:
+        files, total = await get_media_files(db, page=1, per_page=50)
+        base_url = str(request.base_url).rstrip("/")
+        return templates.TemplateResponse(
+            request,
+            "admin/files_list.html",
+            _admin_context(
+                request,
+                page_title="کتابخانه رسانه",
+                active_nav="files",
+                files=files,
+                total=total,
+                page=1,
+                per_page=50,
+                base_url=base_url,
+                human_size=human_size,
+                error=exc.detail,
+                show_upload_form=True,
+            ),
+            status_code=400,
+        )
+
+
+@router.post("/files/{file_id}/delete", name="admin_files_delete")
+async def admin_files_delete(
+    request: Request,
+    file_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    await delete_media_file(file_id, db)
+    return RedirectResponse("/admin/files/", status_code=303)

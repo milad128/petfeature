@@ -4,6 +4,7 @@ from app.models.about import AboutPage
 from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, MediaLinkType, book_references
 from app.models.category import Category, book_categories
 from app.models.contact import ContactMessage
+from app.models.media_file import MediaFile
 from app.models.page_view import PageView
 from app.models.post import CommentStatus, Post, PostComment, PostRating, PostStatus
 from app.models.tool import Tool, ToolFile, ToolStatus, tool_books, tool_posts
@@ -19,6 +20,7 @@ __all__ = [
     "Category",
     "CommentStatus",
     "ContactMessage",
+    "MediaFile",
     "MediaLinkType",
     "PageView",
     "Post",

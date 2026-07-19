@@ -54,6 +54,13 @@
         </div>
 
         <div class="admin-nav-group">
+          <div class="admin-nav-group-label">🗂️ رسانه</div>
+          <a href="{{ url_for('admin_files') }}" class="admin-nav-sub {% if active_nav == 'files' %}active{% endif %}">
+            کتابخانه رسانه
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
           <div class="admin-nav-group-label">⚙️ عمومی</div>
           <a href="{{ url_for('admin_about') }}" class="admin-nav-sub {% if active_nav == 'about' %}active{% endif %}">
             درباره من

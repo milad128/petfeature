@@ -21,6 +21,8 @@ TOOL_FILES_DIR = Path(__file__).parent.parent / "static" / "uploads" / "tool-fil
 TOOL_FILES_URL_PREFIX = "/static/uploads/tool-files/"
 POST_IMAGES_DIR = Path(__file__).parent.parent / "static" / "uploads" / "post-images"
 POST_IMAGES_URL_PREFIX = "/static/uploads/post-images/"
+MEDIA_DIR = Path(__file__).parent.parent / "static" / "uploads" / "media"
+MEDIA_URL_PREFIX = "/static/uploads/media/"
 
 ALLOWED_COVER_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 ALLOWED_DOWNLOAD_EXTENSIONS = {".pdf"}
@@ -37,6 +39,7 @@ def ensure_upload_dirs() -> None:
     POST_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     TOOL_COVERS_DIR.mkdir(parents=True, exist_ok=True)
     TOOL_FILES_DIR.mkdir(parents=True, exist_ok=True)
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def is_local_tool_cover(path: Optional[str]) -> bool:
