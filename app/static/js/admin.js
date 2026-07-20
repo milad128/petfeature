@@ -583,7 +583,7 @@ function _rtBuildVideoEmbed(url) {
   if (/\.(mp4|webm|ogg)(\?|$)/i.test(url)) {
     return (
       `<div class="richtext-video">` +
-      `<video controls style="width:100%;border-radius:8px;"><source src="${url}"></video>` +
+      `<video controls playsinline><source src="${url}"></video>` +
       `</div>`
     );
   }
