@@ -8,15 +8,20 @@ from typing import Optional
 
 from sqlalchemy import delete, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import contains_eager, selectinload
 
 from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, book_references
-from app.models.category import Category
+from app.models.category import Category, book_categories
 from app.schemas.book import BookCommentForm, BookForm, MediaLinkInput
 
 
 async def list_books(
-    session: AsyncSession, *, published_only: bool = False, library_only: bool = False
+    session: AsyncSession,
+    *,
+    published_only: bool = False,
+    library_only: bool = False,
+    status: Optional[str] = None,
+    category_id: Optional[int] = None,
 ) -> list[Book]:
     stmt = (
         select(Book)
@@ -33,6 +38,14 @@ async def list_books(
         stmt = stmt.where(Book.status == BookStatus.PUBLISHED.value)
     if library_only:
         stmt = stmt.where(Book.show_in_library.is_(True))
+    # Admin filter: status (validates against known values to prevent bad queries)
+    if status and status in (BookStatus.PUBLISHED.value, BookStatus.DRAFT.value):
+        stmt = stmt.where(Book.status == status)
+    # Admin filter: category (join via M2M table)
+    if category_id is not None:
+        stmt = stmt.join(book_categories, book_categories.c.book_id == Book.id).where(
+            book_categories.c.category_id == category_id
+        )
     result = await session.execute(stmt)
     return list(result.scalars().unique().all())
 

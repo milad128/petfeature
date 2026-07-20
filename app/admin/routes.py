@@ -100,10 +100,15 @@ async def admin_books_list(
     request: Request,
     db: AsyncSession = Depends(get_db),
     q: str = "",
+    status: Optional[str] = None,
+    category_id: Optional[int] = None,
 ):
     if redirect := _guard_admin(request):
         return redirect
-    books = await book_service.list_books(db)
+    # Silently ignore invalid status values
+    valid_statuses = ("published", "draft")
+    clean_status = status if status in valid_statuses else None
+    books = await book_service.list_books(db, status=clean_status, category_id=category_id)
     if q.strip():
         query = q.strip().lower()
         books = [
@@ -113,6 +118,7 @@ async def admin_books_list(
             or any(query in author.lower() for author in (b.authors or []))
         ]
     book_view_counts = await analytics_service.view_counts_by_type(db, "book")
+    all_categories = await category_service.list_categories(db)
     return templates.TemplateResponse(
         request,
         "admin/books_list.html",
@@ -123,6 +129,9 @@ async def admin_books_list(
             books=books,
             search_query=q,
             view_counts=book_view_counts,
+            all_categories=all_categories,
+            filter_status=clean_status,
+            filter_category_id=category_id,
         ),
     )
 

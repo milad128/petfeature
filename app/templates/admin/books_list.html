@@ -12,6 +12,21 @@
 
 <form method="get" action="{{ url_for('admin_books') }}" class="toolbar">
   <input class="form-control toolbar-search" type="search" name="q" placeholder="جستجوی کتاب..." value="{{ search_query or '' }}">
+  <select class="form-control" name="status" style="width:auto;">
+    <option value="">همه وضعیت‌ها</option>
+    <option value="published" {% if filter_status == 'published' %}selected{% endif %}>منتشرشده</option>
+    <option value="draft" {% if filter_status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+  </select>
+  <select class="form-control" name="category_id" style="width:auto;">
+    <option value="">همه دسته‌ها</option>
+    {% for cat in all_categories %}
+    <option value="{{ cat.id }}" {% if filter_category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-ghost btn-sm">اعمال فیلتر</button>
+  {% if filter_status or filter_category_id %}
+  <a href="{{ url_for('admin_books') }}" class="btn btn-ghost btn-sm">حذف فیلتر</a>
+  {% endif %}
   <span class="form-hint">{{ books | length }} کتاب</span>
 </form>
 
