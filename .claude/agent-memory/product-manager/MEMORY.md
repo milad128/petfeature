@@ -1,3 +1,8 @@
 - [Language Preference](feedback-language.md) — Always respond in English; Persian only inside specs/code strings
-- [v4 Book Engagement Shipped](project-v4-shipped.md) — BookRating/BookComment shipped July 2026; next priority is Newsletter + Contact
-- [v5 About + Contact Planned](project-v5-planned.md) — Spec written July 2026; About redesign (CMS jobs/camps) + Contact form → DB inbox; no email service
+- [v4 Book Engagement Shipped](project-v4-shipped.md) — BookRating/BookComment shipped July 2026
+- [v5 About + Contact Shipped](project-v5-planned.md) — About redesign (CMS jobs/camps) + Contact form → DB inbox; shipped July 2026
+- [v8 Content Enhancements Shipped](project-v8-planned.md) — book media "website" type + post related books + tool downloadable links; shipped July 2026
+- [v9 Shipped](project-v9-planned.md) — Media Library + Book Link Types + Admin Books Filter + Cover Preview Fit + بلاگ→یادداشت; shipped July 2026
+- [v10 Post Related Books](project-v10-planned.md) — admin post form widget + public post detail display; PRD written July 2026, planned
+- [v11 Newsletter](project-v11-newsletter.md) — footer subscription form + admin subscriber list; fully implemented locally, not yet committed; July 2026
+- [v12 User Registration + Auth](project-v12-user-auth.md) — email/password auth, sessions, profile, password reset; ship with v13 Reading List; PRD written July 2026

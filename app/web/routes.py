@@ -19,6 +19,7 @@ from app.services import books as book_service
 from app.services import categories as category_service
 from app.services import contact as contact_service
 from app.services import posts as post_service
+from app.services import subscribers as subscriber_service
 from app.services import tools as tool_service
 
 router = APIRouter()
@@ -330,3 +331,45 @@ async def contact_post(
         "pages/contact.html",
         {"page_title": "تماس", "success": True, "error": "", "form": {}},
     )
+
+
+@router.post("/newsletter/subscribe", name="newsletter_subscribe")
+async def newsletter_subscribe(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    name: str = Form(""),
+    email: str = Form(""),
+    website: str = Form(""),  # honeypot
+):
+    import urllib.parse
+
+    referer_raw = request.headers.get("referer", "/")
+    parsed = urllib.parse.urlparse(referer_raw)
+    referer_path = parsed.path or "/"
+
+    def redirect_with(param: str) -> RedirectResponse:
+        return RedirectResponse(url=f"{referer_path}?nl={param}", status_code=303)
+
+    # Honeypot check — bots that fill the hidden field are silently dropped
+    if website.strip():
+        return redirect_with("ok")
+
+    # Rate limit: 3 requests per hour per IP
+    client_ip = request.client.host if request.client else "unknown"
+    if is_rate_limited("newsletter", client_ip, max_hits=3, window_seconds=3600):
+        return redirect_with("ok")
+
+    # Basic validation
+    name_stripped = name.strip()
+    email_stripped = email.strip()
+    if not name_stripped or not email_stripped or "@" not in email_stripped:
+        return redirect_with("error")
+
+    try:
+        from app.schemas.subscriber import SubscriberForm
+        SubscriberForm(name=name_stripped, email=email_stripped)
+    except Exception:
+        return redirect_with("error")
+
+    await subscriber_service.subscribe(db, name_stripped, email_stripped)
+    return redirect_with("ok")

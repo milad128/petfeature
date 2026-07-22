@@ -51,8 +51,11 @@ flowchart LR
   v5 --> v6["v6 ✓\nAnalytics"]
   v6 --> v7["v7 ✓\nPost Replies"]
   v7 --> v8["v8 ✓\nContent Enhancements"]
-  v8 --> v9["v9 📋\nMedia Library"]
-  v9 --> vN["...\nBacklog"]
+  v8 --> v9["v9 ✓\nMedia Library"]
+  v9 --> v10["v10 📋\nPost Related Books"]
+  v10 --> v11["v11 🔄\nNewsletter"]
+  v11 --> v12["v12 📋\nUser Auth"]
+  v12 --> vN["...\nBacklog"]
 ```
 
 | Version | Document | Epic | Scope | Status |
@@ -65,8 +68,11 @@ flowchart LR
 | **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Shipped** |
 | **v7** | [Product Spec v7](./product-spec-v7.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Shipped** |
 | **v8** | [Product Spec v8](./product-spec-v8.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
-| **v9** | [Product Spec v9](./product-spec-v9.md) | Media Library + Book Link Types | Admin media file manager (upload any file, get URL, delete); book link types "article" and "book" | **Planned** |
-| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, newsletter | Unscheduled |
+| **v9** | [Product Spec v9](./product-spec-v9.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
+| **v10** | [Product Spec v10](./product-spec-v10.md) | Post Related Books | Related books widget in admin post form; related books section on public post detail page | **Planned** |
+| **v11** | [Product Spec v11](./product-spec-v11.md) | Newsletter | Email subscription form + admin subscriber list; no provider integration in v11 | **In Progress** |
+| **v12** | [Product Spec v12](./product-spec-v12.md) | User Registration + Auth | Email/password auth, session cookies, profile page, password reset, admin user list | **Backlog** |
+| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, reading list (v13) | Unscheduled |
 
 ---
 
@@ -74,7 +80,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** Library, blog, tools, book engagement, about redesign, contact, analytics, comment replies, and content enhancements are all shipped (v1–v8). Next priorities from the backlog: Newsletter → Roadmap.
+**Admin:** v1–v9 all shipped. v10 (Post Related Books) spec is written; v11 (Newsletter) is fully implemented locally and ready to commit. After deploy: v12 User Auth + v13 Reading List → Roadmap.
 
 ---
 
@@ -91,7 +97,10 @@ flowchart LR
 | [product-spec-v6.md](./product-spec-v6.md) | PRD for Visitor Analytics (shipped) |
 | [product-spec-v7.md](./product-spec-v7.md) | PRD for Post Comment Replies (shipped) |
 | [product-spec-v8.md](./product-spec-v8.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
-| [product-spec-v9.md](./product-spec-v9.md) | PRD for Media Library + Book Link Types (planned) |
+| [product-spec-v9.md](./product-spec-v9.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |
+| [product-spec-v10.md](./product-spec-v10.md) | PRD for Post Related Books — admin post form widget + public post detail display (planned) |
+| [product-spec-v11.md](./product-spec-v11.md) | PRD for Newsletter — email subscription form + admin subscriber list (in progress) |
+| [product-spec-v12.md](./product-spec-v12.md) | PRD for User Registration + Auth — email/password auth, sessions, profile, password reset (backlog) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
@@ -139,12 +148,32 @@ flowchart LR
 - Tool detail: external URL resources shown alongside file downloads; both count toward download count
 - Admin: book form supports "website" link type; post form has related books picker; tool form supports link-type downloadable resources
 
-### v9 — Media Library + Book Link Types (planned)
+### v9 — Media Library + Book Link Types + Admin Filters (shipped)
 - Admin: Upload any file (PDF, video, document, image) to a central media library at `/admin/files/`
 - Admin: Each uploaded file gets a permanent public URL with a copy-to-clipboard button
 - Admin: Delete media files from the library (removes from disk + DB)
 - Admin: Book form link type dropdown gains "مقاله" (article) and "کتاب" (book) options
 - Book detail: article and book link types render with distinct labels
+- Admin: Books list filter by status and category
+- Admin: Book cover preview image fits to frame (object-fit: cover)
+- Public nav: "بلاگ" label renamed to "یادداشت" across all public pages
+
+### v10 — Post Related Books (planned)
+- Admin: Post form (new + edit) gains a related books picker widget — select books from the library to associate with a post
+- Public: Post detail page displays a "کتاب‌های مرتبط" section below the body, linking each associated book into the library
+
+### v11 — Newsletter (in progress — implemented locally, not yet committed)
+- Visitor subscribes via footer strip form (name + email); success message shown; duplicate emails silently accepted; honeypot spam protection
+- Admin: View subscriber list at `/admin/subscribers/` with name, email, Jalali date, and count; paginated
+- v11 collects emails only — no email sending; provider integration deferred to v12+
+
+### v12 — User Registration + Auth (backlog)
+- Visitor registers at `/register/` with name, email, password; logged in on success
+- Visitor logs in at `/login/`; session cookie set; "مرا به خاطر بسپار" for 30-day persistence
+- Logged-in user sees their name + logout link in site header
+- Visitor resets password via email link (requires email provider — graceful fallback if unconfigured)
+- Admin: View user list at `/admin/users/` with name, email, join date, status; can deactivate/reactivate
+- Auth is prerequisite for v13 Reading List — ship both together
 
 ### Backlog — Roadmap epic
 - Browse Roadmap → View Path Steps (linked to books and posts)
@@ -163,4 +192,4 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*July 2026 · v1–v8 all shipped. v9 (Media Library + Book Link Types) is next.*
+*July 2026 · v1–v9 all shipped. v10 (Post Related Books) is planned. v11 (Newsletter) is implemented locally — next to commit and deploy.*

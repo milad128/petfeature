@@ -224,4 +224,15 @@ v4 assumes v3 provides:
 
 ---
 
+## Deployment Status
+
+| Field | Value |
+|-------|-------|
+| **Status** | Shipped |
+| **Deploy date** | July 2026 |
+| **Platform** | Hamravesh Darkube (production) |
+| **Notes** | — |
+
+---
+
 *v4 spec — July 2026 · Shipped*

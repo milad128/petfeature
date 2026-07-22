@@ -1,7 +1,7 @@
 # Product Spec v9 — Media Library + Book Link Types
 
 **Version:** v9  
-**Status:** Planned  
+**Status:** Shipped  
 **Author:** Milad Mirzaei  
 **Date:** July 2026  
 **Depends on:** v1–v8 (all shipped)
@@ -20,8 +20,11 @@ v9 delivers two independent, admin-facing features that improve content manageme
 |---|------|-------|-----------|
 | 1 | Media Library | New `MediaFile` model + `/admin/files/` page | Yes — creates `media_files` table |
 | 2 | Book Link Types | Extend `MediaLinkType` enum with `article` and `book` | No — column is `String(20)` |
+| 3 | Admin Books Filter | Filter `/admin/books/` by status and category via query params | No — filters on existing columns |
+| 4 | Cover Preview Fit | `object-fit: cover` on the book form's cover image preview | No — CSS/template only |
+| 5 | بلاگ → یادداشت rename | Update public-facing "بلاگ" label to "یادداشت" in nav + blog pages | No — template copy only |
 
-Both epics are fully independent. Feature 2 can ship ahead of Feature 1.
+All five epics are fully independent. Epics 2–5 can ship ahead of Epic 1.
 
 ---
 
@@ -295,14 +298,163 @@ Visitors can scan the links section and understand the content type before click
 
 ---
 
+---
+
+## Epic 3 — Admin Books Filter (by Status and Category)
+
+### Problem Statement
+
+The `/admin/books/` list currently loads all books with no filtering. As the library grows, finding a specific book requires scrolling the entire list. Milad commonly needs to view "all draft books" to see what still needs publishing, or "all books in a specific category" to audit coverage. Without filters, this requires visual scanning of the full list.
+
+### Target User
+
+Admin (Milad) — sole CMS user. No public-facing impact.
+
+### User Stories
+
+| # | As a… | I want to… | So that… |
+|---|-------|-----------|---------|
+| U10 | Admin | Filter the books list by status (draft / published) | I can see at a glance which books are still unpublished |
+| U11 | Admin | Filter the books list by category | I can audit coverage across topic areas |
+| U12 | Admin | Combine status + category filters | I can find "all draft books in the strategy category" without scrolling |
+| U13 | Admin | Clear filters with one click | I can return to the full list quickly |
+
+### Data Model
+
+No model changes required. `Book.status` is an existing `String(20)` column. Categories are already joined via the `book_categories` M2M table. Filters are applied at the service/query level via optional WHERE clauses.
+
+### Acceptance Criteria
+
+**Filter bar on `/admin/books/`**
+
+1. A filter bar appears above the books table containing:
+   - A **وضعیت** dropdown with options: "همه" (default), "منتشرشده" (`published`), "پیش‌نویس" (`draft`).
+   - A **دسته‌بندی** dropdown populated with all existing categories (from `category_service.list_categories`); first option is "همه دسته‌ها" (default).
+   - A **اعمال فیلتر** submit button.
+   - A **حذف فیلتر** link (only visible when any filter is active) that navigates back to `/admin/books/` with no query params.
+2. The filter bar is a plain HTML `<form method="GET">` — no JavaScript required.
+3. Selecting values and submitting the form navigates to `/admin/books/?status=draft&category_id=3` (query params).
+4. On page load with active query params, the dropdowns reflect the currently applied values (selected state).
+
+**Filtered results**
+
+5. When `status` is set, only books with that status value are shown.
+6. When `category_id` is set, only books that belong to that category are shown.
+7. When both are set, both filters apply (AND logic — only books matching both conditions).
+8. When neither is set (default), all books are shown (current behaviour, unchanged).
+9. The page title or a subtitle line indicates the active filter state, e.g.: "نمایش: پیش‌نویس — استراتژی".
+10. The books count shown in the page header (if present) reflects the filtered count, not total.
+
+**Route changes**
+
+11. `GET /admin/books/` accepts two optional query params: `status: str | None` and `category_id: int | None`.
+12. Invalid values (e.g., `status=foo`) are silently ignored — the route falls back to "no filter" for that param.
+
+**Service changes**
+
+13. `book_service.list_books()` is extended to accept `status: str | None = None` and `category_id: int | None = None` and applies them as optional WHERE clauses. Existing callers that pass no arguments continue to work unchanged.
+
+### Out of Scope
+
+- Free-text search within the admin books list (deferred — separate feature).
+- Sorting by columns (deferred).
+- Saved filter presets.
+- Filter on the public `/library/` page — this spec is admin-only.
+
+### Open Questions
+
+| Question | Decision |
+|----------|----------|
+| Should filters persist across page navigations (e.g., stored in session)? | No — query-param-only. Simple, stateless, no server-side session needed. |
+| Should the category dropdown show only categories that have at least one book? | No — show all categories. Filtering to non-empty categories adds complexity; admin knows the categories they've defined. |
+
+---
+
+---
+
+## Epic 4 — Admin Book Cover Preview: Fit to Frame
+
+### Problem Statement
+
+When uploading a cover image on the book create/edit form (`/admin/books/new`, `/admin/books/{slug}/edit`), the preview image stretches or overflows its container if the uploaded image dimensions don't match the frame's aspect ratio. This makes it hard to judge crop and composition before saving.
+
+### Target User
+
+Admin (Milad) — affects only the admin book form. No public-facing change.
+
+### User Story
+
+| # | As a… | I want to… | So that… |
+|---|-------|-----------|---------|
+| U14 | Admin | See the uploaded cover image correctly fitted inside the preview frame | I can judge the image composition without it being stretched or clipped unexpectedly |
+
+### Acceptance Criteria
+
+1. The cover image preview container on the book form has a fixed aspect ratio consistent with how covers are displayed publicly (portrait, approximately 3:4).
+2. The preview `<img>` uses `object-fit: cover` so the image fills the frame without distortion, cropping from the centre if needed — the same behaviour as the public library card.
+3. The preview container has `overflow: hidden` so no image content bleeds outside the frame boundary.
+4. The fix applies both to:
+   - **New image selected** — the live JS preview shown immediately after the user picks a file.
+   - **Existing cover on edit** — the `<img>` rendered server-side when loading an existing book for editing.
+5. No change to how the image is stored or served — this is purely a CSS/template fix.
+
+### Out of Scope
+
+- Changing the actual image dimensions at upload time (cropping server-side).
+- A drag-to-reposition crop tool.
+
+---
+
+---
+
+## Epic 5 — Rename "بلاگ" to "یادداشت" (Public Pages)
+
+### Problem Statement
+
+The blog section is currently labelled "بلاگ" everywhere in the public-facing UI. The word "یادداشت" (note / memo) better reflects the nature of the content — short, personal reflections from a PM's perspective — and fits the site's tone as a personal encyclopedia rather than a generic blog.
+
+### Target User
+
+All public visitors — the change is purely copy/label; no behaviour changes.
+
+### Acceptance Criteria
+
+The following locations must be updated from "بلاگ" to "یادداشت". Admin-panel labels are **out of scope** — admin-side copy stays unchanged.
+
+| Location | File | Current text | New text |
+|----------|------|-------------|---------|
+| Main nav link (all public pages) | `templates/base.html` | `بلاگ` | `یادداشت` |
+| Blog list page heading | `templates/pages/blog.html` | `<h1>بلاگ</h1>` | `<h1>یادداشت</h1>` |
+| Post detail breadcrumb | `templates/pages/post_detail.html` | `بلاگ` | `یادداشت` |
+| Post detail back link | `templates/pages/post_detail.html` | `بازگشت به بلاگ` | `بازگشت به یادداشت‌ها` |
+
+### Out of Scope
+
+- URL path `/blog/` — keep unchanged. Renaming the route breaks existing links, SEO, and all internal `url_for('blog')` references. Label change only.
+- Admin navigation label (`✍️ بلاگ` in `admin/base.html`) — admin copy is internal; no visitor impact.
+- Admin form hint text that mentions "بلاگ" inline — low visibility, no visitor impact.
+- `page_title` context values passed from routes — update only if they appear visibly in the `<title>` tag or page headings seen by visitors.
+
+### Open Questions
+
+| Question | Decision |
+|----------|----------|
+| Should `/blog/` route be renamed to `/notes/` or `/yaddasht/`? | No — deferred indefinitely. URL changes break SEO and require redirects; label-only change delivers the copy intent with zero risk. |
+| Should the `<title>` tag on the blog list page say "یادداشت"? | Yes — if `page_title` is rendered in the browser `<title>`, update it to match. |
+
+---
+
 ## Implementation Order
 
-The two epics are fully independent. Recommended sequence:
+All five epics are fully independent. Recommended sequence:
 
-1. **Epic 2 (Book Link Types)** — ~30 minutes; enum extension + template tweak, zero risk, no migration. Can ship immediately.
-2. **Epic 1 (Media Library)** — new model, migration, service functions, new admin route + template + JS clipboard logic. Estimated 1–2 days.
+1. **Epic 5 (بلاگ → یادداشت rename)** — ~10 minutes; 4 string replacements across 2 template files. Zero risk, zero migration.
+2. **Epic 4 (Cover Preview Fit)** — ~15 minutes; two CSS properties on the preview `<img>` and container. Zero risk, zero migration.
+3. **Epic 2 (Book Link Types)** — ~30 minutes; enum extension + template tweak, zero risk, no migration.
+4. **Epic 3 (Admin Books Filter)** — ~2–3 hours; query param routing, service filter args, template filter bar. No migration, no new model.
+5. **Epic 1 (Media Library)** — new model, migration, service functions, new admin route + template + JS clipboard logic. Estimated 1–2 days.
 
-Both can deploy in a single release. If time-boxing is needed, Epic 2 can ship first.
+All five can deploy in a single release. Epics 2–5 can ship first if Epic 1 needs more time.
 
 ---
 
@@ -365,17 +517,45 @@ v9 is done when all of the following are true:
 - [ ] The book detail page renders "مقاله" and "کتاب" labels distinctly from "وبسایت", "ویدیو", and "پادکست".
 - [ ] Existing books with `video`, `podcast`, or `website` links are unaffected.
 
+**Epic 3 — Admin Books Filter**
+- [ ] Filter bar appears on `/admin/books/` with وضعیت and دسته‌بندی dropdowns.
+- [ ] Submitting the filter bar appends `status` and/or `category_id` as GET query params.
+- [ ] Active filter values are reflected in the dropdown selected state on page load.
+- [ ] Filtering by `status=draft` returns only draft books.
+- [ ] Filtering by `status=published` returns only published books.
+- [ ] Filtering by `category_id` returns only books in that category.
+- [ ] Combined status + category filter applies AND logic.
+- [ ] No-filter default returns all books (existing behaviour unchanged).
+- [ ] "حذف فیلتر" link is visible when a filter is active and clears all filters on click.
+- [ ] Invalid query param values (e.g., `status=foo`) are silently ignored — full list shown.
+- [ ] `book_service.list_books()` existing callers with no arguments are unaffected.
+
+**Epic 5 — بلاگ → یادداشت Rename**
+- [ ] Main nav link on all public pages shows "یادداشت" (not "بلاگ").
+- [ ] Blog list page `<h1>` reads "یادداشت".
+- [ ] Post detail breadcrumb reads "یادداشت".
+- [ ] Post detail back link reads "بازگشت به یادداشت‌ها".
+- [ ] `/blog/` URL and all `url_for('blog')` references are unchanged.
+- [ ] Admin navigation label is unchanged.
+
+**Epic 4 — Admin Book Cover Preview**
+- [ ] Cover preview container has a fixed portrait aspect ratio (~3:4) consistent with public library cards.
+- [ ] Preview `<img>` uses `object-fit: cover` — no stretching regardless of uploaded image dimensions.
+- [ ] Preview container has `overflow: hidden` — no image bleed outside the frame.
+- [ ] Fix applies to the live JS preview (new file selected) and the server-rendered existing cover (edit form).
+- [ ] Image storage and public serving are unchanged.
+
 ---
 
 ## Deployment Status
 
 | Field | Value |
 |-------|-------|
-| **Status** | Not deployed |
-| **Deploy date** | — |
+| **Status** | Shipped |
+| **Deploy date** | July 2026 |
 | **Platform** | Hamravesh Darkube (production) |
-| **Notes** | Pending implementation |
+| **Notes** | All five epics deployed |
 
 ---
 
-*July 2026 — v9 spec written and enhanced. v1–v8 all shipped. v9 is next.*
+*July 2026 — v9 shipped. v1–v9 all shipped. v10 is next.*

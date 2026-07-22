@@ -280,4 +280,15 @@ v3 assumes v2 provides:
 
 ---
 
+## Deployment Status
+
+| Field | Value |
+|-------|-------|
+| **Status** | Shipped |
+| **Deploy date** | July 2026 |
+| **Platform** | Hamravesh Darkube (production) |
+| **Notes** | — |
+
+---
+
 *v3 spec — July 2026 · Updated from design files: Petfeature Tools.dc.html, Petfeature Tool Detail.dc.html · **Shipped***

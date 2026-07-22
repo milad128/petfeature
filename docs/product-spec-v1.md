@@ -242,4 +242,15 @@ Deferred to [v2](./product-spec-v2.md) or [v3](./product-spec-v3.md):
 
 ---
 
+## Deployment Status
+
+| Field | Value |
+|-------|-------|
+| **Status** | Shipped |
+| **Deploy date** | July 2026 |
+| **Platform** | Hamravesh Darkube (production) |
+| **Notes** | — |
+
+---
+
 *v1 spec — July 2026*

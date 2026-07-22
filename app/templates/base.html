@@ -41,6 +41,40 @@
     {% block content %}{% endblock %}
   </main>
 
+  <section class="nls-strip">
+    <div class="nls-glow" aria-hidden="true"></div>
+    <div class="nls-inner">
+      <div class="nls-copy">
+        <h2>با هر یادداشت تازه، یک ایمیل کوتاه</h2>
+        <p>دو تا سه بار در ماه؛ کتاب تازه، ابزار جدید یا یک لینک خواندنی. بدون اسپم، لغو در یک کلیک.</p>
+      </div>
+      <div class="nls-form-wrap">
+        {% set nl_state = request.query_params.get("nl") %}
+        {% if nl_state == "ok" %}
+        <div class="nls-success">
+          <span class="nls-check" aria-hidden="true">✓</span>
+          <div>
+            <strong>ممنون!</strong>
+            <p>اشتراک شما ثبت شد. اولین ایمیل با یادداشت تازه می‌رسد.</p>
+          </div>
+        </div>
+        {% else %}
+        <form class="nls-form" method="post" action="{{ url_for('newsletter_subscribe') }}" novalidate>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true">
+          <div class="nls-fields">
+            <input class="nls-input" type="text" name="name" placeholder="نام شما" required>
+            <input class="nls-input" type="email" name="email" placeholder="ایمیل شما" required dir="ltr">
+            <button class="nls-btn" type="submit">عضویت</button>
+          </div>
+          {% if nl_state == "error" %}
+          <p class="nls-error">اطلاعات وارد شده معتبر نیست. لطفاً نام و ایمیل را بررسی کنید.</p>
+          {% endif %}
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
   <footer class="site-footer">
     <div class="container">
       <span class="footer-brand">پت فیچر — دفترچه‌ی عمومی یک مدیر محصول</span>

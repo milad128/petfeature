@@ -33,6 +33,7 @@ from app.services import books as book_service
 from app.services import categories as category_service
 from app.services import contact as contact_service
 from app.services import posts as post_service
+from app.services import subscribers as subscriber_service
 from app.services import tools as tool_service
 from app.services import uploads as upload_service
 from app.services.media import delete_media_file, get_media_files, human_size, upload_media_file
@@ -1970,3 +1971,29 @@ async def admin_files_delete(
         return redirect
     await delete_media_file(file_id, db)
     return RedirectResponse("/admin/files/", status_code=303)
+
+
+# ── Newsletter subscribers ─────────────────────────────────────────────────
+
+@router.get("/subscribers/", name="admin_subscribers")
+async def admin_subscribers(
+    request: Request,
+    page: int = 1,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    subscribers, total = await subscriber_service.list_subscribers(db, page=page, per_page=50)
+    return templates.TemplateResponse(
+        request,
+        "admin/subscribers_list.html",
+        _admin_context(
+            request,
+            page_title="مشترکین",
+            active_nav="subscribers",
+            subscribers=subscribers,
+            total=total,
+            page=page,
+            per_page=50,
+        ),
+    )

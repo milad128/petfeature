@@ -72,10 +72,13 @@ app/
 | v6 | Visitor Analytics (PageView log, bot filtering, admin dashboard) | **Shipped** |
 | v7 | Post & Book Comment Replies (admin richtext reply, public display) | **Shipped** |
 | v8 | Content Enhancements (book website links, post related books, tool link downloads) | **Shipped** |
-| v9 | Media Library (admin file manager + URL copy) + Book link types article/book | **Planned** |
-| Backlog | Newsletter, Roadmap | Unscheduled — see `docs/product backlog.md` |
+| v9 | Media Library (admin file manager + URL copy) + Book link types article/book + Admin books filter + Cover preview fit + بلاگ→یادداشت rename | **Shipped** |
+| v10 | Post Related Books (admin post form widget + public post detail display) | **Planned** |
+| v11 | Newsletter (footer subscription form + admin subscriber list; email collection only) | **Shipped** |
+| v12 | User Registration + Auth (email/password, sessions, profile, password reset) | **Planned** |
+| Backlog | Reading List (v13), Roadmap | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v8.md`.
+Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v12.md`.
 
 ## Environment variables
 

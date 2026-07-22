@@ -282,4 +282,15 @@ v2 assumes v1 provides:
 
 ---
 
+## Deployment Status
+
+| Field | Value |
+|-------|-------|
+| **Status** | Shipped |
+| **Deploy date** | July 2026 |
+| **Platform** | Hamravesh Darkube (production) |
+| **Notes** | — |
+
+---
+
 *v2 spec — July 2026 · Updated from design files: Petfeature Blog.dc.html, Petfeature Post.dc.html · **Shipped***
