@@ -21,6 +21,7 @@ async def list_books(
     published_only: bool = False,
     library_only: bool = False,
     status: Optional[str] = None,
+    library_visibility: Optional[str] = None,
     category_id: Optional[int] = None,
 ) -> list[Book]:
     stmt = (
@@ -38,9 +39,14 @@ async def list_books(
         stmt = stmt.where(Book.status == BookStatus.PUBLISHED.value)
     if library_only:
         stmt = stmt.where(Book.show_in_library.is_(True))
-    # Admin filter: status (validates against known values to prevent bad queries)
-    if status and status in (BookStatus.PUBLISHED.value, BookStatus.DRAFT.value):
+    # Admin filter: publication status
+    if status in (BookStatus.PUBLISHED.value, BookStatus.DRAFT.value):
         stmt = stmt.where(Book.status == status)
+    # Admin filter: library visibility
+    if library_visibility == "shown":
+        stmt = stmt.where(Book.show_in_library.is_(True))
+    elif library_visibility == "hidden":
+        stmt = stmt.where(Book.show_in_library.is_(False))
     # Admin filter: category (join via M2M table)
     if category_id is not None:
         stmt = stmt.join(book_categories, book_categories.c.book_id == Book.id).where(

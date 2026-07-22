@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Optional, Union
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -95,20 +95,36 @@ async def admin_logout(request: Request):
     return RedirectResponse(url="/admin/login/", status_code=303)
 
 
+def _optional_query_int(value: Optional[str]) -> Optional[int]:
+    if value is None or not value.strip().isdigit():
+        return None
+    return int(value)
+
+
 @router.get("/books/", name="admin_books")
 async def admin_books_list(
     request: Request,
     db: AsyncSession = Depends(get_db),
     q: str = "",
     status: Optional[str] = None,
-    category_id: Optional[int] = None,
+    library_visibility: Optional[str] = None,
+    category_id: Optional[str] = Query(None),
 ):
     if redirect := _guard_admin(request):
         return redirect
-    # Silently ignore invalid status values
     valid_statuses = ("published", "draft")
+    valid_library_visibility = ("shown", "hidden")
     clean_status = status if status in valid_statuses else None
-    books = await book_service.list_books(db, status=clean_status, category_id=category_id)
+    clean_library_visibility = (
+        library_visibility if library_visibility in valid_library_visibility else None
+    )
+    clean_category_id = _optional_query_int(category_id)
+    books = await book_service.list_books(
+        db,
+        status=clean_status,
+        library_visibility=clean_library_visibility,
+        category_id=clean_category_id,
+    )
     if q.strip():
         query = q.strip().lower()
         books = [
@@ -131,7 +147,8 @@ async def admin_books_list(
             view_counts=book_view_counts,
             all_categories=all_categories,
             filter_status=clean_status,
-            filter_category_id=category_id,
+            filter_library_visibility=clean_library_visibility,
+            filter_category_id=clean_category_id,
         ),
     )
 

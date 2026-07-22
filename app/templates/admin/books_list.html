@@ -12,10 +12,15 @@
 
 <form method="get" action="{{ url_for('admin_books') }}" class="toolbar">
   <input class="form-control toolbar-search" type="search" name="q" placeholder="جستجوی کتاب..." value="{{ search_query or '' }}">
-  <select class="form-control" name="status" style="width:auto;">
+  <select class="form-control" name="status" style="width:auto;" aria-label="وضعیت انتشار">
     <option value="">همه وضعیت‌ها</option>
     <option value="published" {% if filter_status == 'published' %}selected{% endif %}>منتشرشده</option>
     <option value="draft" {% if filter_status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+  </select>
+  <select class="form-control" name="library_visibility" style="width:auto;" aria-label="نمایش در کتابخانه">
+    <option value="">همه</option>
+    <option value="shown" {% if filter_library_visibility == 'shown' %}selected{% endif %}>نمایش در کتابخانه</option>
+    <option value="hidden" {% if filter_library_visibility == 'hidden' %}selected{% endif %}>پنهان از کتابخانه</option>
   </select>
   <select class="form-control" name="category_id" style="width:auto;">
     <option value="">همه دسته‌ها</option>
@@ -24,7 +29,7 @@
     {% endfor %}
   </select>
   <button type="submit" class="btn btn-ghost btn-sm">اعمال فیلتر</button>
-  {% if filter_status or filter_category_id %}
+  {% if filter_status or filter_library_visibility or filter_category_id %}
   <a href="{{ url_for('admin_books') }}" class="btn btn-ghost btn-sm">حذف فیلتر</a>
   {% endif %}
   <span class="form-hint">{{ books | length }} کتاب</span>

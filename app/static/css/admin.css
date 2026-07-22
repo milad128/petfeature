@@ -81,17 +81,17 @@ button { font-family: var(--font); }
 }
 
 .admin-login-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  margin-bottom: 6px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 .brand-logo {
-  height: 28px;
+  height: 44px;
   width: auto;
   flex-shrink: 0;
+}
+.admin-login-brand .brand-logo {
+  height: 52px;
 }
 
 .admin-login-brand .brand-icon {
@@ -126,21 +126,19 @@ button { font-family: var(--font); }
 
 .admin-sidebar-brand {
   display: flex;
-  align-items: center;
-  gap: 9px;
-  font-weight: 700;
-  font-size: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   padding: 0 0.5rem;
   margin-bottom: 2rem;
 }
-.admin-sidebar-brand .brand-icon {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--accent); color: #fff;
-  font-size: 14px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.admin-sidebar-sub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 400;
+  padding-right: 2px;
 }
-.admin-sidebar-brand small { display: block; color: var(--muted); font-size: 0.68rem; font-weight: 400; margin-top: 1px; }
 
 .admin-nav { display: flex; flex-direction: column; gap: 0; flex: 1; }
 .admin-nav a {
