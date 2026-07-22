@@ -74,11 +74,13 @@ app/
 | v8 | Content Enhancements (book website links, post related books, tool link downloads) | **Shipped** |
 | v9 | Media Library (admin file manager + URL copy) + Book link types article/book + Admin books filter + Cover preview fit + بلاگ→یادداشت rename | **Shipped** |
 | v10 | Post Related Books (admin post form widget + public post detail display) | **Planned** |
-| v11 | Newsletter (footer subscription form + admin subscriber list; email collection only) | **Shipped** |
-| v12 | User Registration + Auth (email/password, sessions, profile, password reset) | **Planned** |
-| Backlog | Reading List (v13), Roadmap | Unscheduled — see `docs/product backlog.md` |
+| ~~v11~~ | ~~Newsletter email (subscriber form + admin list)~~ | **Cancelled** — superseded by v11.5 |
+| v11.5 | Telegram Channel (replace email form with @petfeature channel join button in footer) | **Planned** |
+| v12 | User Registration + Auth (email/password, sessions, profile, password reset) | **Backlog** |
+| v13 | Newsletter Bot (Telegram Bot auto-posts to @petfeature on publish + admin compose panel) | **Backlog** |
+| Backlog | Reading List (v14+), Roadmap | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v12.md`.
+Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v13.md`.
 
 ## Environment variables
 

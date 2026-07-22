@@ -5,7 +5,9 @@ metadata:
   type: project
 ---
 
-v11 PRD written and saved to `docs/product-spec-v11.md` (July 2026). **Status: In Progress — fully implemented in working tree, not yet committed or deployed.**
+v11 email newsletter approach **CANCELLED** (July 2026). All email subscriber code in working tree must be reverted — do not commit.
+
+**Why cancelled:** Iranian market is on Telegram. Email open rates structurally lower (~15–25%) vs Telegram channels (~60–80%). Iranian email provider payment friction + deliverability complexity made email the wrong channel.
 
 **Scope:** Subscriber model + footer subscription form (name + email) + admin `/admin/subscribers/` list. No email sending in v11 — collection only.
 

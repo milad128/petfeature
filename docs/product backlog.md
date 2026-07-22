@@ -2,17 +2,23 @@
 
 **Shipped:** v1 Library · v2 Blog · v3 Tools · v4 Book Engagement · v5 About Redesign + Contact · v6 Visitor Analytics · v7 Comment Replies · v8 Content Enhancements · v9 Media Library + Book Link Types + Admin Filters
 
-**Planned:** v10 Post Related Books · **v11 Newsletter** (in progress — implemented locally, ready to commit)
+**Planned:** v10 Post Related Books · v11.5 Telegram Channel (@petfeature join button)
+
+**Cancelled:** v11 Newsletter email — superseded by v11.5 (Telegram channel approach)
 
 See [product-spec.md](./product-spec.md) for the versioned roadmap. Nothing below has a committed version or timeline. Items move into a versioned spec when prioritized and scoped.
 
 ---
 
-## ~~Epic: Newsletter~~ → Scoped as v11
+## ~~Epic: Newsletter (email)~~ → Cancelled
 
-**Moved to spec.** See [product-spec-v11.md](./product-spec-v11.md).
+~~Moved to spec.~~ v11 email approach **cancelled** — superseded by Telegram channel strategy.
 
-Key decisions recorded: footer strip (Option A) recommended; single opt-in; Resend recommended as email provider (deferred to v12+); v11 collects emails only — no sending; duplicate emails show success silently; honeypot + rate limiting for spam protection.
+**Why cancelled:** Iranian market is on Telegram. Email open rates (~15-25%) are structurally lower than Telegram channel reach (~60-80%). Payment friction with Iranian providers + deliverability issues made email the wrong channel for this audience.
+
+**Replaced by:**
+- **v11.5** — Telegram channel join button in footer → `@petfeature` (See [product-spec-v11.5.md](./product-spec-v11.5.md))
+- **v13** — Telegram Bot auto-posts when content is published (See [product-spec-v13.md](./product-spec-v13.md))
 
 ---
 
@@ -113,4 +119,4 @@ Deferred from v4. Simple engagement signal — no login required.
 
 ---
 
-*Backlog last updated: July 2026 — v1–v9 shipped; v10 planned; v11 Newsletter implemented locally (ready to commit); v12 User Auth scoped into spec*
+*Backlog last updated: July 2026 — v1–v9 shipped; v10 planned; v11 email cancelled → v11.5 Telegram channel; v12 User Auth + v13 Newsletter Bot scoped into specs; Reading List moved to v14+*
