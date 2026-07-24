@@ -61,7 +61,67 @@
       <span class="footer-domain">petfeature.ir</span>
     </div>
   </footer>
+  <!-- ── Telegram Subscription Popup (v13.5) ── -->
+  <div id="tg-popup" class="tg-popup tg-popup--hidden" role="dialog" aria-modal="true" aria-labelledby="tg-popup-title">
+    <div class="tg-popup__overlay"></div>
+    <div class="tg-popup__box">
+      <button class="tg-popup__close" aria-label="بستن">×</button>
+      <div class="tg-popup__icon">✈️</div>
+      <h2 id="tg-popup-title" class="tg-popup__title">در کانال تلگرام ما باشید</h2>
+      <p class="tg-popup__body">یادداشت تازه، کتاب جدید، ابزار کاربردی — اول در کانال.</p>
+      <a class="tg-popup__join" href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer">
+        عضویت در کانال @petfeature
+      </a>
+      <a class="tg-popup__later" href="#">بعداً</a>
+    </div>
+  </div>
+
   <script src="{{ asset_url(request, 'js/lamp.js') }}"></script>
   {% block extra_scripts %}{% endblock %}
+  <script>
+  (function () {
+    var STORAGE_KEY = 'pf_tg_popup_seen';
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    if (window.location.pathname.startsWith('/admin/')) return;
+
+    function dismiss() {
+      localStorage.setItem(STORAGE_KEY, '1');
+      var popup = document.getElementById('tg-popup');
+      popup.classList.add('tg-popup--out');
+      setTimeout(function () { popup.classList.add('tg-popup--hidden'); }, 160);
+      document.body.style.overflow = '';
+    }
+
+    setTimeout(function () {
+      var popup = document.getElementById('tg-popup');
+      popup.classList.remove('tg-popup--hidden');
+      document.body.style.overflow = 'hidden';
+
+      popup.querySelector('.tg-popup__overlay').addEventListener('click', dismiss);
+      popup.querySelector('.tg-popup__close').addEventListener('click', dismiss);
+      popup.querySelector('.tg-popup__later').addEventListener('click', function (e) {
+        e.preventDefault();
+        dismiss();
+      });
+      popup.querySelector('.tg-popup__join').addEventListener('click', dismiss);
+      document.addEventListener('keydown', function kh(e) {
+        if (e.key === 'Escape') { dismiss(); document.removeEventListener('keydown', kh); }
+      });
+
+      /* Focus trap */
+      var focusable = popup.querySelectorAll('a, button');
+      var first = focusable[0], last = focusable[focusable.length - 1];
+      popup.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+      first.focus();
+    }, 30000);
+  })();
+  </script>
 </body>
 </html>

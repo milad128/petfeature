@@ -1,264 +1,268 @@
-# Product Spec v12 — User Registration + Auth (احراز هویت کاربران)
+# Product Spec v12 — User Auth via Google Login (احراز هویت با گوگل)
 
-**Version:** v12  
-**Status:** Planned  
-**Author:** Milad Mirzaei  
-**Date:** July 2026  
-**Depends on:** v1–v10  
-**Unlocks:** Reading List (v13+), Bookmarks, personalised features
+**Version:** v12
+**Status:** Backlog
+**Author:** Milad Mirzaei
+**Date:** July 2026
+**Depends on:** v1–v13
+**Unlocks:** Reading List (v14+), personalised features
 
 ---
 
 ## Overview
 
-v12 introduces a public-facing authentication system — registration, login, logout, profile page, and password reset — for site visitors. This is entirely separate from the existing admin session auth.
+v12 introduces user authentication via **Google OAuth 2.0 only** — no email/password, no registration form, no SMTP required. Visitors click "ورود با گوگل", authorise on Google's servers, and return to petfeature.ir as a logged-in user. Their Google name and email are stored on first login (auto-registration).
 
-v12 is a **prerequisite epic**: it has no standalone user value unless paired with at least one personalised feature (Reading List, v13). Ship v12 and v13 together in the same release, or hold both until ready.
+**Why Google-only:**
+- No SMTP server available — password reset via email is not feasible
+- Persian-speaking PM audience universally has Google accounts
+- Google handles identity verification — no bcrypt, no honeypot, no rate limiting on registration
+- One auth method means half the code and zero password-management edge cases
+
+**Scope decision (Option C):** v12 ships standalone — no Reading List or other personalised features bundled. The profile page will be minimal (name, email, join date). This is an accepted gap; do not promote user registration sitewide until Reading List (v14+) ships.
 
 ---
 
 ## Problem Statement
 
-All current features on petfeature.ir are fully anonymous — visitor identity is tracked only by an ephemeral cookie token, used for deduplicating ratings and comments. There is no concept of a user account.
+petfeature.ir has no persistent user identity. All interactions (ratings, comments) are tied to an ephemeral visitor cookie. To support personalised features — reading list, bookmarks, saved state — the site needs a real user account.
 
-To build personalised features — a reading list, saved bookmarks, custom notification preferences — the site needs a persistent user identity. v12 creates the foundation.
+Password-based auth requires an SMTP provider for password reset, adding operational complexity. Google Login eliminates this entirely while delivering higher trust and lower friction for the target audience.
 
 ---
 
 ## Target Users
 
-- **Registered visitor:** A Persian-speaking PM professional who wants to track their reading progress and save books across sessions.
-- **Admin (Milad):** Needs visibility into the registered user base — count, join dates — without managing individual accounts directly.
+- **Visitor:** A Persian-speaking PM who wants to save their reading progress across sessions. Clicks one button to log in with their existing Google account.
+- **Admin (Milad):** Needs to see the registered user base — count and join dates — without managing passwords or account issues.
 
 ---
 
 ## User Stories
 
-### Registration & Login
-
 | # | As a… | I want to… | So that… |
 |---|-------|-----------|---------|
-| U1 | Visitor | Create an account with my name, email, and a password | I have a persistent identity on the site |
-| U2 | Visitor | Log in with my email and password | I can access my personal data (reading list etc.) |
+| U1 | Visitor | Log in with my Google account | I don't have to create yet another username and password |
+| U2 | Visitor | Be automatically registered on first login | I don't have to fill out a separate sign-up form |
 | U3 | Visitor | Log out | My session is cleared on shared devices |
-| U4 | Visitor | Reset my password via email if I forget it | I can regain access without contacting anyone |
-| U5 | Visitor | See a clear error if I try to register with an email already in use | I understand why registration failed and can log in instead |
-| U6 | Visitor | Stay logged in across browser sessions | I don't have to log in every time I visit |
+| U4 | Registered user | See my profile page | I can confirm my account and access future personalised features |
+| U5 | Registered user | See my name in the site header when logged in | I know I'm logged in |
+| U6 | Admin | See a list of registered users with name, email, and join date | I have visibility into the user base |
+| U7 | Admin | Deactivate a user account | I can handle abuse without deleting data |
 
-### Profile
+---
 
-| # | As a… | I want to… | So that… |
-|---|-------|-----------|---------|
-| U7 | Registered user | View my profile page | I can confirm my account details and access personalised features |
-| U8 | Registered user | See my name displayed in the site header when logged in | I know I'm logged in |
+## Auth Flow
 
-### Admin
-
-| # | As a… | I want to… | So that… |
-|---|-------|-----------|---------|
-| U9 | Admin | See a list of registered users with name, email, and join date | I have visibility into the user base |
-| U10 | Admin | See the total registered user count | I can track growth |
-| U11 | Admin | Deactivate a user account | I can handle abuse without deleting data |
+```
+Visitor clicks "ورود با گوگل" on /login/ or site header
+    │
+    ▼
+Redirect to Google OAuth consent screen
+    │
+    ▼ (user grants permission)
+Google redirects to /auth/google/callback/?code=...
+    │
+    ▼
+Server exchanges code for tokens → gets user's email + name from Google
+    │
+    ├── User exists in DB? → update name if changed → log in
+    │
+    └── New user? → create User record → log in (auto-registration)
+    │
+    ▼
+Set signed session cookie → redirect to /profile/
+    (or to ?next= param if present)
+```
 
 ---
 
 ## Data Model
 
-**New model: `User`**
+### `User`
 
-| Column | Type | Constraints | Notes |
-|--------|------|-------------|-------|
-| `id` | Integer | PK, auto-increment | |
-| `name` | String(200) | NOT NULL | Display name |
-| `email` | String(300) | NOT NULL, UNIQUE | Lowercased before save |
-| `hashed_password` | String(500) | NOT NULL | bcrypt hash; plain password never stored |
-| `is_active` | Boolean | NOT NULL, default=True | False = deactivated by admin |
-| `created_at` | DateTime | NOT NULL, server_default=now() | |
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | Integer PK | |
+| `name` | String(200) | From Google profile; updated on each login |
+| `email` | String(300) UNIQUE | From Google; lowercased |
+| `google_id` | String(200) UNIQUE | Google's `sub` claim — primary identity key |
+| `is_active` | Boolean default=True | False = deactivated by admin |
+| `created_at` | DateTime server_default=now() | First login = registration date |
 
-**Session management:** Server-side sessions via signed cookie using the existing `SECRET_KEY` environment variable. No separate `UserSession` table — session data (user ID) is stored in a signed, httponly cookie consistent with the existing admin auth pattern. Session lifetime: 30 days with "remember me" enabled; browser session without.
+**No `hashed_password` column** — Google handles authentication entirely.
 
-**No JWT.** This is an SSR app; JWTs add complexity with no benefit over signed cookies in this context.
+**Session management:** Signed session cookie using existing `SECRET_KEY`. `httponly=True`, `samesite="lax"`, `secure=True` in production. Lifetime: 30 days (always persistent — no "remember me" toggle needed with OAuth).
 
-**Alembic migration required** — creates the `users` table.
-
-**Password hashing:** `passlib[bcrypt]` — already a common FastAPI pattern; add to `requirements.txt`.
+**Migration required:** `alembic revision --autogenerate -m "add users table"`
 
 ---
 
 ## Pages & Routes
 
-| Method | Path | Name | Purpose |
-|--------|------|------|---------|
-| `GET` | `/register/` | `register` | Registration form |
-| `POST` | `/register/` | `register_submit` | Process registration |
-| `GET` | `/login/` | `login` | Login form |
-| `POST` | `/login/` | `login_submit` | Process login |
-| `POST` | `/logout/` | `logout` | Clear session, redirect home |
-| `GET` | `/profile/` | `profile` | User profile page (auth required) |
-| `GET` | `/forgot-password/` | `forgot_password` | Forgot password form |
-| `POST` | `/forgot-password/` | `forgot_password_submit` | Send reset email |
-| `GET` | `/reset-password/` | `reset_password` | Reset password form (token in query param) |
-| `POST` | `/reset-password/` | `reset_password_submit` | Process password reset |
-| `GET` | `/admin/users/` | `admin_users` | Admin user list |
-| `POST` | `/admin/users/{id}/deactivate/` | `admin_user_deactivate` | Deactivate a user |
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/login/` | Login page — single "ورود با گوگل" button |
+| `GET` | `/auth/google/` | Initiate OAuth flow — redirect to Google |
+| `GET` | `/auth/google/callback/` | Handle OAuth callback; create/update user; set session |
+| `POST` | `/logout/` | Clear session cookie; redirect to home |
+| `GET` | `/profile/` | User profile page (auth required) |
+| `GET` | `/admin/users/` | Admin user list |
+| `POST` | `/admin/users/{id}/deactivate/` | Deactivate user |
+| `POST` | `/admin/users/{id}/reactivate/` | Reactivate user |
 
 ---
 
 ## Acceptance Criteria
 
-### Registration (`/register/`)
-
-1. Form fields: نام (required), ایمیل (required), رمز عبور (required, min 8 chars), تکرار رمز عبور (required, must match).
-2. Email is lowercased and trimmed before validation.
-3. On success: user record created with bcrypt-hashed password; user is logged in immediately; redirected to `/profile/` with a welcome message: "خوش آمدی، {name}!"
-4. Duplicate email: form re-renders with error "این ایمیل قبلاً ثبت شده. وارد شوید."
-5. Password too short: "رمز عبور باید حداقل ۸ کاراکتر باشد."
-6. Passwords don't match: "تکرار رمز عبور مطابقت ندارد."
-7. Honeypot field present to block bot registrations.
-8. Rate limiting: max 5 registration attempts per IP per hour.
-
 ### Login (`/login/`)
+- [ ] Page shows a single "ورود با گوگل" button; no email/password form
+- [ ] If user is already logged in, redirect to `/profile/`
+- [ ] "ورود" and "ثبت‌نام" links in the site header both point to `/login/` — Google handles both flows
 
-9. Form fields: ایمیل (required), رمز عبور (required), checkbox "مرا به خاطر بسپار" (remember me, default unchecked).
-10. On success: session cookie set; user redirected to `next` query param if present, otherwise to `/profile/`.
-11. Invalid email or wrong password: "ایمیل یا رمز عبور اشتباه است." — no distinction between the two (prevents user enumeration).
-12. Deactivated account: "حساب کاربری شما غیرفعال شده است."
-13. "مرا به خاطر بسپار" unchecked: session cookie expires at browser close. Checked: cookie lifetime 30 days.
-14. Rate limiting: max 10 login attempts per IP per 15 minutes; after limit exceeded: "تعداد تلاش‌های ورود بیش از حد مجاز است. لطفاً ۱۵ دقیقه صبر کنید."
+### OAuth callback (`/auth/google/callback/`)
+- [ ] Valid code → exchange for tokens → fetch email + name + google_id from Google userinfo endpoint
+- [ ] If `google_id` exists in DB → update `name` if changed → create session → redirect
+- [ ] If `google_id` not found → create new `User` record → create session → redirect to `/profile/`
+- [ ] If user's `is_active=False` → do not create session → redirect to `/login/` with error: "حساب کاربری شما غیرفعال شده است."
+- [ ] Invalid or expired OAuth state → redirect to `/login/` with error: "خطا در ورود. لطفاً دوباره امتحان کنید."
+- [ ] OAuth `state` parameter used to prevent CSRF on the callback
 
 ### Logout
-
-15. `POST /logout/` clears the session cookie and redirects to home (`/`).
-16. Logout uses POST (not GET) to prevent CSRF-triggered logouts from external links.
+- [ ] `POST /logout/` clears session cookie and redirects to `/`
+- [ ] Uses POST not GET (prevents logout via external link)
 
 ### Profile (`/profile/`)
+- [ ] Unauthenticated visitors redirected to `/login/?next=/profile/`
+- [ ] Displays: user's name, email (LTR), join date in Jalali
+- [ ] A placeholder section for future features: "قابلیت‌های بیشتر به زودی اضافه می‌شن"
+- [ ] Header shows user's name + "خروج" link when logged in
 
-17. Accessible only when logged in. Unauthenticated visitors are redirected to `/login/?next=/profile/`.
-18. Displays: user's name, email, join date (Jalali formatted).
-19. Entry point for personalised features — in v12 this is a simple info page; reading list link added in v13.
-20. Header nav: when logged in, the auth nav area shows the user's name + a "خروج" link. When logged out, it shows "ورود" and "ثبت‌نام" links.
-
-### Password Reset
-
-21. `GET /forgot-password/`: form with a single ایمیل field and a "ارسال لینک بازیابی" button.
-22. On submit: if the email exists, a password reset email is sent with a time-limited signed token (1 hour expiry). If the email does not exist, the same success message is shown — no email enumeration.
-23. Success message: "اگر این ایمیل در سیستم ثبت شده باشد، لینک بازیابی رمز عبور برایتان ارسال شد."
-24. Reset token: a signed, time-limited token (HMAC using `SECRET_KEY`); stored in the reset URL as a query parameter. No separate DB table needed.
-25. `GET /reset-password/?token=…`: renders the new password form (رمز عبور جدید + تکرار). Invalid or expired token shows: "لینک بازیابی نامعتبر یا منقضی شده است."
-26. On valid reset: password updated, token invalidated (by expiry — single-use not enforced in v12), user redirected to `/login/` with: "رمز عبور با موفقیت تغییر یافت. وارد شوید."
-27. **Password reset requires an email provider.** See Open Questions. If no email provider is configured, this feature is disabled and the forgot-password form shows: "بازیابی رمز عبور در حال حاضر در دسترس نیست."
-
-### Admin User List (`/admin/users/`)
-
-28. New **"کاربران"** entry appears in the admin sidebar.
-29. Table columns: نام, ایمیل (LTR), تاریخ عضویت (Jalali), وضعیت (فعال / غیرفعال).
-30. Summary line: "**X** کاربر ثبت‌نام‌شده".
-31. Deactivate button per row (active users only); reactivate button for deactivated users.
-32. Pagination: 50 rows per page.
-33. No password reset or edit actions from the admin panel — admin is not a user manager beyond activation status.
+### Admin user list (`/admin/users/`)
+- [ ] New "کاربران" entry in admin sidebar
+- [ ] Table: نام, ایمیل (LTR), تاریخ عضویت (Jalali), وضعیت (فعال / غیرفعال)
+- [ ] Summary: "**X** کاربر ثبت‌نام‌شده"
+- [ ] Deactivate / reactivate button per row
+- [ ] Pagination: 50 per page
 
 ---
 
-## Auth Guard
+## Technical Setup (one-time)
 
-A dependency `get_current_user(request)` is added to `app/core/` — mirrors the existing `_guard_admin` pattern but for public users:
+### Google Cloud Console
+1. Create a project at [console.cloud.google.com](https://console.cloud.google.com)
+2. Enable **Google+ API** (or People API)
+3. Create OAuth 2.0 credentials → Web application
+4. Add authorised redirect URI: `https://petfeature.ir/auth/google/callback/`
+5. Copy `client_id` and `client_secret` → add to Hamravesh env vars
 
-- Reads the signed session cookie.
-- Returns the `User` record if valid and active.
-- Returns `None` if no session or session is invalid.
-- Routes that require auth redirect to `/login/?next={current_path}` if `get_current_user` returns `None`.
+### New env vars
 
-The existing admin auth is completely unchanged.
+| Variable | Notes |
+|----------|-------|
+| `GOOGLE_CLIENT_ID` | From Google Cloud Console |
+| `GOOGLE_CLIENT_SECRET` | From Google Cloud Console |
+| `GOOGLE_REDIRECT_URI` | `https://petfeature.ir/auth/google/callback/` |
+
+### Library
+
+**`authlib`** — the standard OAuth library for FastAPI/Starlette. Add to `requirements.txt`:
+```
+authlib>=1.3.0
+```
+
+### Auth guard
+
+`get_current_user(request) -> User | None` dependency in `app/core/`:
+- Reads signed session cookie → looks up `User` by id
+- Returns `User` if valid and active, `None` otherwise
+- Protected routes redirect to `/login/?next={path}` if `None`
+- Existing admin auth (`_guard_admin`) is completely unchanged
 
 ---
 
-## NFRs
+## New Files
 
-### Security
-- Passwords hashed with bcrypt (cost factor ≥ 12).
-- Session cookie: `httponly=True`, `samesite="lax"`, `secure=True` in production (`DEBUG=False`).
-- Reset tokens are HMAC-signed and time-limited (1 hour). No plain tokens stored in the DB.
-- Rate limiting on register and login endpoints.
-- Honeypot on registration form.
-- Email enumeration prevented on login, forgot-password, and duplicate registration responses.
+| File | Purpose |
+|------|---------|
+| `app/models/user.py` | `User` model |
+| `app/services/users.py` | `get_or_create_user(google_id, email, name)`, `get_user_by_id()` |
+| `app/core/auth.py` | `get_current_user()` dependency; session read/write helpers |
+| `app/web/auth_routes.py` | `/login/`, `/logout/`, `/profile/`, `/auth/google/`, `/auth/google/callback/` |
+| `app/templates/pages/login.html` | Login page with Google button |
+| `app/templates/pages/profile.html` | User profile page |
+| `app/templates/admin/users_list.html` | Admin user list |
 
-### RTL / Persian
-- All public-facing copy, error messages, and form labels are in Persian and RTL.
-- Emails and dates rendered `dir="ltr"`.
-- Auth pages (`/register/`, `/login/`, `/profile/`, `/forgot-password/`) follow the same layout and RTL conventions as all other public pages.
+## Modified Files
 
-### Performance
-- Auth check (session cookie read + user DB lookup) adds one DB query per request on authenticated routes. Acceptable at current scale.
-- No caching of user sessions in v12 — straightforward DB lookup.
+| File | Change |
+|------|--------|
+| `app/core/config.py` | Add `google_client_id`, `google_client_secret`, `google_redirect_uri` |
+| `app/main.py` | Register auth router |
+| `app/templates/base.html` | Auth nav area — show name + logout when logged in; "ورود" when logged out |
+| `app/templates/admin/base.html` | Add "کاربران" nav item |
+| `alembic/env.py` | Import `User` model |
 
 ---
 
 ## Out of Scope (v12)
 
-- Social login (Google, GitHub) — deferred; adds OAuth complexity.
-- Email verification / confirm-your-email flow — deferred; adds friction. Revisit if spam accounts become a problem.
-- Two-factor authentication.
-- User-editable profile (change name, email, password) — deferred to v13+.
-- Account deletion / right-to-erasure flow — deferred.
-- Reading list, bookmarks, or any other personalised feature — those are v13+; v12 is auth infrastructure only.
-- Admin: editing user data, resetting passwords, viewing user activity.
+| Item | Reason |
+|------|--------|
+| Email/password login | No SMTP; Google Login eliminates the need |
+| Password reset | Not applicable — no passwords |
+| Email verification | Google already verified the email |
+| Reading List, bookmarks, personalised features | v14+ — v12 is auth infrastructure only |
+| User-editable profile (change name/email) | Name + email come from Google; changing them here has no value |
+| Account deletion / right-to-erasure | Deferred |
+| Social login beyond Google (GitHub, etc.) | One provider is enough for this audience |
+| Two-factor authentication | Google handles 2FA on their side |
+
+---
+
+## NFRs
+
+- `GOOGLE_CLIENT_SECRET` must never appear in templates, logs, or HTML responses
+- OAuth `state` parameter must be validated on callback to prevent CSRF
+- Session cookie: `httponly=True`, `samesite="lax"`, `secure=True` in production
+- All public-facing copy is in Persian, RTL; emails displayed `dir="ltr"`
+- Auth check adds one DB query per request on protected routes — acceptable at current scale
 
 ---
 
 ## Open Questions
 
 | Question | Decision |
-|----------|----------|
-| Email provider for password reset? | Resend is recommended — simplest API, Persian-friendly SMTP, generous free tier. Coordinate with Newsletter epic (v11) to share the same provider. If no provider is set up when v12 ships, disable the forgot-password flow gracefully. |
-| Social login (Google)? | Deferred — email-only for v12. Social can be added as a parallel login path in v13+ without breaking the email-password flow. |
-| Should registration require email verification? | No for v12 — single step, lower friction. Add if spam accounts become a problem. |
-| Display logged-in user name in the header nav? | Yes — show name + logout link. Decision: show the full name or just "حساب من"? Recommend full name for personal feel. |
-| Should the admin see when a user last logged in? | Deferred — would require a `last_login_at` column and update on every login. Not needed for v12. |
+|----------|---------|
+| Should the header show "ورود" or both "ورود" + "ثبت‌نام"? | One "ورود با گوگل" button is enough — Google handles both new and returning users |
+| Should login persist across sessions always, or ask user? | Always persistent (30 days) — no toggle needed with OAuth |
+| What if Google changes the user's email? | Update email on each login using `google_id` as the stable key |
 
 ---
 
-## Dependencies
+## Known Gap (Option C decision)
 
-| Dependency | Notes |
-|------------|-------|
-| `passlib[bcrypt]` | Add to `requirements.txt` |
-| Email provider (Resend or equivalent) | Required for password reset only; rest of v12 works without it |
-| `SECRET_KEY` env var | Already present in production; used for signing session cookies and reset tokens |
+The profile page in v12 is minimal — name, email, join date, and a placeholder. Users who register will see no personalised features. This is an accepted trade-off.
+
+**Do not add "ثبت‌نام کن" CTAs across the site until Reading List (v14+) ships.** Registration without a reason to register creates a poor first impression that is hard to recover from.
 
 ---
 
-## Success Metrics
+## Effort Estimate
 
-v12 is done when all of the following are true:
-
-- [ ] `users` table exists in production (migration applied).
-- [ ] Visitor can register at `/register/` with name, email, and password; is logged in immediately on success.
-- [ ] Duplicate email registration shows the correct Persian error without creating a duplicate record.
-- [ ] Visitor can log in at `/login/` with correct credentials; session cookie is set.
-- [ ] Wrong credentials show the combined error message (no email/password distinction).
-- [ ] "مرا به خاطر بسپار" sets a 30-day cookie; unchecked sets a session cookie.
-- [ ] Logout at `POST /logout/` clears the session and redirects to home.
-- [ ] `/profile/` is accessible only when logged in; unauthenticated visitors are redirected to `/login/?next=/profile/`.
-- [ ] Logged-in user's name and logout link appear in the site header.
-- [ ] Forgot-password form sends a reset email (or shows the graceful disabled message if no provider is configured).
-- [ ] Valid reset token allows setting a new password; expired/invalid token shows the correct error.
-- [ ] Admin **"کاربران"** sidebar link renders the user list with name, email, Jalali join date, and active status.
-- [ ] Admin can deactivate and reactivate a user.
-- [ ] Deactivated user cannot log in.
-- [ ] Rate limiting is active on register and login endpoints.
-- [ ] Honeypot field is present on the registration form.
+| Task | Estimate |
+|------|----------|
+| Google Cloud Console setup | 30 min (one-time) |
+| `User` model + migration | 1 hour |
+| `authlib` OAuth flow (initiate + callback) | 4 hours |
+| Session management (`get_current_user` dependency) | 2 hours |
+| Login page + header auth nav | 2 hours |
+| Profile page | 1 hour |
+| Logout | 30 min |
+| Admin user list + deactivate/reactivate | 2 hours |
+| Config + env vars + wiring | 1 hour |
+| **Total** | **~2 days** |
 
 ---
 
-## Deployment Status
-
-| Field | Value |
-|-------|-------|
-| **Status** | Not deployed |
-| **Deploy date** | — |
-| **Platform** | Hamravesh Darkube (production) |
-| **Notes** | Unscheduled backlog item. Ship together with v13 (Reading List) — auth alone provides no user-visible value. |
-
----
-
-*July 2026 — v12 spec written. Unscheduled backlog item. Must ship with v13 (Reading List) to deliver visible user value.*
+*July 2026 — v12 revised: Google Login only (no email/password, no SMTP needed). Ships standalone (Option C); profile page is minimal until Reading List (v14+).*

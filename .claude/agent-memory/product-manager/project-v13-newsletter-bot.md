@@ -7,7 +7,7 @@ metadata:
 
 v13 adds an AI-powered newsletter workflow. Admin initiates every send deliberately — no auto-posting on publish, no per-item send buttons.
 
-**Status:** Backlog
+**Status:** Shipped (July 2026)
 
 **Channel:** @petfeature
 

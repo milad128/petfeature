@@ -1,25 +1,30 @@
 ---
 name: project-v12-user-auth
-description: v12 User Registration + Auth spec written July 2026 — email/password auth, sessions, profile, password reset, admin user list
+description: v12 User Auth via Google Login — Google OAuth only, no email/password, no SMTP needed; auto-registration; profile page (minimal); admin user list; backlog
 metadata:
   type: project
 ---
 
-v12 PRD written and saved to `docs/product-spec-v12.md` (July 2026). Backlog item, unscheduled. Prerequisite for v13 Reading List.
+v12 revised July 2026. **Google Login only** — original email/password approach dropped because no SMTP server available for password reset.
 
-**Scope:** Register, login, logout, profile page, forgot/reset password, admin user list + deactivate.
+**Status:** Backlog
 
 **Key decisions:**
-- Email + password only — no social login (Google deferred; adds OAuth complexity)
-- No email verification on registration — single step, lower friction
-- Server-side sessions via signed `SECRET_KEY` cookie — consistent with existing admin auth; no JWT
-- "مرا به خاطر بسپار" = 30-day cookie; unchecked = session cookie
-- Password hashing: bcrypt via `passlib[bcrypt]` (add to requirements.txt)
-- Password reset requires email provider (Resend recommended — share with v11 Newsletter); graceful disable if unconfigured
-- No email enumeration on login or forgot-password — combined error messages
-- Rate limiting: 5 register attempts/IP/hour; 10 login attempts/IP/15min
-- Admin user list is read-only except for activate/deactivate — no edit or password reset from admin
+- **Google OAuth 2.0 only** — no email/password, no bcrypt, no password reset flow
+- No SMTP needed — Google handles all identity verification
+- Auto-registration on first Google login — no separate sign-up form
+- `google_id` (Google's `sub` claim) is the stable identity key — email can change but google_id won't
+- Server-side sessions via signed `SECRET_KEY` cookie; 30 days always persistent (no "remember me" toggle)
+- Library: `authlib` (add to requirements.txt)
+- **Option C decision:** ships standalone — profile page is minimal (name, email, join date only); no Reading List bundled
+- Do NOT add "ثبت‌نام کن" CTAs sitewide until Reading List (v14+) ships
 
-**Data model:** `User` (id, name, email, hashed_password, is_active, created_at); UNIQUE on email; Alembic migration required.
+**Data model:** `User` (id, name, email, google_id UNIQUE, is_active, created_at) — no hashed_password; Alembic migration required.
 
-**Critical:** Ship v12 together with v13 Reading List — auth alone provides no user-visible value. [[project-v11-newsletter]]
+**New env vars:** `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`
+
+**One-time setup:** Google Cloud Console → create project → enable Google+ API → OAuth 2.0 credentials → set redirect URI to `https://petfeature.ir/auth/google/callback/`
+
+**Effort:** ~2 days
+
+**Unlocks:** Reading List (v14+), personalised features. [[project-v13-newsletter-bot]]

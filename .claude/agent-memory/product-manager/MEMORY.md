@@ -7,4 +7,6 @@
 - [v11 Newsletter](project-v11-newsletter.md) — email subscriber form + admin list + Subscriber model; SHIPPED July 2026 (commit 8ffcb9e); admin page still live
 - [v11.5 Telegram Channel](project-v11.5-telegram-channel.md) — replaced footer email form with @petfeature join strip; SHIPPED July 2026 (commit 4a4cb8c)
 - [v12 User Registration + Auth](project-v12-user-auth.md) — email/password auth, sessions, profile, password reset; backlog; PRD written July 2026
-- [v13 Newsletter AI Draft Agent](project-v13-newsletter-bot.md) — campaign log + AI draft via Claude Haiku from new content diff; admin compose + send; no auto-posting; ~2 days; backlog
+- [v13 Newsletter AI Draft Agent](project-v13-newsletter-bot.md) — campaign log + AI draft via Claude Haiku from new content diff; admin compose + send; no auto-posting; SHIPPED July 2026
+- [v13.5 Telegram Popup](project-v13.5-telegram-popup.md) — 30s delay modal → join @petfeature; localStorage dismiss; pure JS+CSS; no DB; ~2.5h; backlog
+- [v14 User Dashboard](project-v14-user-dashboard.md) — newsletter subscribe/unsubscribe (reuses Subscriber) + My Comments with status + admin replies; user_id FK on comments; ~2 days; backlog

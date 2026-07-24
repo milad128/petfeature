@@ -2459,3 +2459,139 @@ main { padding: 0; }
   .hero-title { font-size: 2.2rem; }
   .btn { padding: 11px 18px; font-size: 14px; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   Telegram Popup — v13.5
+   ══════════════════════════════════════════════════════════ */
+.tg-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tg-popup-in 200ms ease forwards;
+}
+.tg-popup--hidden {
+  display: none !important;
+}
+.tg-popup--out {
+  animation: tg-popup-out 150ms ease forwards;
+}
+@keyframes tg-popup-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes tg-popup-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Overlay */
+.tg-popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(2px);
+}
+
+/* Box */
+.tg-popup__box {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 36px 32px;
+  max-width: 400px;
+  width: calc(100% - 40px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+}
+
+/* Close button */
+.tg-popup__close {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color .15s, background .15s;
+}
+.tg-popup__close:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+/* Icon */
+.tg-popup__icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* Title */
+.tg-popup__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Body */
+.tg-popup__body {
+  font-size: .92rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Join CTA */
+.tg-popup__join {
+  display: inline-block;
+  margin-top: 8px;
+  background: #229ED9;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: .92rem;
+  padding: 12px 24px;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background .15s, transform .1s;
+}
+.tg-popup__join:hover {
+  background: #1a8cc0;
+  transform: translateY(-1px);
+}
+
+/* Later link */
+.tg-popup__later {
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color .15s;
+}
+.tg-popup__later:hover {
+  color: var(--text);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tg-popup__box {
+    padding: 36px 24px 28px;
+    border-radius: 16px;
+  }
+}

@@ -1,7 +1,7 @@
 # Product Spec v13 — Newsletter AI Draft Agent (دستیار هوش مصنوعی خبرنامه)
 
 **Version:** v13
-**Status:** In Progress
+**Status:** Shipped
 **Author:** Milad Mirzaei
 **Date:** July 2026
 **Depends on:** v11.5 (Telegram channel live), v12 (optional — independent)

@@ -115,14 +115,19 @@ button { font-family: var(--font); }
   width: var(--sidebar-w);
   flex-shrink: 0;
   background: var(--surface);
-  border-left: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   padding: 1.25rem 1rem;
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
 }
+
+.admin-sidebar::-webkit-scrollbar { width: 4px; }
+.admin-sidebar::-webkit-scrollbar-track { background: transparent; }
+.admin-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .admin-sidebar-brand {
   display: flex;
