@@ -30,6 +30,9 @@
           </a>
           <a href="{{ url_for('admin_book_comments') }}" class="admin-nav-sub {% if active_nav == 'book_comments' %}active{% endif %}">
             نظرها
+            {% if request.state.pending_book_comments %}
+            <span class="nav-badge">{{ request.state.pending_book_comments }}</span>
+            {% endif %}
           </a>
         </div>
 
@@ -40,6 +43,9 @@
           </a>
           <a href="{{ url_for('admin_post_comments') }}" class="admin-nav-sub {% if active_nav == 'post_comments' %}active{% endif %}">
             نظرها
+            {% if request.state.pending_post_comments %}
+            <span class="nav-badge">{{ request.state.pending_post_comments }}</span>
+            {% endif %}
           </a>
         </div>
 
@@ -54,6 +60,16 @@
           <div class="admin-nav-group-label">🗂️ رسانه</div>
           <a href="{{ url_for('admin_files') }}" class="admin-nav-sub {% if active_nav == 'files' %}active{% endif %}">
             کتابخانه رسانه
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-label">📨 خبرنامه</div>
+          <a href="{{ url_for('admin_newsletters') }}" class="admin-nav-sub {% if active_nav == 'newsletters' %}active{% endif %}">
+            لاگ خبرنامه‌ها
+          </a>
+          <a href="{{ url_for('admin_newsletter_new') }}" class="admin-nav-sub {% if active_nav == 'newsletter_new' %}active{% endif %}">
+            خبرنامه جدید
           </a>
         </div>
 

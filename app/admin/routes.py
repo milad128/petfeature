@@ -16,6 +16,7 @@ from app.admin.auth import (
     logout_admin,
     redirect_if_authenticated,
 )
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.templates import templates
 from app.models.book import BookCommentStatus, BookStatus
@@ -36,8 +37,20 @@ from app.services import posts as post_service
 from app.services import tools as tool_service
 from app.services import uploads as upload_service
 from app.services.media import delete_media_file, get_media_files, human_size, upload_media_file
+from app.services import newsletters as newsletter_service
+from app.services import newsletter_ai
 
 router = APIRouter()
+
+
+async def _inject_comment_badges(request: Request, db: AsyncSession = Depends(get_db)) -> None:
+    """Router-level dependency: attach pending comment counts to request.state for the sidebar badges."""
+    if not is_admin_authenticated(request):
+        request.state.pending_post_comments = 0
+        request.state.pending_book_comments = 0
+        return
+    request.state.pending_post_comments = await post_service.count_pending_comments(db)
+    request.state.pending_book_comments = await book_service.count_pending_book_comments(db)
 
 
 def _admin_context(request: Request, **extra):
@@ -1988,3 +2001,157 @@ async def admin_files_delete(
     await delete_media_file(file_id, db)
     return RedirectResponse("/admin/files/", status_code=303)
 
+
+
+# ── Newsletter campaigns ────────────────────────────────────────────────────
+
+@router.get("/newsletters/", name="admin_newsletters")
+async def admin_newsletters_list(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    flash: str = "",
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    campaigns = await newsletter_service.list_campaigns(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/newsletters_list.html",
+        _admin_context(
+            request,
+            page_title="خبرنامه‌ها",
+            active_nav="newsletters",
+            campaigns=campaigns,
+            flash=flash,
+        ),
+    )
+
+
+@router.get("/newsletters/new/", name="admin_newsletter_new")
+async def admin_newsletter_new(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    draft_id: Optional[int] = None,
+    mode: str = "",
+    flash: str = "",
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    campaign = None
+    if draft_id:
+        campaign = await newsletter_service.get_campaign(db, draft_id)
+        # Allow viewing sent campaigns (read-only) or editing drafts
+        if not campaign:
+            campaign = None
+    elif mode == "manual":
+        # Show blank compose panel without an existing campaign
+        campaign = type("BlankCampaign", (), {"id": None, "body": "", "status": "draft"})()
+
+    return templates.TemplateResponse(
+        request,
+        "admin/newsletter_compose.html",
+        _admin_context(
+            request,
+            page_title="خبرنامه جدید",
+            active_nav="newsletters",
+            campaign=campaign,
+            flash=flash,
+            ai_enabled=bool(settings.gapgpt_api_key),
+        ),
+    )
+
+
+@router.post("/newsletters/draft/ai/", name="admin_newsletter_ai_draft")
+async def admin_newsletter_ai_draft(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    if not settings.gapgpt_api_key:
+        return RedirectResponse("/admin/newsletters/new/", status_code=303)
+
+    draft_text = await newsletter_ai.generate_draft(db)
+
+    if draft_text == "":
+        # No new content since last send
+        return RedirectResponse(
+            "/admin/newsletters/new/?flash=no_content",
+            status_code=303,
+        )
+
+    if draft_text is None:
+        # API failure
+        return RedirectResponse(
+            "/admin/newsletters/new/?flash=ai_error",
+            status_code=303,
+        )
+
+    campaign = await newsletter_service.create_draft(db, body=draft_text)
+    return RedirectResponse(
+        f"/admin/newsletters/new/?draft_id={campaign.id}",
+        status_code=303,
+    )
+
+
+@router.post("/newsletters/save/", name="admin_newsletter_save")
+async def admin_newsletter_save(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    body: str = Form(""),
+    draft_id: Optional[int] = Form(None),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    if draft_id:
+        campaign = await newsletter_service.get_campaign(db, draft_id)
+        if campaign and campaign.status == "draft":
+            await newsletter_service.update_body(db, campaign, body.strip())
+        else:
+            await newsletter_service.create_draft(db, body=body.strip())
+    else:
+        await newsletter_service.create_draft(db, body=body.strip())
+
+    return RedirectResponse("/admin/newsletters/", status_code=303)
+
+
+@router.post("/newsletters/mark-sent/", name="admin_newsletter_mark_sent")
+async def admin_newsletter_mark_sent(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    draft_id: Optional[int] = Form(None),
+    body: str = Form(""),
+):
+    """Mark a campaign as manually sent (after the admin copied and pasted it to Telegram)."""
+    if redirect := _guard_admin(request):
+        return redirect
+
+    if draft_id:
+        campaign = await newsletter_service.get_campaign(db, draft_id)
+        if campaign and campaign.status == "draft":
+            await newsletter_service.update_body(db, campaign, body.strip())
+            await newsletter_service.mark_sent(db, campaign)
+    else:
+        campaign = await newsletter_service.create_draft(db, body=body.strip())
+        await newsletter_service.mark_sent(db, campaign)
+
+    return RedirectResponse("/admin/newsletters/?flash=marked_sent", status_code=303)
+
+
+@router.post("/newsletters/{campaign_id}/delete/", name="admin_newsletter_delete")
+async def admin_newsletter_delete(
+    request: Request,
+    campaign_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    campaign = await newsletter_service.get_campaign(db, campaign_id)
+    if campaign and campaign.status == "draft":
+        await newsletter_service.delete_campaign(db, campaign)
+
+    return RedirectResponse("/admin/newsletters/", status_code=303)

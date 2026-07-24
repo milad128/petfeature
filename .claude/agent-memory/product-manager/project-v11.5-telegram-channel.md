@@ -1,13 +1,13 @@
 ---
 name: project-v11.5-telegram-channel
-description: v11.5 Telegram Channel — replace email footer form with @petfeature join button; planned July 2026; ~2h effort; no DB changes
+description: v11.5 Telegram Channel shipped July 2026 (commit 4a4cb8c) — replaced footer email form with @petfeature join strip; subscriber admin page kept live
 metadata:
   type: project
 ---
 
-v11.5 supersedes v11 (email newsletter). Replace the `nls-strip` email form in `base.html` with a Telegram channel join section pointing to `https://t.me/petfeature`.
+v11.5 **SHIPPED** (commit 4a4cb8c, July 2026). Replaced the public footer email form with a Telegram channel join strip pointing to `https://t.me/petfeature`. v11 Subscriber admin page and DB table remain live.
 
-**Status:** Planned
+**Status:** Shipped
 
 **Why Telegram over email:** Iranian market. Channel open rates ~60–80% vs email ~15–25%. No payment friction, no deliverability issues, no provider dependency.
 

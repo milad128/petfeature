@@ -1,0 +1,235 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── Layout ── */
+.nl-compose-card { max-width: 1200px; }
+
+/* ── Entry point buttons ── */
+.nl-entry-btns { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.nl-entry-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px; cursor: pointer;
+  text-decoration: none; color: var(--text); font-weight: 600;
+  transition: border-color .15s, background .15s;
+  flex: 1; min-width: 200px;
+}
+.nl-entry-btn:hover { border-color: var(--border-2); background: var(--raise); }
+.nl-entry-btn .btn-icon { font-size: 1.4rem; }
+.nl-entry-btn .btn-label small { display: block; font-weight: 400; color: var(--muted); font-size: .8rem; margin-top: 2px; }
+
+/* ── Split panel ── */
+.nl-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.nl-panel-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--muted); margin-bottom: 8px;
+}
+
+/* ── Textarea side ── */
+.nl-textarea {
+  width: 100%; min-height: 360px; box-sizing: border-box;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; font-size: .88rem;
+  font-family: monospace; color: var(--text); line-height: 1.8;
+  resize: vertical; direction: ltr; text-align: left;
+}
+.nl-textarea:focus { outline: none; border-color: var(--border-2); }
+.nl-char-count { font-size: .75rem; color: var(--muted); text-align: left; margin-top: 6px; direction: ltr; }
+.nl-char-count.over { color: var(--danger); font-weight: 600; }
+
+/* ── Preview side ── */
+.nl-preview-wrap {
+  background: #1e1e2e;
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 360px;
+}
+.nl-preview-bubble {
+  background: #2a2a3e;
+  border-radius: 10px 10px 10px 2px;
+  padding: 14px 16px;
+  font-size: .88rem;
+  line-height: 1.9;
+  color: #e8e8f0;
+  direction: rtl;
+  text-align: right;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.nl-preview-bubble a { color: #64b5f6; }
+.nl-preview-bubble b { font-weight: 700; color: #fff; }
+.nl-preview-empty {
+  color: #555575;
+  font-size: .82rem;
+  text-align: center;
+  padding-top: 60px;
+}
+
+/* ── Actions ── */
+.nl-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+/* ── Flash ── */
+.nl-flash-info  { background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: .9rem; }
+.nl-flash-error { background: color-mix(in srgb, var(--danger) 10%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: .9rem; color: var(--danger); }
+
+@media (max-width: 900px) {
+  .nl-split { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card nl-compose-card">
+
+  {# ── Flash messages ── #}
+  {% if flash == "no_content" %}
+  <div class="nl-flash-info">محتوای جدیدی از آخرین خبرنامه منتشر نشده است.</div>
+  {% elif flash == "ai_error" %}
+  <div class="nl-flash-error">خطا در ارتباط با هوش مصنوعی — لطفاً دوباره تلاش کنید یا دستی بنویسید.</div>
+  {% endif %}
+
+  {% if not campaign %}
+  {# ── Entry point: AI or manual ── #}
+  <div class="nl-entry-btns">
+    {% if ai_enabled %}
+    <form method="post" action="{{ url_for('admin_newsletter_ai_draft') }}" style="flex:1;min-width:200px;">
+      <button type="submit" class="nl-entry-btn" style="width:100%;">
+        <span class="btn-icon">🤖</span>
+        <span class="btn-label">
+          ایجاد پیش‌نویس با هوش مصنوعی
+          <small>بر اساس محتوای جدید از آخرین خبرنامه</small>
+        </span>
+      </button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('admin_newsletter_new') }}?mode=manual" class="nl-entry-btn">
+      <span class="btn-icon">✍️</span>
+      <span class="btn-label">
+        نوشتن دستی
+        <small>شروع با صفحه خالی</small>
+      </span>
+    </a>
+  </div>
+  {% if not ai_enabled %}
+  <p class="form-hint" style="margin-bottom:20px;">متغیر <code>GAPGPT_API_KEY</code> تنظیم نشده — پیش‌نویس هوش مصنوعی غیرفعال است.</p>
+  {% endif %}
+
+  {% else %}
+  {# ── Compose panel ── #}
+  {% if campaign.status == "sent" %}
+  <div class="nl-flash-info">این خبرنامه ارسال شده و قابل ویرایش نیست.</div>
+  {% endif %}
+
+  <form method="post" id="nl-form">
+    {% if campaign.id %}<input type="hidden" name="draft_id" value="{{ campaign.id }}">{% endif %}
+
+    <div class="nl-split">
+
+      {# Left: raw editor #}
+      <div>
+        <div class="nl-panel-label">متن خبرنامه (HTML تلگرام)</div>
+        <textarea
+          class="nl-textarea"
+          name="body"
+          id="nl-body"
+          placeholder="متن خبرنامه را اینجا بنویسید…&#10;&#10;مثال:&#10;&lt;b&gt;عنوان&lt;/b&gt;&#10;&#10;توضیح کوتاه&#10;&#10;&lt;a href=&quot;https://petfeature.ir&quot;&gt;بیشتر بخوانید&lt;/a&gt;"
+          {% if campaign.status == "sent" %}readonly{% endif %}
+        >{{ campaign.body }}</textarea>
+        <div class="nl-char-count" id="nl-char-count">۰ / ۴۰۹۶</div>
+      </div>
+
+      {# Right: rendered preview #}
+      <div>
+        <div class="nl-panel-label">پیش‌نمایش</div>
+        <div class="nl-preview-wrap">
+          <div class="nl-preview-bubble" id="nl-preview">
+            <span class="nl-preview-empty">پیش‌نمایش اینجا نمایش داده می‌شود…</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {% if campaign.status != "sent" %}
+    <div class="nl-actions">
+      <button type="button" id="nl-copy-btn" class="btn btn-ghost" onclick="copyNewsletter()">
+        📋 کپی متن
+      </button>
+      <button type="submit" formaction="{{ url_for('admin_newsletter_save') }}" class="btn btn-ghost">
+        ذخیره پیش‌نویس
+      </button>
+      <button type="submit" formaction="{{ url_for('admin_newsletter_mark_sent') }}"
+              class="btn btn-primary"
+              onclick="return confirm('متن را در کانال تلگرام پیست کردید؟ این خبرنامه به عنوان ارسال‌شده ثبت می‌شود.')">
+        ✓ ثبت به عنوان ارسال‌شده
+      </button>
+    </div>
+    {% endif %}
+  </form>
+  {% endif %}
+
+</div>
+
+<script>
+(function () {
+  var ta      = document.getElementById('nl-body');
+  var counter = document.getElementById('nl-char-count');
+  var preview = document.getElementById('nl-preview');
+  if (!ta) return;
+
+  function toFa(n) {
+    return String(n).replace(/\d/g, function(d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; });
+  }
+
+  function renderPreview(raw) {
+    if (!raw.trim()) {
+      preview.innerHTML = '<span class="nl-preview-empty">پیش‌نمایش اینجا نمایش داده می‌شود…</span>';
+      return;
+    }
+    /* Plain text preview: just escape HTML entities and convert newlines to <br> */
+    var escaped = raw
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
+    preview.innerHTML = escaped;
+  }
+
+  function update() {
+    var len = ta.value.length;
+    if (counter) {
+      counter.textContent = toFa(len) + ' / ۴۰۹۶';
+      counter.classList.toggle('over', len > 4096);
+    }
+    if (preview) renderPreview(ta.value);
+  }
+
+  ta.addEventListener('input', update);
+  update();
+})();
+
+function copyNewsletter() {
+  var ta  = document.getElementById('nl-body');
+  var btn = document.getElementById('nl-copy-btn');
+  if (!ta || !btn) return;
+
+  navigator.clipboard.writeText(ta.value).then(function() {
+    btn.textContent = '✓ کپی شد';
+    setTimeout(function() { btn.textContent = '📋 کپی متن'; }, 2500);
+  }).catch(function() {
+    /* fallback for non-HTTPS */
+    ta.select();
+    document.execCommand('copy');
+    btn.textContent = '✓ کپی شد';
+    setTimeout(function() { btn.textContent = '📋 کپی متن'; }, 2500);
+  });
+}
+</script>
+
+{% endblock %}

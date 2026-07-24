@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_newsletter_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> خبرنامه جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+{% if flash == "marked_sent" %}
+<div class="form-success" style="margin-bottom:16px;">خبرنامه به عنوان ارسال‌شده ثبت شد ✓</div>
+{% endif %}
+
+<div class="card">
+  {% if campaigns %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>وضعیت</th>
+        <th>تاریخ ایجاد</th>
+        <th>تاریخ ارسال</th>
+        <th>متن (پیش‌نمایش)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in campaigns %}
+      <tr>
+        <td>
+          {% if c.status == "draft" %}
+          <span class="badge badge-draft">پیش‌نویس</span>
+          {% else %}
+          <span class="badge badge-published">ارسال شده</span>
+          {% endif %}
+        </td>
+        <td style="white-space:nowrap;">{{ c.created_at | jalali }}</td>
+        <td style="white-space:nowrap;">{{ c.sent_at | jalali if c.sent_at else "—" }}</td>
+        <td style="max-width:480px; font-size:.85rem; color:var(--muted);">
+          {{ c.body[:80] }}{% if c.body | length > 80 %}…{% endif %}
+        </td>
+        <td>
+          <div class="row-actions">
+            {% if c.status == "draft" %}
+            <a href="{{ url_for('admin_newsletter_new') }}?draft_id={{ c.id }}" class="btn btn-ghost btn-sm">ویرایش</a>
+            <form method="post" action="{{ url_for('admin_newsletter_delete', campaign_id=c.id) }}"
+                  data-delete-form data-confirm="این پیش‌نویس حذف شود؟" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('admin_newsletter_new') }}?draft_id={{ c.id }}" class="btn btn-ghost btn-sm">مشاهده</a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty">
+    <div class="empty-icon" aria-hidden="true">📨</div>
+    <h3>هنوز خبرنامه‌ای ارسال نشده</h3>
+    <p>اولین خبرنامه را بنویس یا از دستیار هوش مصنوعی بخواه که پیش‌نویس بسازد.</p>
+    <a href="{{ url_for('admin_newsletter_new') }}" class="btn btn-primary" style="margin-top:12px;">خبرنامه جدید</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

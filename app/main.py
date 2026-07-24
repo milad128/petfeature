@@ -3,11 +3,11 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.admin.routes import router as admin_router
+from app.admin.routes import router as admin_router, _inject_comment_badges
 from app.api.v1.router import router as api_v1_router
 from app.core.analytics import AnalyticsMiddleware
 from app.core.config import settings
@@ -58,5 +58,10 @@ app.add_middleware(AnalyticsMiddleware)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.include_router(web_router)
-app.include_router(admin_router, prefix="/admin", tags=["admin"])
+app.include_router(
+    admin_router,
+    prefix="/admin",
+    tags=["admin"],
+    dependencies=[Depends(_inject_comment_badges)],
+)
 app.include_router(api_v1_router, prefix="/api/v1", tags=["api"])

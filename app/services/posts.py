@@ -171,6 +171,14 @@ async def add_comment(session: AsyncSession, post: Post, data: CommentForm) -> P
     return comment
 
 
+async def count_pending_comments(session: AsyncSession) -> int:
+    from sqlalchemy import func as sa_func
+    result = await session.execute(
+        select(sa_func.count()).select_from(PostComment).where(PostComment.status == "pending")
+    )
+    return result.scalar() or 0
+
+
 async def list_comments(session: AsyncSession, *, status: Optional[str] = None) -> list[PostComment]:
     stmt = (
         select(PostComment)

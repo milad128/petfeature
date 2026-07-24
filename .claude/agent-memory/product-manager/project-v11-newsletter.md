@@ -1,13 +1,13 @@
 ---
 name: project-v11-newsletter
-description: v11 Newsletter implemented locally July 2026 — footer subscription form + admin subscriber list; code done, not yet committed
+description: v11 Newsletter shipped July 2026 (commit 8ffcb9e) — email subscriber form + admin list + Subscriber model live in production
 metadata:
   type: project
 ---
 
-v11 email newsletter approach **CANCELLED** (July 2026). All email subscriber code in working tree must be reverted — do not commit.
+v11 **SHIPPED** (commit 8ffcb9e, July 2026). Email subscriber form in footer + admin subscriber list + `Subscriber` model + Alembic migration — all live in production.
 
-**Why cancelled:** Iranian market is on Telegram. Email open rates structurally lower (~15–25%) vs Telegram channels (~60–80%). Iranian email provider payment friction + deliverability complexity made email the wrong channel.
+**Note:** v11.5 (4a4cb8c) subsequently replaced the public footer form with a Telegram join strip. The `Subscriber` admin page and DB table remain live as a secondary collection channel.
 
 **Scope:** Subscriber model + footer subscription form (name + email) + admin `/admin/subscribers/` list. No email sending in v11 — collection only.
 

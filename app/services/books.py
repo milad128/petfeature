@@ -271,6 +271,14 @@ async def add_book_comment(session: AsyncSession, book: Book, data: BookCommentF
     return comment
 
 
+async def count_pending_book_comments(session: AsyncSession) -> int:
+    from sqlalchemy import func as sa_func
+    result = await session.execute(
+        select(sa_func.count()).select_from(BookComment).where(BookComment.status == "pending")
+    )
+    return result.scalar() or 0
+
+
 async def list_book_comments(session: AsyncSession, *, status: Optional[str] = None) -> list[BookComment]:
     stmt = (
         select(BookComment)

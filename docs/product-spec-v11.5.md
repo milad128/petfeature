@@ -1,10 +1,10 @@
 # Product Spec v11.5 — Telegram Channel Integration (کانال تلگرام)
 
 **Version:** v11.5
-**Status:** Planned
+**Status:** Shipped (commit 4a4cb8c)
 **Author:** Milad Mirzaei
 **Date:** July 2026
-**Supersedes:** v11 (email subscriber form — cancelled; code must be reverted before committing)
+**Note:** v11 email subscriber model + admin page remain in the codebase (shipped in 8ffcb9e). v11.5 replaced the public footer form only — the `Subscriber` DB table and `/admin/subscribers/` are still live.
 **Depends on:** v1–v10
 
 ---

@@ -19,6 +19,16 @@ class Settings(BaseSettings):
     admin_username: str = "admin"
     admin_password: str = "change-me"
 
+    # Telegram bot
+    telegram_bot_token: str = ""
+    telegram_channel_id: str = "@petfeature"
+    telegram_proxy: str = ""  # optional HTTP/SOCKS5 proxy, e.g. http://127.0.0.1:7890
+
+    # GapGPT (Anthropic-compatible proxy)
+    gapgpt_api_key: str = ""
+    gapgpt_base_url: str = "https://api.gapgpt.app/v1"
+    gapgpt_model: str = "gpt-5.6-luna"
+
     @property
     def database_url_sync(self) -> str:
         """Sync URL for Alembic migrations (strips async driver prefixes)."""

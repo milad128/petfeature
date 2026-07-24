@@ -166,6 +166,22 @@ button { font-family: var(--font); }
   opacity: 0.7;
 }
 .admin-nav-sub { padding-right: 24px !important; font-size: 0.85rem !important; }
+.admin-nav a { justify-content: space-between; }
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--danger, #e53935);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 9px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 
 .admin-nav-footer { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.75rem; }
 .admin-nav-footer a { color: var(--muted); }

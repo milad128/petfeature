@@ -31,7 +31,7 @@ Overview and index for petfeature.ir. Detailed requirements live in version-spec
 
 | Epic | Description | Status |
 |------|-------------|--------|
-| **Telegram Channel** | Telegram channel join button in footer (v11.5); Newsletter Bot auto-post (v13) | Planned / Backlog |
+| **Telegram Channel** | Telegram channel join button in footer (v11.5 — shipped); Newsletter Bot auto-post + AI draft (v13 — backlog) | Shipped / Backlog |
 | **Book Engagement** | Star ratings and comments on library books | **Shipped** (v4) |
 | **Contact** | Contact page with form + admin inbox | **Shipped** (v5) |
 | **Visitor Analytics** | Site-wide page-view tracking and admin dashboard (all page types) | **Shipped** (v6) |
@@ -53,7 +53,8 @@ flowchart LR
   v7 --> v8["v8 ✓\nContent Enhancements"]
   v8 --> v9["v9 ✓\nMedia Library"]
   v9 --> v10["v10 📋\nPost Related Books"]
-  v10 --> v11.5["v11.5 📋\nTelegram Channel"]
+  v10 --> v11["v11 ✓\nNewsletter"]
+  v11 --> v11.5["v11.5 ✓\nTelegram Channel"]
   v11.5 --> v12["v12 📋\nUser Auth"]
   v12 --> v13["v13 📋\nNewsletter Bot"]
   v13 --> vN["...\nBacklog"]
@@ -71,10 +72,10 @@ flowchart LR
 | **v8** | [Product Spec v8](./product-spec-v8.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
 | **v9** | [Product Spec v9](./product-spec-v9.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
 | **v10** | [Product Spec v10](./product-spec-v10.md) | Post Related Books | Related books widget in admin post form; related books section on public post detail page | **Planned** |
-| ~~**v11**~~ | ~~[Product Spec v11](./product-spec-v11.md)~~ | ~~Newsletter (email)~~ | ~~Email subscription form + admin subscriber list~~ | **Cancelled** — superseded by v11.5 |
-| **v11.5** | [Product Spec v11.5](./product-spec-v11.5.md) | Telegram Channel | Replace email form with Telegram channel join section pointing to @petfeature | **Planned** |
+| **v11** | [Product Spec v11](./product-spec-v11.md) | Newsletter | Email subscriber form + admin subscriber list + `Subscriber` model | **Shipped** |
+| **v11.5** | [Product Spec v11.5](./product-spec-v11.5.md) | Telegram Channel | Replace public footer email form with @petfeature Telegram join strip; subscriber admin remains live | **Shipped** |
 | **v12** | [Product Spec v12](./product-spec-v12.md) | User Registration + Auth | Email/password auth, session cookies, profile page, password reset, admin user list | **Backlog** |
-| **v13** | [Product Spec v13](./product-spec-v13.md) | Newsletter Bot | Telegram Bot auto-posts to @petfeature on new content publish; admin compose panel | **Backlog** |
+| **v13** | [Product Spec v13](./product-spec-v13.md) | Newsletter AI Draft Agent | Campaign log + AI draft agent (Claude Haiku generates Persian digest from new content diff); admin compose panel; no auto-posting | **Backlog** |
 | **Backlog** | [Product Backlog](./product%20backlog.md) | — | Roadmap, Reading List (v14+) | Unscheduled |
 
 ---
@@ -83,7 +84,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** v1–v9 all shipped. v10 (Post Related Books) is next. v11 email approach cancelled → replaced by v11.5 (Telegram channel join button). v13 (Newsletter Bot) wires Telegram auto-posting. v12 User Auth → Reading List (v14+) → Roadmap.
+**Admin:** v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next. After that: v12 User Auth → v13 Newsletter Bot (Telegram auto-post + AI draft agent) → Reading List (v14+) → Roadmap.
 
 ---
 
@@ -102,10 +103,10 @@ flowchart LR
 | [product-spec-v8.md](./product-spec-v8.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
 | [product-spec-v9.md](./product-spec-v9.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |
 | [product-spec-v10.md](./product-spec-v10.md) | PRD for Post Related Books — admin post form widget + public post detail display (planned) |
-| ~~[product-spec-v11.md](./product-spec-v11.md)~~ | ~~PRD for Newsletter (email) — cancelled; superseded by v11.5~~ |
-| [product-spec-v11.5.md](./product-spec-v11.5.md) | PRD for Telegram Channel — replace email form with @petfeature join button (planned) |
+| [product-spec-v11.md](./product-spec-v11.md) | PRD for Newsletter — email subscriber form + admin list + Subscriber model (shipped) |
+| [product-spec-v11.5.md](./product-spec-v11.5.md) | PRD for Telegram Channel — replace footer email form with @petfeature join strip (shipped) |
 | [product-spec-v12.md](./product-spec-v12.md) | PRD for User Registration + Auth — email/password auth, sessions, profile, password reset (backlog) |
-| [product-spec-v13.md](./product-spec-v13.md) | PRD for Newsletter Bot — Telegram Bot auto-posts on publish + admin compose panel (backlog) |
+| [product-spec-v13.md](./product-spec-v13.md) | PRD for Newsletter AI Draft Agent — campaign log + AI draft via Claude Haiku + admin compose panel; no auto-posting (backlog) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
@@ -167,15 +168,16 @@ flowchart LR
 - Admin: Post form (new + edit) gains a related books picker widget — select books from the library to associate with a post
 - Public: Post detail page displays a "کتاب‌های مرتبط" section below the body, linking each associated book into the library
 
-### ~~v11 — Newsletter email (cancelled)~~
-Superseded by v11.5. Email subscriber approach abandoned in favour of Telegram channel.
+### v11 — Newsletter (shipped)
+- Visitor subscribes via footer form (name + email); success message shown; duplicate emails silently accepted; honeypot spam protection
+- Admin: View subscriber list at `/admin/subscribers/` with name, email, Jalali date, and count; paginated
+- `Subscriber` model + Alembic migration shipped; email collection only — no sending in v11
 
-### v11.5 — Telegram Channel (planned)
-- Footer email subscription form removed and replaced with a Telegram channel join section
-- Section shows: headline, one-line description, "عضویت در کانال" button → `https://t.me/petfeature`
-- Channel handle `@petfeature` visible as supporting text
-- No new models, routes, or migrations — pure template + CSS change
-- All v11 email subscriber code (model, service, migration, admin page) must be reverted before committing
+### v11.5 — Telegram Channel (shipped)
+- Footer email form replaced with Telegram channel join strip pointing to `https://t.me/petfeature`
+- Strip shows: Persian headline, one-line description, "عضویت در کانال" button, @petfeature handle
+- v11 `Subscriber` admin page and DB table remain live — email collection kept as a secondary channel
+- Logo replaced with petfeature brand images; Vazirmatn Bold font added (shipped in same batch)
 
 ### v12 — User Registration + Auth (backlog)
 - Visitor registers at `/register/` with name, email, password; logged in on success
@@ -184,14 +186,16 @@ Superseded by v11.5. Email subscriber approach abandoned in favour of Telegram c
 - Visitor resets password via email link (requires email provider — graceful fallback if unconfigured)
 - Admin: View user list at `/admin/users/` with name, email, join date, status; can deactivate/reactivate
 
-### v13 — Newsletter Bot (backlog)
-- Telegram Bot auto-posts a formatted message to @petfeature when admin publishes a new Post, Book, or Tool
-- Auto-post fires only on first publish — editing an already-published item does not re-send
-- Telegram failure never blocks publishing (fire-and-forget; errors logged)
-- Admin: "ارسال به کانال تلگرام" on-demand button on each published content item
-- Admin: Custom compose panel at `/admin/telegram/compose/` for one-off channel messages
-- Config: `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHANNEL_ID` env vars; all features silently disabled if token not set
-- No DB changes; no library — single `httpx` POST to Bot API
+### v13 — Newsletter AI Draft Agent (backlog)
+- Admin: Campaign log at `/admin/newsletters/` — all sent newsletters and drafts in reverse chronological order
+- Admin: "خبرنامه جدید" → choose AI draft or manual compose
+- AI Draft: one click queries all content published since last sent campaign → passes titles + excerpts to Claude Haiku → returns Persian Telegram-formatted newsletter draft
+- If no new content since last send → shows message; no draft generated
+- Admin edits draft in textarea, saves as draft or sends directly to @petfeature channel
+- On send: campaign status → `sent`, `sent_at` recorded, message posted to Telegram via Bot API
+- Config: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, `ANTHROPIC_API_KEY` — features gracefully disabled if tokens missing
+- New model: `NewsletterCampaign` (body, status: draft/sent, sent_at) — requires migration
+- No auto-posting on publish; no per-item send buttons — admin sends deliberately
 
 ### Backlog — Roadmap epic
 - Browse Roadmap → View Path Steps (linked to books and posts)
@@ -210,4 +214,4 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*July 2026 · v1–v9 all shipped. v10 next. v11 email cancelled → v11.5 Telegram channel. v13 Newsletter Bot (Telegram auto-post).*
+*July 2026 · v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next.*

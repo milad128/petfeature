@@ -4,7 +4,7 @@
 - [v8 Content Enhancements Shipped](project-v8-planned.md) — book media "website" type + post related books + tool downloadable links; shipped July 2026
 - [v9 Shipped](project-v9-planned.md) — Media Library + Book Link Types + Admin Books Filter + Cover Preview Fit + بلاگ→یادداشت; shipped July 2026
 - [v10 Post Related Books](project-v10-planned.md) — admin post form widget + public post detail display; PRD written July 2026, planned
-- [v11 Newsletter (CANCELLED)](project-v11-newsletter.md) — email approach cancelled July 2026; all working-tree subscriber code must be reverted; superseded by v11.5
-- [v11.5 Telegram Channel](project-v11.5-telegram-channel.md) — replace email form with @petfeature Telegram join button in footer; planned; ~2h effort; no DB changes
+- [v11 Newsletter](project-v11-newsletter.md) — email subscriber form + admin list + Subscriber model; SHIPPED July 2026 (commit 8ffcb9e); admin page still live
+- [v11.5 Telegram Channel](project-v11.5-telegram-channel.md) — replaced footer email form with @petfeature join strip; SHIPPED July 2026 (commit 4a4cb8c)
 - [v12 User Registration + Auth](project-v12-user-auth.md) — email/password auth, sessions, profile, password reset; backlog; PRD written July 2026
-- [v13 Newsletter Bot](project-v13-newsletter-bot.md) — Telegram Bot auto-posts to @petfeature on publish; admin compose panel; httpx only; ~1.5 days; backlog
+- [v13 Newsletter AI Draft Agent](project-v13-newsletter-bot.md) — campaign log + AI draft via Claude Haiku from new content diff; admin compose + send; no auto-posting; ~2 days; backlog

@@ -1,7 +1,7 @@
-# Product Spec v13 — Newsletter Bot (ربات خبرنامه تلگرام)
+# Product Spec v13 — Newsletter AI Draft Agent (دستیار هوش مصنوعی خبرنامه)
 
 **Version:** v13
-**Status:** Backlog
+**Status:** In Progress
 **Author:** Milad Mirzaei
 **Date:** July 2026
 **Depends on:** v11.5 (Telegram channel live), v12 (optional — independent)
@@ -10,149 +10,212 @@
 
 ## Overview
 
-v13 wires a Telegram Bot to the admin CMS. When Milad publishes new content (Post, Book, or Tool), a formatted message is sent automatically to the @petfeature Telegram channel. An admin compose panel also allows sending custom one-off messages to the channel.
+v13 adds an AI-powered newsletter workflow to the admin CMS. Milad opens the newsletter section, clicks one button, and Claude generates a Persian newsletter draft based on content published since the last send. He reviews, edits, and sends it to @petfeature.
 
-No third-party library is needed — a single `httpx` POST to the Telegram Bot API is sufficient.
+Two components:
+1. **Newsletter campaign log** — records every newsletter sent; gives the AI a reference point for "what's new"
+2. **AI draft agent** — queries new content, passes it to Claude Haiku, returns an editable Persian Telegram-formatted draft
+
+No auto-posting on publish. No per-content-item buttons. Admin initiates every send deliberately.
 
 ---
 
 ## Problem Statement
 
-After v11.5, visitors can join @petfeature. But the channel is only useful if it gets updated. Today, publishing content on petfeature.ir requires a separate manual step to notify the Telegram audience. This friction means notifications get skipped and the channel goes silent.
+After v11.5, visitors can join @petfeature. But writing a newsletter digest — synthesising what's new across posts, books, and tools — is time-consuming. The admin knows the content exists but has to manually scan and summarise it.
 
-v13 closes the loop: publishing content on the site automatically notifies the Telegram channel.
+v13 eliminates the writing step: one click, Claude produces a ready-to-edit Persian draft that covers exactly what's new since the last campaign.
 
 ---
 
 ## Target Users
 
-- **Milad (admin):** Publish once, notify everywhere — no manual Telegram posting needed.
-- **Channel subscribers:** Receive a timely, well-formatted update when new content drops.
+- **Milad (admin):** When it's time for a newsletter, one click produces a draft in Persian — review, adjust, send. No blank-page problem.
+- **Channel subscribers:** Receive a well-written, timely digest in Persian.
 
 ---
 
 ## User Stories
 
-- *As admin, I want new posts/books/tools to automatically notify the Telegram channel so that I don't have to post manually after publishing.*
-- *As admin, I want a "ارسال به کانال" button on each content page so that I can trigger a notification on demand (e.g. for re-posts or corrections).*
-- *As admin, I want a compose panel to write a custom message and send it to the channel so that I can post announcements not tied to a specific content item.*
-- *As a channel subscriber, I want to receive a clear, well-formatted message with a direct link to the new content so that I can read it in one tap.*
+- *As admin, I want to see a log of all past newsletters so that I know what was already sent and when.*
+- *As admin, I want to save draft newsletters before sending so that I can review and edit them before they go out.*
+- *As admin, I want to click one button to generate a newsletter draft so that I don't have to write it from scratch.*
+- *As admin, I want the AI draft to cover only content published since the last newsletter so that I don't repeat what subscribers already received.*
+- *As admin, I want to edit the AI draft before sending so that I have full control over what goes out.*
+- *As admin, I want to write a newsletter manually (without AI) so that I can send announcements not tied to specific new content.*
 
 ---
 
 ## Acceptance Criteria
 
-### A — Auto-post on publish
+### A — Newsletter campaign log
 
-- [ ] When admin sets a Post's status to `published` (new or edit), a Telegram message is sent to the channel
-- [ ] When admin publishes a new Book (status → published), a Telegram message is sent
-- [ ] When admin publishes a new Tool (status → published), a Telegram message is sent
-- [ ] Auto-post fires **only on the first publish** — editing an already-published item does not re-send
-- [ ] If the Telegram API call fails (network error, bad token), the publish action still succeeds — Telegram failure must never block content publishing
-- [ ] Failed sends are logged to the app error log with enough context to retry manually
+- [ ] Admin page at `/admin/newsletters/` lists all campaigns in reverse chronological order
+- [ ] Each row shows: Jalali send date, first 80 chars of body, status (پیش‌نویس / ارسال شده)
+- [ ] Clicking a row opens the campaign detail — full body and send timestamp
+- [ ] Draft campaigns shown at the top of the list, clearly labelled
+- [ ] Admin can delete a draft campaign; sent campaigns cannot be deleted
+- [ ] Admin sidebar shows "خبرنامه" nav item; sub-items: "لاگ خبرنامه‌ها" + "خبرنامه جدید"
 
-### B — On-demand "ارسال به کانال" button
+### B — AI draft agent
 
-- [ ] Post detail page in admin has a "ارسال به کانال تلگرام" button (only visible for published posts)
-- [ ] Same button on Book and Tool admin detail pages
-- [ ] Clicking the button sends the standard auto-post message for that item
-- [ ] Button shows a flash confirmation: "پیام با موفقیت ارسال شد" or "ارسال ناموفق — لطفاً دوباره تلاش کنید"
-- [ ] No rate limiting in v13 — admin is trusted; spam prevention is not in scope
+- [ ] `/admin/newsletters/new/` shows two entry points: "ایجاد پیش‌نویس با هوش مصنوعی" and "نوشتن دستی"
+- [ ] Clicking "ایجاد پیش‌نویس" triggers POST to `/admin/newsletters/draft/ai/`
+- [ ] System queries DB for all Posts, Books, and Tools published **after** `sent_at` of the most recent sent campaign
+- [ ] If no sent campaign exists yet → includes all published content (first newsletter scenario)
+- [ ] If no new content found since last send → shows: "محتوای جدیدی از آخرین خبرنامه منتشر نشده است." and stops
+- [ ] New content list (title + excerpt per item) is passed to Claude Haiku with the system prompt
+- [ ] Claude returns a Persian newsletter draft formatted for Telegram HTML (`parse_mode=HTML`)
+- [ ] Draft is saved to `NewsletterCampaign` (status=`draft`) and loaded into the compose textarea
+- [ ] If `ANTHROPIC_API_KEY` is not set, AI button is hidden — no 500 errors; manual compose still works
 
-### C — Custom message compose panel
+### C — Compose panel (shared by AI draft and manual)
 
-- [ ] Admin page at `/admin/telegram/compose/` with a textarea and a "ارسال به کانال" button
-- [ ] Supports plain text; no rich formatting in v13 (Markdown/HTML formatting is v14+)
+- [ ] Editable textarea pre-filled with AI draft (or blank for manual)
 - [ ] Character counter shown (Telegram limit: 4096 chars)
-- [ ] Preview section shows what the message will look like (plain text render)
-- [ ] Confirmation flash on success/failure
+- [ ] "ذخیره پیش‌نویس" — saves to DB (status=`draft`), redirects to campaign log
+- [ ] "ارسال به کانال" — posts to Telegram, updates campaign status to `sent`, records `sent_at`
+- [ ] On send success: flash "پیام با موفقیت ارسال شد", redirect to `/admin/newsletters/`
+- [ ] On send failure: flash "ارسال ناموفق — لطفاً دوباره تلاش کنید", stay on compose page; draft preserved
 
 ### D — Configuration
 
-- [ ] Two new env vars: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`
-- [ ] `TELEGRAM_CHANNEL_ID` can be a channel username (`@petfeature`) or numeric chat ID
-- [ ] If `TELEGRAM_BOT_TOKEN` is not set, all Telegram features are silently disabled — no 500 errors
-- [ ] Admin sidebar shows "تلگرام" nav item linking to the compose panel (only when bot is configured)
-- [ ] Health check at `/api/v1/health` does **not** test Telegram connectivity
+- [ ] New env vars: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID` (default: `@petfeature`), `ANTHROPIC_API_KEY`
+- [ ] If `TELEGRAM_BOT_TOKEN` not set → send button disabled, shows warning; draft/save still works
+- [ ] If `ANTHROPIC_API_KEY` not set → AI draft button hidden; manual compose unaffected
 
 ---
 
-## Message Format (Auto-post)
+## Data Model
 
-Telegram HTML formatting (`parse_mode=HTML`):
+### `NewsletterCampaign`
+
+```python
+class NewsletterCampaign(Base):
+    __tablename__ = "newsletter_campaigns"
+
+    id: int (PK)
+    body: str (Text)          # full Telegram message body
+    status: str               # "draft" | "sent"
+    created_at: datetime
+    sent_at: datetime | None  # null for drafts
+```
+
+**Migration required:** `alembic revision --autogenerate -m "add newsletter_campaigns table"`
+
+---
+
+## AI Agent Design
+
+### System prompt (sent to Claude)
 
 ```
-📌 <b>[عنوان محتوا]</b>
+تو دستیار نویسنده خبرنامه پت‌فیچر هستی — یک دانشنامه فارسی برای مدیران محصول.
+وظیفه‌ات نوشتن یک پیام خبرنامه کوتاه و جذاب برای کانال تلگرام @petfeature است.
 
-[خلاصه یا توضیح کوتاه — اول ۱۵۰ کاراکتر از متن یا توضیح ادمین]
-
-🔗 <a href="https://petfeature.ir/[path]/[slug]/">مطالعه در پت فیچر</a>
-
-#[نوع_محتوا]
+قوانین:
+- فارسی بنویس. لحن صمیمی و حرفه‌ای.
+- خروجی را با parse_mode=HTML تلگرام فرمت کن (<b>, <a>, \n\n برای پاراگراف).
+- حداکثر ۳۰۰ کلمه.
+- برای هر محتوای جدید یک بند کوتاه بنویس: عنوان، یک جمله توضیح، لینک.
+- در انتها یک جمله دعوت به تعامل اضافه کن.
+- از هشتگ‌های مناسب استفاده کن: #یادداشت #کتاب #ابزار
 ```
 
-**Content type tags:**
-- Post → `#یادداشت`
-- Book → `#کتاب`
-- Tool → `#ابزار`
+### User message (generated dynamically)
+
+```
+محتوای جدیدی که از آخرین خبرنامه منتشر شده:
+
+یادداشت‌ها:
+- [عنوان] — [خلاصه ۱۵۰ کاراکتری] — https://petfeature.ir/blog/[slug]/
+
+کتاب‌ها:
+- [عنوان] — [توضیح کوتاه] — https://petfeature.ir/library/[slug]/
+
+ابزارها:
+- [عنوان] — [توضیح کوتاه] — https://petfeature.ir/tools/[slug]/
+
+یک پیش‌نویس خبرنامه برای کانال تلگرام بنویس.
+```
+
+### Claude model
+
+`claude-haiku-4-5` — fast (~2s), cheap, sufficient for Persian digest summarisation.
+
+### Python sketch
+
+```python
+# app/services/newsletter_ai.py
+import anthropic
+from app.core.config import settings
+
+async def generate_draft(new_content: dict) -> str | None:
+    if not settings.anthropic_api_key:
+        return None
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    user_msg = build_user_message(new_content)
+    message = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=1024,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": user_msg}],
+    )
+    return message.content[0].text
+```
 
 ---
 
 ## Technical Design
 
-### Bot setup (one-time, manual)
-1. Create bot via @BotFather → get `TELEGRAM_BOT_TOKEN`
-2. Add bot as admin to @petfeature channel (post permission only)
-3. Set `TELEGRAM_CHANNEL_ID=@petfeature` in Hamravesh env vars
-
-### API call (no library)
-```python
-# app/services/telegram.py
-import httpx
-from app.core.config import settings
-
-async def send_to_channel(text: str) -> bool:
-    if not settings.telegram_bot_token:
-        return False
-    url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
-    payload = {
-        "chat_id": settings.telegram_channel_id,
-        "text": text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": False,
-    }
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            r = await client.post(url, json=payload)
-            return r.status_code == 200
-    except Exception:
-        return False  # never raise; log instead
-```
-
-### New config keys (`app/core/config.py`)
-```python
-telegram_bot_token: str | None = None
-telegram_channel_id: str = "@petfeature"
-```
-
 ### New files
+
 | File | Purpose |
 |------|---------|
-| `app/services/telegram.py` | `send_to_channel(text)` async function |
-| `app/templates/admin/telegram_compose.html` | Compose panel template |
+| `app/models/newsletter.py` | `NewsletterCampaign` model |
+| `app/services/telegram.py` | `send_to_channel(text)` — httpx POST to Bot API |
+| `app/services/newsletter_ai.py` | `generate_draft(new_content)` — Claude integration |
+| `app/templates/admin/newsletters_list.html` | Campaign log page |
+| `app/templates/admin/newsletter_compose.html` | Compose + AI draft page |
 
 ### Modified files
+
 | File | Change |
 |------|--------|
-| `app/core/config.py` | Add `telegram_bot_token`, `telegram_channel_id` |
-| `app/admin/routes.py` | Call `telegram.send_to_channel()` on publish; add compose route; add on-demand button routes |
-| `app/templates/admin/base.html` | Add "تلگرام" nav item |
-| `app/templates/admin/post_detail.html` | Add "ارسال به کانال" button |
-| `app/templates/admin/book_detail.html` | Add "ارسال به کانال" button |
-| `app/templates/admin/tool_detail.html` | Add "ارسال به کانال" button |
+| `app/core/config.py` | Add `telegram_bot_token`, `telegram_channel_id`, `anthropic_api_key` |
+| `app/admin/routes.py` | Newsletter CRUD routes + AI draft route |
+| `app/templates/admin/base.html` | "خبرنامه" nav section with sub-items |
+| `alembic/env.py` | Import `NewsletterCampaign` |
 
-### No migration needed
-No new DB tables. Sent message history is not persisted in v13 — add a `TelegramMessage` log table in v14+ if needed.
+### One-time bot setup
+
+1. Create bot via @BotFather → copy `TELEGRAM_BOT_TOKEN`
+2. Add bot as admin to @petfeature channel (post messages permission only)
+3. Set env vars in Hamravesh: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID=@petfeature`, `ANTHROPIC_API_KEY`
+
+---
+
+## Admin UI Flow
+
+```
+/admin/newsletters/             ← campaign log (sent + drafts, reverse chrono)
+    [+ خبرنامه جدید] ─────────→ /admin/newsletters/new/
+                                    ├── [ایجاد پیش‌نویس با هوش مصنوعی]
+                                    │       └── POST /admin/newsletters/draft/ai/
+                                    │               → query new content since last send
+                                    │               → call Claude Haiku
+                                    │               → save as draft
+                                    │               → redirect to compose with draft loaded
+                                    └── [نوشتن دستی] → blank textarea
+
+                                Compose panel:
+                                ┌────────────────────────────────────┐
+                                │ [textarea — editable draft or blank] │
+                                │ ۲۴۳ / ۴۰۹۶ کاراکتر                │
+                                │                                     │
+                                │  [ذخیره پیش‌نویس]  [ارسال به کانال] │
+                                └────────────────────────────────────┘
+```
 
 ---
 
@@ -160,32 +223,33 @@ No new DB tables. Sent message history is not persisted in v13 — add a `Telegr
 
 | Item | Reason |
 |------|--------|
-| Telegram Markdown/MarkdownV2 formatting | Parse_mode=HTML covers 90% of needs; MarkdownV2 escaping is error-prone |
-| Message send history / log table | Low value in v1 — add in v14+ if needed |
-| Scheduling (send at a specific time) | Adds complexity; out of scope |
-| Subscriber tracking via bot | No bot inbox in v13; channel-only |
-| Reading List (v14) | Independent epic |
-| Rate limiting the on-demand button | Admin is trusted |
-| Telegram login / user auth via Telegram | v12+ concern |
+| Auto-post on content publish | Removed — admin sends deliberately |
+| Per-item "ارسال به کانال" button | Removed — same reason |
+| Scheduling (send at specific time) | Adds cron complexity; v14+ |
+| Image/media in newsletter | `sendPhoto` API; v14+ |
+| Retry queue for failed sends | Log only; v14+ |
+| Multiple Telegram channels | Single channel only |
+| AI model selection in UI | Hardcoded to Haiku; v14+ |
+| Reading List (v14+) | Independent epic |
 
 ---
 
 ## NFRs
 
-- Telegram API failure must never block content publishing (fire-and-forget pattern)
-- Bot token must never appear in templates, logs, or HTML responses
-- All admin-facing UI must be RTL Persian
-- Message text must be well-formed HTML (no unescaped `<`, `>`, `&`)
+- `TELEGRAM_BOT_TOKEN` and `ANTHROPIC_API_KEY` must never appear in HTML, logs, or templates
+- AI draft generation should complete in < 5 seconds (Haiku is fast)
+- All admin UI must be RTL Persian
+- Message HTML must be well-formed — escape `<`, `>`, `&` in user-generated content
 
 ---
 
 ## Open Questions
 
-| Question | Status |
-|----------|--------|
-| Should the auto-post message include the book cover image (Telegram supports `sendPhoto`)? | Open — `sendPhoto` is more complex; decide during implementation |
-| Should failed sends be retried automatically, or just logged? | Recommend: log only in v13; retry queue in v14+ |
-| Should admin be able to edit the auto-generated message before sending? | Nice-to-have — open |
+| Question | Recommendation |
+|----------|---------------|
+| Should admin be able to regenerate the AI draft (discard + retry)? | Yes — delete draft campaign, re-trigger |
+| Should the AI draft include the previous newsletter body as context to avoid repetition? | Nice-to-have — pass last `sent` campaign body; open for implementation |
+| Should the compose panel show a Telegram message preview? | Low priority — textarea sufficient for v13 |
 
 ---
 
@@ -193,10 +257,11 @@ No new DB tables. Sent message history is not persisted in v13 — add a `Telegr
 
 | Task | Estimate |
 |------|----------|
-| `app/services/telegram.py` | 2 hours |
-| Config keys + env setup | 1 hour |
-| Auto-post hook on publish (Post, Book, Tool) | 3 hours |
-| On-demand button (3 content types) | 2 hours |
-| Compose panel (template + route) | 3 hours |
-| Admin nav + conditional display | 1 hour |
-| **Total** | **~1.5 days** |
+| `NewsletterCampaign` model + migration | 1 hour |
+| `app/services/telegram.py` (send_to_channel) | 1 hour |
+| Campaign log page (`/admin/newsletters/`) | 2 hours |
+| Compose panel (manual + draft UI, save + send) | 2 hours |
+| `app/services/newsletter_ai.py` (Claude + prompt) | 3 hours |
+| AI draft route + new content diff query | 2 hours |
+| Admin nav + config + env vars | 1 hour |
+| **Total** | **~2 days** |

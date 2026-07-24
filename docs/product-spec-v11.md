@@ -1,7 +1,7 @@
 # Product Spec v11 — Newsletter (مشترکین)
 
 **Version:** v11  
-**Status:** In Progress (implemented locally, not yet committed)  
+**Status:** Shipped (commit 8ffcb9e)  
 **Author:** Milad Mirzaei  
 **Date:** July 2026  
 **Depends on:** v1–v10
