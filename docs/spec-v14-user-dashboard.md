@@ -12,7 +12,7 @@
 
 v14 turns the minimal v12 profile page into a real user dashboard. Logged-in users get two sections:
 
-1. **خبرنامه (Newsletter)** — subscribe to the email newsletter and join the Telegram channel from one place
+1. **تلگرام (Telegram)** — join the @petfeature channel from the dashboard
 2. **نظرات من (My Comments)** — see all comments the user has posted across books and posts, with their approval status and any admin replies
 
 This gives users a reason to have an account on petfeature.ir — their interactions with the site are now visible, trackable, and managed from one page.
@@ -24,10 +24,10 @@ This gives users a reason to have an account on petfeature.ir — their interact
 After v12, a logged-in user's profile page shows only their name, email, and join date — essentially an empty page. Users have no reason to register and no reason to come back to their profile.
 
 v14 surfaces two things users genuinely want to know:
-1. "Am I subscribed to updates?" → Newsletter section
+1. "Where do I follow updates?" → Telegram section
 2. "Was my comment approved? Did the admin reply?" → Comments section
 
-Both use data that already exists in the DB (Subscriber model from v11, PostComment/BookComment from v2/v4) — this is mostly a presentation layer with one new migration.
+The comments data already exists in the DB (PostComment/BookComment from v2/v4) — this is mostly a presentation layer with one new migration. The Telegram section is a static link with no state to store.
 
 ---
 
@@ -40,8 +40,7 @@ Both use data that already exists in the DB (Subscriber model from v11, PostComm
 ## User Stories
 
 ### Newsletter
-- *As a logged-in user, I want to see whether my email is subscribed to the newsletter so that I know if I'll receive email updates.*
-- *As a logged-in user, I want to subscribe or unsubscribe from the email newsletter from my dashboard so that I control my inbox.*
+- *As a logged-in user, I want a one-click way to reach the Telegram channel so that I can follow new content.*
 - *As a logged-in user, I want a button to join the Telegram channel directly from my dashboard so that I have one place to manage all petfeature notifications.*
 
 ### My Comments
@@ -55,22 +54,15 @@ Both use data that already exists in the DB (Subscriber model from v11, PostComm
 
 ### Dashboard layout (`/profile/`)
 
-- [ ] Profile page has two clearly labelled sections below the user info: "خبرنامه" and "نظرات من"
+- [ ] Profile page has two clearly labelled sections below the user info: "تلگرام" and "نظرات من"
 - [ ] Page is accessible only when logged in (existing v12 auth guard)
 - [ ] RTL layout consistent with rest of site
 
 ---
 
-### Section A — Newsletter (خبرنامه)
+### Section A — Telegram (تلگرام)
 
-#### Email subscription
-- [ ] Check if the user's Google email exists in the `Subscriber` table (from v11)
-- [ ] If **subscribed**: show "✓ ایمیل شما در لیست خبرنامه است" + "لغو اشتراک" button
-- [ ] If **not subscribed**: show "عضویت در خبرنامه ایمیلی" button
-- [ ] Clicking "عضویت": adds the user's Google email + name to `Subscriber` (same logic as public form); shows success state
-- [ ] Clicking "لغو اشتراک": sets `is_active=False` on the `Subscriber` record; shows unsubscribed state
-- [ ] No email field shown — email comes from the user's Google account automatically
-- [ ] Duplicate subscription handled silently (reactivate the existing record if `is_active=False`)
+> **No email subscription.** The email newsletter was removed from the product in July 2026 — there is no `Subscriber` model and no subscribe/unsubscribe state to show. Telegram is the only subscription channel, and joining it happens on Telegram's side.
 
 #### Telegram channel
 - [ ] Show a "عضویت در کانال تلگرام @petfeature" button linking to `https://t.me/petfeature` (new tab)
@@ -126,7 +118,6 @@ user_id: Mapped[Optional[int]] = mapped_column(
 **Migration:** `alembic revision --autogenerate -m "add user_id to post_comments and book_comments"`
 
 ### No new models needed
-- `Subscriber` (v11) — reused as-is for email subscription
 - `PostComment` / `BookComment` — extended with `user_id` FK
 - `User` (v12) — unchanged
 
@@ -148,9 +139,7 @@ Anonymous visitors (not logged in) continue to submit comments with `user_id=Non
 
 | Method | Path | Change |
 |--------|------|--------|
-| `GET` | `/profile/` | Expand to render newsletter + comments sections |
-| `POST` | `/profile/newsletter/subscribe/` | Add user email to Subscriber |
-| `POST` | `/profile/newsletter/unsubscribe/` | Set Subscriber.is_active=False |
+| `GET` | `/profile/` | Expand to render Telegram + comments sections |
 | `POST` | `/library/{slug}/comment/` | Set `user_id` if user is logged in (existing route, small change) |
 | `POST` | `/blog/{slug}/comment/` | Set `user_id` if user is logged in (existing route, small change) |
 
@@ -162,34 +151,11 @@ Anonymous visitors (not logged in) continue to submit comments with `user_id=Non
 
 | File | Change |
 |------|--------|
-| `app/templates/pages/profile.html` | Expand with newsletter + comments sections |
-| `app/services/users.py` | Add `get_user_comments()`, `subscribe_to_newsletter()`, `unsubscribe_from_newsletter()` |
-| `app/web/routes.py` | Add newsletter subscribe/unsubscribe routes; add `user_id` to comment submission |
+| `app/templates/pages/profile.html` | Expand with Telegram link + comments sections |
+| `app/services/users.py` | Add `get_user_comments()` |
+| `app/web/routes.py` | Add `user_id` to comment submission |
 | `app/models/post.py` | Add `user_id` FK to `PostComment` |
 | `app/models/book.py` | Add `user_id` FK to `BookComment` |
-
-### Newsletter subscription logic
-
-```python
-# app/services/users.py
-async def subscribe_to_newsletter(session, user: User) -> None:
-    existing = await session.scalar(
-        select(Subscriber).where(Subscriber.email == user.email)
-    )
-    if existing:
-        existing.is_active = True  # reactivate if previously unsubscribed
-    else:
-        session.add(Subscriber(name=user.name, email=user.email, is_active=True))
-    await session.commit()
-
-async def unsubscribe_from_newsletter(session, user: User) -> None:
-    existing = await session.scalar(
-        select(Subscriber).where(Subscriber.email == user.email)
-    )
-    if existing:
-        existing.is_active = False
-        await session.commit()
-```
 
 ### Comment query
 
@@ -233,9 +199,8 @@ async def get_user_comments(session, user_id: int, page: int = 1):
 |------|----------|
 | Migration (user_id on PostComment + BookComment) | 1 hour |
 | Wire `user_id` into comment submission routes | 1 hour |
-| Newsletter subscribe/unsubscribe service + routes | 2 hours |
 | `get_user_comments()` service query (unified post + book) | 3 hours |
-| Profile page template (newsletter section) | 1.5 hours |
+| Profile page template (Telegram section) | 0.5 hours |
 | Profile page template (comments section + pagination) | 3 hours |
 | Empty states, status badges, reply display | 1 hour |
-| **Total** | **~2 days** |
+| **Total** | **~1.5 days** |

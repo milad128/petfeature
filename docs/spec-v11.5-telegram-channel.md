@@ -4,16 +4,16 @@
 **Status:** Shipped (commit 4a4cb8c)
 **Author:** Milad Mirzaei
 **Date:** July 2026
-**Note:** v11 email subscriber model + admin page remain in the codebase (shipped in 8ffcb9e). v11.5 replaced the public footer form only — the `Subscriber` DB table and `/admin/subscribers/` are still live.
+**Note (July 2026):** the email newsletter has been removed from the product entirely. There is no `Subscriber` model and no `/admin/subscribers/` page. Telegram is the only subscription channel.
 **Depends on:** v1–v10
 
 ---
 
 ## Overview
 
-v11 (email newsletter) is cancelled. The Iranian audience is on Telegram — a channel reach of 60–80% open rate is structurally better than email for this market. v11.5 replaces the email subscription footer strip with a Telegram channel join section pointing to @petfeature.
+The email newsletter is cancelled. The Iranian audience is on Telegram — a channel reach of 60–80% open rate is structurally better than email for this market. The footer carries a Telegram channel join section pointing to @petfeature — and nothing else.
 
-This is a pure frontend change: no new model, no migration, no new route. The v11 email subscriber code in the working tree must **not be committed** — it is superseded by this spec.
+This is a pure frontend change: no new model, no migration, no new route.
 
 ---
 
@@ -47,14 +47,17 @@ Visitors to petfeature.ir — Persian-speaking Product Managers — who want to 
 - [ ] Design is RTL-consistent; button is styled to match the site's existing button palette
 - [ ] Section is responsive — stacks vertically on mobile
 
-### Code cleanup (prerequisite — do before committing v11.5)
-- [ ] Revert / do not commit: `app/models/subscriber.py`
-- [ ] Revert / do not commit: `app/schemas/subscriber.py`
-- [ ] Revert / do not commit: `app/services/subscribers.py`
-- [ ] Revert / do not commit: `alembic/versions/4716ef14fd90_add_subscribers_table.py`
-- [ ] Revert / do not commit: `app/templates/admin/subscribers_list.html`
-- [ ] Revert subscriber route additions from `app/web/routes.py` and `app/admin/routes.py`
-- [ ] Revert admin nav link for "مشترکین" from `app/templates/admin/base.html`
+### Code cleanup — remove the email newsletter (July 2026)
+
+The email newsletter is removed from the product. These artifacts were shipped and must now be deleted:
+
+- [ ] Delete `app/models/newsletter.py` (the `Subscriber` model; keep `NewsletterCampaign` if it lives here — v13 needs it)
+- [ ] Delete `app/schemas/subscriber.py`
+- [ ] Delete `app/services/subscribers.py`
+- [ ] Delete `app/templates/admin/subscribers_list.html`
+- [ ] Remove subscriber routes from `app/web/routes.py` and `app/admin/routes.py`
+- [ ] Remove the "مشترکین" admin nav link from `app/templates/admin/base.html`
+- [ ] New Alembic migration to **drop the `subscribers` table** (do not delete the original migration — it is already applied in production)
 
 ### No regressions
 - [ ] All other footer content (brand name, nav links) remains unchanged
@@ -67,7 +70,7 @@ Visitors to petfeature.ir — Persian-speaking Product Managers — who want to 
 
 | Item | Reason |
 |------|--------|
-| Subscriber count display | No data to show |
+| Subscriber count display | No list, no data to show |
 | Telegram Bot auto-posting | v13 |
 | Email subscription | Cancelled permanently |
 | Analytics on channel clicks | Nice-to-have; add later |

@@ -1,6 +1,6 @@
 # Product Backlog — پت فیچر
 
-**Shipped:** v1 Library · v2 Blog · v3 Tools · v4 Book Engagement · v5 About Redesign + Contact · v6 Visitor Analytics · v7 Comment Replies · v8 Content Enhancements · v9 Media Library + Book Link Types + Admin Filters · v11 Newsletter (email subscriber) · v11.5 Telegram Channel (@petfeature join strip)
+**Shipped:** v1 Library · v2 Blog · v3 Tools · v4 Book Engagement · v5 About Redesign + Contact · v6 Visitor Analytics · v7 Comment Replies · v8 Content Enhancements · v9 Media Library + Book Link Types + Admin Filters · v11.5 Telegram Channel (@petfeature join strip) · v13 Telegram Digest AI Agent
 
 **Planned:** v10 Post Related Books
 
@@ -8,16 +8,14 @@ See [spec.md](./spec.md) for the versioned roadmap. Nothing below has a committe
 
 ---
 
-## Epic: Newsletter → Shipped as v11 + v11.5
+## Epic: Subscription → Telegram only
 
-Both shipped July 2026.
+**Email newsletter is removed from the product (July 2026).** No email collection, no `Subscriber` model, no `/admin/subscribers/` page. Telegram is the single subscription channel.
 
-- **v11** (8ffcb9e) — Email subscriber form in footer + admin subscriber list + `Subscriber` model. Email collection kept as secondary channel.
-- **v11.5** (4a4cb8c) — Replaced public footer email form with Telegram channel join strip → `@petfeature`. Subscriber admin page remains live.
+- **v11.5** (4a4cb8c) — Telegram channel join strip in the footer → `@petfeature`.
+- **v13** — AI-drafted Telegram digest: campaign log + Claude Haiku generates a Persian digest from the new-content diff; admin edits and sends deliberately. See [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md).
 
-**Why Telegram primary:** Iranian market open rates ~60–80% vs email ~15–25%. No payment friction, no deliverability issues.
-
-**Next:** v13 Newsletter Bot — Telegram auto-post on publish + AI draft agent (Claude Haiku generates Persian digest from new content diff). See [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md).
+**Why Telegram only:** Iranian market open rates ~60–80% vs email ~15–25%. No payment friction, no deliverability issues, no list to maintain.
 
 ---
 
@@ -100,4 +98,4 @@ Deferred from v4. Simple engagement signal — no login required.
 
 ---
 
-*Backlog last updated: July 2026 — v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) shipped; v10 planned; v12 User Auth + v13 Newsletter Bot scoped into specs; Reading List v14+*
+*Backlog last updated: July 2026 — v1–v9, v11.5 (Telegram Channel), v13 (Telegram Digest) shipped; email newsletter removed; v10 planned; v12 User Auth + v13 Newsletter Bot scoped into specs; Reading List v14+*

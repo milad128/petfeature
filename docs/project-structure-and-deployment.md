@@ -165,7 +165,7 @@ petfeature/
 | `GET /api/v1/health` | Health check for deploy |
 | `/static/*` | CSS, JS, uploaded files |
 
-**Not yet built:** `/path/` (Roadmap), `/newsletter/`, `/contact/`, `/admin/analytics/`.
+**Not yet built:** `/path/` (Roadmap).
 
 ---
 
@@ -190,7 +190,7 @@ This layout matches that model:
 | **v2** | Blog (`Post`, `PostRating`, `PostComment`), post admin + comment moderation | **Shipped** |
 | **v3** | Tools (`Tool`, `ToolFile`), tool admin, cross-links to books/posts | **Shipped** |
 | **v4** | Book Engagement (`BookRating`, `BookComment`), rating widget, comment moderation | **Shipped** |
-| **Backlog** | Roadmap (`PathStep`), newsletter/contact, analytics dashboard | Unscheduled |
+| **Backlog** | Roadmap (`RoadmapLevel` / `RoadmapBlock` / `RoadmapResource`) | Unscheduled |
 
 Routes stay thin; logic lives in `services/` so web and admin do not duplicate code.
 
@@ -332,7 +332,7 @@ CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --proxy-headers
 | [spec-v1-library.md](./spec-v1-library.md) | v1 scope: library + about (shipped) |
 | [spec-v2-blog.md](./spec-v2-blog.md) | v2 scope: blog (shipped) |
 | [spec-v3-tools.md](./spec-v3-tools.md) | v3 scope: tools (shipped) |
-| [product backlog.md](./product%20backlog.md) | Unscheduled: roadmap, newsletter, analytics |
+| [product backlog.md](./product%20backlog.md) | Unscheduled: roadmap, book like |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
 
 ---

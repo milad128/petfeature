@@ -31,7 +31,7 @@ Overview and index for petfeature.ir. Detailed requirements live in version-spec
 
 | Epic | Description | Status |
 |------|-------------|--------|
-| **Telegram Channel** | Telegram channel join button in footer (v11.5 — shipped); Newsletter Bot auto-post + AI draft (v13 — backlog) | Shipped / Backlog |
+| **Telegram Channel** | Telegram channel join strip in footer (v11.5) + AI-drafted Telegram digest (v13) | **Shipped** |
 | **Book Engagement** | Star ratings and comments on library books | **Shipped** (v4) |
 | **Contact** | Contact page with form + admin inbox | **Shipped** (v5) |
 | **Visitor Analytics** | Site-wide page-view tracking and admin dashboard (all page types) | **Shipped** (v6) |
@@ -53,8 +53,7 @@ flowchart LR
   v7 --> v8["v8 ✓\nContent Enhancements"]
   v8 --> v9["v9 ✓\nMedia Library"]
   v9 --> v10["v10 📋\nPost Related Books"]
-  v10 --> v11["v11 ✓\nNewsletter"]
-  v11 --> v11.5["v11.5 ✓\nTelegram Channel"]
+  v10 --> v11.5["v11.5 ✓\nTelegram Channel"]
   v11.5 --> v12["v12 📋\nUser Auth"]
   v12 --> v13.5["v13.5 📋\nTG Popup"]
   v13.5 --> v14["v14 📋\nUser Dashboard"]
@@ -73,12 +72,11 @@ flowchart LR
 | **v8** | [Product Spec v8](./spec-v8-content-enhancements.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
 | **v9** | [Product Spec v9](./spec-v9-media-library.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
 | **v10** | [Product Spec v10](./spec-v10-post-related-books.md) | Post Related Books | Related books widget in admin post form; related books section on public post detail page | **Planned** |
-| **v11** | [Product Spec v11](./spec-v11-newsletter.md) | Newsletter | Email subscriber form + admin subscriber list + `Subscriber` model | **Shipped** |
-| **v11.5** | [Product Spec v11.5](./spec-v11.5-telegram-channel.md) | Telegram Channel | Replace public footer email form with @petfeature Telegram join strip; subscriber admin remains live | **Shipped** |
+| **v11.5** | [Product Spec v11.5](./spec-v11.5-telegram-channel.md) | Telegram Channel | @petfeature Telegram join strip in the footer — the single subscription channel | **Shipped** |
 | **v12** | [Product Spec v12](./spec-v12-user-auth.md) | User Auth via Google Login | Google OAuth only (no email/password, no SMTP); auto-registration on first login; profile page; admin user list | **Backlog** |
-| **v13** | [Product Spec v13](./spec-v13-newsletter-ai-agent.md) | Newsletter AI Draft Agent | Campaign log + AI draft agent (Claude Haiku generates Persian digest from new content diff); admin compose panel; no auto-posting | **Shipped** |
+| **v13** | [Product Spec v13](./spec-v13-newsletter-ai-agent.md) | Telegram Digest AI Agent | Campaign log + AI draft agent (Claude Haiku generates Persian digest from new content diff); admin compose panel; sends to Telegram; no auto-posting | **Shipped** |
 | **v13.5** | [Product Spec v13.5](./spec-v13.5-telegram-popup.md) | Telegram Popup | 30-second popup inviting visitors to join @petfeature; dismissed once via localStorage; no DB | **Backlog** |
-| **v14** | [Product Spec v14](./spec-v14-user-dashboard.md) | User Dashboard | Newsletter subscribe/unsubscribe + My Comments with admin replies; expands v12 profile page | **Backlog** |
+| **v14** | [Product Spec v14](./spec-v14-user-dashboard.md) | User Dashboard | My Comments with admin replies + Telegram channel link; expands v12 profile page | **Backlog** |
 | **v15** | [Product Spec v15](./spec-v15-bookshelf.md) | Bookshelf (قفسه کتاب) | Personal bookshelf with reading statuses; social proof save count; admin save counts; requires v12 | **Backlog** |
 
 ---
@@ -87,7 +85,7 @@ flowchart LR
 
 **Readers:** PM learning is scattered; hard to find complete, curated book notes in one place — and no PM-focused tools in Persian.
 
-**Admin:** v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next. After that: v12 User Auth → v13 Newsletter Bot (Telegram auto-post + AI draft agent) → Reading List (v14+) → Roadmap.
+**Admin:** v1–v9, v11.5 (Telegram Channel) and v13 (Telegram Digest AI Agent) all shipped. v10 (Post Related Books) is next. After that: v12 User Auth → v14 User Dashboard → v15 Bookshelf → v16 Learning Roadmap.
 
 ---
 
@@ -106,12 +104,11 @@ flowchart LR
 | [spec-v8-content-enhancements.md](./spec-v8-content-enhancements.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
 | [spec-v9-media-library.md](./spec-v9-media-library.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |
 | [spec-v10-post-related-books.md](./spec-v10-post-related-books.md) | PRD for Post Related Books — admin post form widget + public post detail display (planned) |
-| [spec-v11-newsletter.md](./spec-v11-newsletter.md) | PRD for Newsletter — email subscriber form + admin list + Subscriber model (shipped) |
-| [spec-v11.5-telegram-channel.md](./spec-v11.5-telegram-channel.md) | PRD for Telegram Channel — replace footer email form with @petfeature join strip (shipped) |
+| [spec-v11.5-telegram-channel.md](./spec-v11.5-telegram-channel.md) | PRD for Telegram Channel — @petfeature join strip in the footer (shipped) |
 | [spec-v12-user-auth.md](./spec-v12-user-auth.md) | PRD for User Auth — Google Login only; no email/password; auto-registration; profile page; admin user list (backlog) |
-| [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md) | PRD for Newsletter AI Draft Agent — campaign log + AI draft via Claude Haiku + admin compose panel; no auto-posting (shipped) |
+| [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md) | PRD for Telegram Digest AI Agent — campaign log + AI draft via Claude Haiku + admin compose panel; no auto-posting (shipped) |
 | [spec-v13.5-telegram-popup.md](./spec-v13.5-telegram-popup.md) | PRD for Telegram Popup — 30s delay popup inviting visitors to join @petfeature; localStorage dismiss; no DB (backlog) |
-| [spec-v14-user-dashboard.md](./spec-v14-user-dashboard.md) | PRD for User Dashboard — newsletter subscribe/unsubscribe + My Comments with admin replies (backlog) |
+| [spec-v14-user-dashboard.md](./spec-v14-user-dashboard.md) | PRD for User Dashboard — My Comments with admin replies + Telegram channel link (backlog) |
 | [spec-v15-bookshelf.md](./spec-v15-bookshelf.md) | PRD for Bookshelf (قفسه کتاب) — personal reading list with statuses, social proof, admin save counts (backlog) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
@@ -174,15 +171,9 @@ flowchart LR
 - Admin: Post form (new + edit) gains a related books picker widget — select books from the library to associate with a post
 - Public: Post detail page displays a "کتاب‌های مرتبط" section below the body, linking each associated book into the library
 
-### v11 — Newsletter (shipped)
-- Visitor subscribes via footer form (name + email); success message shown; duplicate emails silently accepted; honeypot spam protection
-- Admin: View subscriber list at `/admin/subscribers/` with name, email, Jalali date, and count; paginated
-- `Subscriber` model + Alembic migration shipped; email collection only — no sending in v11
-
 ### v11.5 — Telegram Channel (shipped)
 - Footer email form replaced with Telegram channel join strip pointing to `https://t.me/petfeature`
 - Strip shows: Persian headline, one-line description, "عضویت در کانال" button, @petfeature handle
-- v11 `Subscriber` admin page and DB table remain live — email collection kept as a secondary channel
 - Logo replaced with petfeature brand images; Vazirmatn Bold font added (shipped in same batch)
 
 ### v12 — User Auth via Google Login (backlog)
@@ -193,10 +184,10 @@ flowchart LR
 - Admin: user list at `/admin/users/` with name, email, Jalali join date, status; deactivate/reactivate
 - Library: `authlib`; new env vars: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`
 
-### v13 — Newsletter AI Draft Agent (shipped)
-- Admin: Campaign log at `/admin/newsletters/` — all sent newsletters and drafts in reverse chronological order
+### v13 — Telegram Digest AI Agent (shipped)
+- Admin: Campaign log at `/admin/newsletters/` — all sent Telegram digests and drafts in reverse chronological order
 - Admin: "خبرنامه جدید" → choose AI draft or manual compose
-- AI Draft: one click queries all content published since last sent campaign → passes titles + excerpts to Claude Haiku → returns Persian Telegram-formatted newsletter draft
+- AI Draft: one click queries all content published since last sent campaign → passes titles + excerpts to Claude Haiku → returns a Persian Telegram-formatted digest draft
 - If no new content since last send → shows message; no draft generated
 - Admin edits draft in textarea, saves as draft or sends directly to @petfeature channel
 - On send: campaign status → `sent`, `sent_at` recorded, message posted to Telegram via Bot API
@@ -214,7 +205,7 @@ flowchart LR
 
 ### v14 — User Dashboard (backlog)
 - Expands the v12 profile page into a dashboard with two sections
-- **Newsletter section:** shows email subscription status (from Subscriber model); subscribe/unsubscribe without re-entering email (uses Google account email); Telegram channel join button
+- **Telegram section:** join button for the @petfeature channel — the single subscription channel
 - **My Comments section:** all PostComments + BookComments posted by the logged-in user; shows content title (linked), comment text, Jalali date, status badge (در انتظار / تأیید شده / رد شده), and admin reply if one exists
 - Requires: `user_id` nullable FK added to `PostComment` + `BookComment` (new migration); new comments from logged-in users get `user_id` set automatically
 
@@ -231,8 +222,10 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 | Item | Notes |
 |------|-------|
 | Home page library preview | Static hardcoded cards — not loaded from DB |
-| Telegram channel | Join button in footer — v11.5 (planned); Newsletter Bot auto-post — v13 (backlog) |
+| Telegram channel | Join strip in footer (v11.5 — shipped); AI-drafted digest (v13 — shipped) |
 
 ---
 
-*July 2026 · v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next. v15 Bookshelf spec written — blocked on v12 User Auth.*
+*July 2026 · v1–v9, v11.5 (Telegram Channel) and v13 (Telegram Digest AI Agent) all shipped. v10 (Post Related Books) is next. v15 Bookshelf spec written — blocked on v12 User Auth.*
+
+> **Email newsletter removed (July 2026).** The email subscriber form, the `Subscriber` model and the `/admin/subscribers/` page are no longer part of the product. Telegram is the only subscription channel. The former v11 spec has been deleted; v11.5 and v13 remain and are Telegram-only.

@@ -30,7 +30,7 @@ CONTEXT
 DELIVERABLES — design these screens (details in the brief below):
 1. Login page (single «ورود با گوگل» button)
 2. Header auth states (logged out vs logged in)
-3. User Dashboard (/profile/) — user info + Newsletter section + My Comments section
+3. User Dashboard (/profile/) — user info + Telegram section + My Comments section
 4. Bookshelf page (/profile/bookshelf/) — summary bar + book cards + empty state
 5. Book detail additions — save-to-shelf button, status picker, social-proof count
 6. "خواندم" review modal — star rating + optional comment
@@ -100,12 +100,9 @@ Two variants of the existing site header:
 Logged-in only. Structure top to bottom:
 
 1. **User info header:** name, email (`dir="ltr"`), join date (Jalali).
-2. **Section A — خبرنامه (Newsletter):**
-   - Email subscription state:
-     - Subscribed → «✓ ایمیل شما در لیست خبرنامه است» + «لغو اشتراک» button.
-     - Not subscribed → «عضویت در خبرنامه ایمیلی» button.
-     - No email input field — email comes from Google account.
-   - Telegram: «عضویت در کانال تلگرام @petfeature» button (opens `https://t.me/petfeature` in new tab) + one-line description.
+2. **Section A — تلگرام (Telegram):**
+   - A single «عضویت در کانال تلگرام @petfeature» button (opens `https://t.me/petfeature` in a new tab) + one-line description.
+   - **No subscription state to design.** The email newsletter was removed from the product (July 2026) — there is no subscribe/unsubscribe toggle, no email field, and no `Subscriber` record. Telegram is the only channel and joining happens on Telegram's side.
 3. **Section B — نظرات من (My Comments):**
    - List of the user's comments across books + posts, newest first.
    - **Comment card:** content-type badge («یادداشت» / «کتاب»), linked title, comment text (truncate >200 chars with «بیشتر»), Jalali date, status badge.
@@ -205,7 +202,7 @@ Match the existing admin panel styling.
 | Screen | Feature | Spec |
 |--------|---------|------|
 | Login, Header auth, Admin users | v12 User Auth | [spec-v12-user-auth.md](./spec-v12-user-auth.md) |
-| Dashboard (Newsletter + My Comments) | v14 User Dashboard | [spec-v14-user-dashboard.md](./spec-v14-user-dashboard.md) |
+| Dashboard (Telegram + My Comments) | v14 User Dashboard | [spec-v14-user-dashboard.md](../spec-v14-user-dashboard.md) |
 | Bookshelf, Book detail additions, Review modal, Admin column | v15 Bookshelf | [spec-v15-bookshelf.md](./spec-v15-bookshelf.md) |
 
 ---

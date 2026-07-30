@@ -3329,71 +3329,105 @@ main { padding: 0; }
   gap: 4px;
 }
 
-/* ── Bookshelf widget on book detail page (v15) ───────────────────────── */
-.bookshelf-widget {
-  margin-top: 1.5rem;
-  padding: 1.1rem 1.25rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+/* ── Bookshelf widget — aside on book detail page (v15) ───────────────── */
+.bd2-bookshelf {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: .6rem;
 }
-.bsw-label {
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
-.bsw-pills {
-  display: flex;
-  flex-wrap: wrap;
+/* Status badge (shown when book already in shelf) */
+.bd2-bs-badge {
+  display: inline-flex;
   align-items: center;
-  gap: .5rem;
+  gap: 6px;
+  font-size: .74rem;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+  align-self: flex-start;
 }
-.bsw-pill {
-  border: 1.5px solid var(--border);
-  background: transparent;
-  color: var(--text);
+.bd2-bs-badge--want  { background: color-mix(in srgb, var(--muted) 12%, transparent); border: 1px solid color-mix(in srgb, var(--muted) 32%, transparent); color: var(--muted); }
+.bd2-bs-badge--reading { background: color-mix(in srgb, #d9a05f 12%, transparent); border: 1px solid color-mix(in srgb, #d9a05f 32%, transparent); color: #d9a05f; }
+.bd2-bs-badge--read  { background: color-mix(in srgb, #8fbf86 12%, transparent); border: 1px solid color-mix(in srgb, #8fbf86 32%, transparent); color: #8fbf86;  }
+/* Pill row */
+.bd2-bs-pills {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.bd2-bs-pill {
   font-family: inherit;
-  font-size: .82rem;
-  padding: 5px 14px;
-  border-radius: 100px;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 7px 15px;
+  border-radius: 20px;
   cursor: pointer;
-  transition: border-color .15s, background .15s, color .15s;
+  transition: all .16s;
+  white-space: nowrap;
+  text-align: center;
+  background: var(--raise);
+  border: 1px solid var(--border);
+  color: var(--muted);
 }
-.bsw-pill:hover { border-color: var(--accent); color: var(--accent); }
-.bsw-pill--active {
+.bd2-bs-pill:hover:not(.bd2-bs-pill--on) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* Active states per status (matching design) */
+.bd2-bs-pill--want.bd2-bs-pill--on,
+.bd2-bs-pill--reading.bd2-bs-pill--on {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--bg);
-  font-weight: 600;
+  color: #171210;
 }
-.bsw-pill--sm { font-size: .77rem; padding: 4px 11px; }
-.bsw-remove {
+.bd2-bs-pill--read.bd2-bs-pill--on {
+  background: color-mix(in srgb, #8fbf86 14%, transparent);
+  border: 1px solid color-mix(in srgb, #8fbf86 40%, transparent);
+  color: #8fbf86;
+}
+/* Remove link */
+.bd2-bs-remove-form { margin: 0; }
+.bd2-bs-remove {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: .78rem;
-  color: var(--faint);
   font-family: inherit;
-  padding: 0 4px;
-  text-decoration: underline;
+  font-size: .75rem;
+  color: var(--faint);
+  padding: 0;
+  text-align: center;
+  width: 100%;
 }
-.bsw-remove:hover { color: var(--text); }
-.bsw-cta {
-  font-size: .9rem;
+.bd2-bs-remove:hover { color: #d98878; }
+/* Login nudge */
+.bd2-bs-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: .82rem;
+  font-weight: 600;
   color: var(--accent);
   text-decoration: none;
-  font-weight: 600;
+  padding: 8px 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 20px;
+  transition: background .15s;
 }
-.bsw-save-count {
-  font-size: .8rem;
+.bd2-bs-cta:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--accent); }
+/* Social proof count */
+.bd2-bs-count {
+  font-size: .74rem;
   color: var(--faint);
+  text-align: center;
   margin: 0;
 }
+/* Bookshelf page pill (reuse with smaller size) */
+.bsw-pill--sm { font-size: .77rem; padding: 4px 11px; }
 
 /* ── Review modal (v15) ────────────────────────────────────────────────── */
 .review-modal-overlay {

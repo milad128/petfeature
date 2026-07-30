@@ -74,15 +74,16 @@ app/
 | v8 | Content Enhancements (book website links, post related books, tool link downloads) | **Shipped** |
 | v9 | Media Library (admin file manager + URL copy) + Book link types article/book + Admin books filter + Cover preview fit + بلاگ→یادداشت rename | **Shipped** |
 | v10 | Post Related Books (admin post form widget + public post detail display) | **Planned** |
-| v11 | Newsletter (email subscriber form + admin list + Subscriber model) | **Shipped** |
-| v11.5 | Telegram Channel (replace footer email form with @petfeature join strip; subscriber admin kept) | **Shipped** |
+| v11.5 | Telegram Channel (@petfeature join strip in footer — the single subscription channel) | **Shipped** |
 | v12 | User Auth via Google Login (Google OAuth only; no email/password; auto-registration; profile page; admin user list) | **Backlog** |
-| v13 | Newsletter AI Draft Agent (campaign log; AI draft via Claude Haiku from new content diff; admin compose + send to Telegram; no auto-posting) | **Shipped** |
+| v13 | Telegram Digest AI Agent (campaign log; AI draft via Claude Haiku from new content diff; admin compose + send to Telegram; no auto-posting) | **Shipped** |
 | v13.5 | Telegram Popup (30s delay modal inviting visitors to join @petfeature; localStorage dismiss; no DB) | **Shipped** |
-| v14 | User Dashboard (newsletter subscribe/unsubscribe + My Comments with admin replies; expands v12 profile page; requires v12) | **Backlog** |
+| v14 | User Dashboard (My Comments with admin replies + Telegram channel link; expands v12 profile page; requires v12) | **Backlog** |
 | Backlog | Reading List (v15+), Roadmap | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/spec.md` (index), `docs/spec-v1-library.md` through `docs/spec-v13-newsletter-ai-agent.md`.
+Product specs: `docs/spec.md` (index), `docs/spec-v1-library.md` through `docs/spec-v15-bookshelf.md`.
+
+> **Email newsletter removed (July 2026).** No `Subscriber` model, no `/admin/subscribers/` page, no email collection. Telegram (`@petfeature`) is the only subscription channel.
 
 ## Environment variables
 

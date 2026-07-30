@@ -1,6 +1,6 @@
 # Use Case Diagram — petfeature.ir
 
-UML use case diagram for **petfeature.ir** — v1 Library, v2 Blog, v3 Tools, and v4 Book Engagement (all shipped). Backlog epics (Roadmap, newsletter, analytics) are not shown here until scoped into a version.
+UML use case diagram for **petfeature.ir** — v1 Library, v2 Blog, v3 Tools, and v4 Book Engagement (all shipped). Backlog epics (Roadmap, analytics) are not shown here until scoped into a version.
 
 **Specs:** [v1](./spec-v1-library.md) · [v2](./spec-v2-blog.md) · [v3](./spec-v3-tools.md) · [v4](./spec-v4-book-engagement.md) · [Backlog](./product%20backlog.md) · [Overview](./spec.md)
 
@@ -63,7 +63,7 @@ Visitor
 | **v2** | Blog — posts, ratings, comments, sharing (shipped) |
 | **v3** | Tools — downloadable PM template library (shipped) |
 | **v4** | Book Engagement — star ratings + moderated comments on books (shipped) |
-| **Backlog** | Roadmap, newsletter, contact, analytics — unscheduled |
+| **Backlog** | Roadmap, contact, analytics — unscheduled |
 
 ---
 

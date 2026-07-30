@@ -65,6 +65,54 @@
         </div>
         {% endif %}
       </div>
+
+      {# ── Bookshelf widget (v15) — under book picture in aside ── #}
+      <div class="bd2-bookshelf">
+        {% if request.state.current_user %}
+          {# Status badge (when already saved) #}
+          {% if shelf_item %}
+          <div class="bd2-bs-badge bd2-bs-badge--{{ shelf_item.status }}">
+            <span aria-hidden="true">{% if shelf_item.status == 'read' %}✓{% elif shelf_item.status == 'reading' %}◐{% else %}＋{% endif %}</span>
+            {{ shelf_item.status_label }}
+          </div>
+          {% endif %}
+
+          {# Three status pills #}
+          <div class="bd2-bs-pills">
+            {% for val, label in [('want', 'می‌خواهم بخوانم'), ('reading', 'در حال خواندن'), ('read', 'خواندم')] %}
+            <form method="post" action="{{ url_for('bookshelf_add') }}" style="display:contents;">
+              <input type="hidden" name="book_id" value="{{ book.id }}">
+              <input type="hidden" name="status" value="{{ val }}">
+              <button type="submit"
+                class="bd2-bs-pill bd2-bs-pill--{{ val }} {% if shelf_item and shelf_item.status == val %}bd2-bs-pill--on{% endif %}"
+                aria-pressed="{{ 'true' if shelf_item and shelf_item.status == val else 'false' }}">
+                {{ label }}{% if shelf_item and shelf_item.status == val %} ✓{% endif %}
+              </button>
+            </form>
+            {% endfor %}
+          </div>
+
+          {# Remove link (shown only when book is on shelf) #}
+          {% if shelf_item %}
+          <form method="post" action="{{ url_for('bookshelf_remove') }}" class="bd2-bs-remove-form">
+            <input type="hidden" name="book_id" value="{{ book.id }}">
+            <button type="submit" class="bd2-bs-remove">حذف از قفسه</button>
+          </form>
+          {% endif %}
+
+        {% else %}
+          {# Not logged in — nudge to login #}
+          <a href="{{ url_for('login') }}?next={{ request.url.path }}" class="bd2-bs-cta">
+            <span aria-hidden="true">＋</span> افزودن به قفسه
+          </a>
+        {% endif %}
+
+        {# Social proof counter #}
+        {% if save_count >= 2 %}
+        <p class="bd2-bs-count">{{ save_count | fa_digits }} نفر در قفسه‌شان دارند</p>
+        {% endif %}
+      </div>
+
     </aside>
 
     {# ── Main content ──────────────────────────── #}
@@ -120,41 +168,6 @@
             {% endif %}
           </span>
         </div>
-      </div>
-
-      {# ── Bookshelf (v15) ────────────────────────────────────────── #}
-      <div class="bookshelf-widget" id="bookshelf-widget">
-        {% if request.state.current_user %}
-          {# Status picker — always visible; current status shown as active pill #}
-          <div class="bsw-label">افزودن به قفسه‌ام</div>
-          <div class="bsw-pills">
-            {% for val, label in [('want', 'می‌خواهم بخوانم'), ('reading', 'در حال خواندن'), ('read', 'خواندم')] %}
-            <form method="post" action="{{ url_for('bookshelf_add') }}" style="display:contents;">
-              <input type="hidden" name="book_id" value="{{ book.id }}">
-              <input type="hidden" name="status" value="{{ val }}">
-              <button type="submit"
-                class="bsw-pill {% if shelf_item and shelf_item.status == val %}bsw-pill--active{% endif %}"
-                aria-pressed="{{ 'true' if shelf_item and shelf_item.status == val else 'false' }}">
-                {% if shelf_item and shelf_item.status == val %}✓ {% endif %}{{ label }}
-              </button>
-            </form>
-            {% endfor %}
-            {% if shelf_item %}
-            <form method="post" action="{{ url_for('bookshelf_remove') }}" style="display:contents;">
-              <input type="hidden" name="book_id" value="{{ book.id }}">
-              <button type="submit" class="bsw-remove">حذف از قفسه</button>
-            </form>
-            {% endif %}
-          </div>
-        {% else %}
-          {# Not logged in — redirect to login #}
-          <a href="{{ url_for('login') }}?next={{ request.url.path }}" class="bsw-cta">
-            افزودن به قفسه ←
-          </a>
-        {% endif %}
-        {% if save_count >= 2 %}
-        <p class="bsw-save-count">{{ save_count | fa_digits }} نفر این کتاب را در قفسه‌شان دارند</p>
-        {% endif %}
       </div>
 
       {# Note #}
