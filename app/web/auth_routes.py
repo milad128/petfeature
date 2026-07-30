@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import logging
+
+from authlib.integrations.base_client.errors import MismatchingStateError, OAuthError
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,7 +15,28 @@ from app.core.database import get_db
 from app.core.templates import templates
 from app.services import users as user_service
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
+
+
+async def _fetch_google_userinfo(request: Request, token: dict) -> dict:
+    """Return Google profile claims from token userinfo, id_token, or userinfo API."""
+    userinfo = token.get("userinfo")
+    if isinstance(userinfo, dict) and userinfo.get("sub"):
+        return userinfo
+
+    if "id_token" in token:
+        try:
+            parsed = await oauth.google.parse_id_token(request, token)
+            if isinstance(parsed, dict) and parsed.get("sub"):
+                return parsed
+        except Exception:
+            logger.warning("Google id_token parse failed; falling back to userinfo endpoint", exc_info=True)
+
+    resp = await oauth.google.get("userinfo", token=token)
+    resp.raise_for_status()
+    return resp.json()
 
 
 # ── Login page ────────────────────────────────────────────────────────────────
@@ -45,12 +69,24 @@ async def auth_google_callback(
     request: Request, db: AsyncSession = Depends(get_db)
 ):
     try:
-        token = await oauth.google.authorize_access_token(request)
-        userinfo = token.get("userinfo") or {}
-        google_id: str = userinfo["sub"]
-        email: str = userinfo["email"].lower()
-        name: str = userinfo.get("name", email)
+        token = await oauth.google.authorize_access_token(
+            request, redirect_uri=settings.google_redirect_uri
+        )
+        userinfo = await _fetch_google_userinfo(request, token)
+        google_id = userinfo["sub"]
+        email = userinfo["email"].lower()
+        name = userinfo.get("name", email)
+    except MismatchingStateError:
+        logger.warning("Google OAuth state mismatch — session cookie likely lost between redirects")
+        return RedirectResponse(url="/login/?error=state", status_code=303)
+    except OAuthError as exc:
+        logger.error("Google OAuth token exchange failed: %s", exc.error, exc_info=True)
+        return RedirectResponse(url="/login/?error=oauth", status_code=303)
+    except (KeyError, TypeError, ValueError) as exc:
+        logger.error("Google OAuth profile missing required fields: %s", exc, exc_info=True)
+        return RedirectResponse(url="/login/?error=profile", status_code=303)
     except Exception:
+        logger.exception("Google OAuth callback failed")
         return RedirectResponse(url="/login/?error=generic", status_code=303)
 
     user = await user_service.get_or_create_user(db, google_id, email, name)

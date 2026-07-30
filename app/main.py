@@ -57,7 +57,12 @@ app = FastAPI(
 # Desired request flow: Analytics → Session → UserAuth → App
 # So add order: UserAuth first (innermost), then Session, then Analytics.
 app.add_middleware(UserAuthMiddleware)                                    # innermost: reads session → sets request.state.current_user
-app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)    # decodes cookie → request.session
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.secret_key,
+    same_site="lax",
+    https_only=not settings.debug,
+)
 app.add_middleware(AnalyticsMiddleware)                                   # outermost: logs page views
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
