@@ -8,7 +8,9 @@
 
 ## How to read this document
 
-The roadmap has two layers.
+The roadmap has two layers, plus one separate track.
+
+**[Roadmap 0 — Getting Hired](#roadmap-0--getting-hired-as-a-pm)** sits outside the ladder entirely. It covers résumé, portfolio, interview practice, job search and negotiation, and it ends the day you accept an offer. The six seniority roadmaps below all assume you already hold the job.
 
 **The competency depth matrix** says *how good you need to be* at each of 15 competencies, at each of 6 levels. It is the assessment rubric — your gap on any competency is `required depth at your target level − your current depth`.
 
@@ -72,7 +74,8 @@ Then two modifiers, each **+50%**:
 
 | # | Level | Specification | Required | Reading | Sprints | Tenure |
 |---|-------|--------------|----------|---------|---------|--------|
-| 1 | **Beginner (APM)** | Learns fundamentals, contributes to execution under guidance, develops core analytical, technical, and communication skills. | 18 | ~57h | 31 wk (~7 mo) | 12–24 months |
+| **0** | **Getting Hired** *(not a seniority level)* | Decides whether PM is the right career, builds a résumé and portfolio that read as product, practises the three interview formats, runs a job search, and negotiates an offer. | 13 | ~35h | 18 wk (~4 mo) | 3–6 months (a campaign) |
+| 1 | **Beginner (APM)** | Learns fundamentals, contributes to execution under guidance, develops core analytical, technical, and communication skills. | 15 | ~53h | 31 wk (~7 mo) | 12–24 months |
 | 2 | **Product Manager** | Independently owns a product or feature, discovers customer problems, prioritizes solutions, and delivers measurable business outcomes. | 18 | ~81h | 58 wk (~13.5 mo) | 24–36 months |
 | 3 | **Senior Product Manager** | Solves ambiguous product problems, leads strategic initiatives, mentors other PMs, and influences direction across multiple teams. | 16 | ~86h | 54 wk (~12.5 mo) | 24–36 months |
 | 4 | **Product Lead** | Leads a small group of PMs, sets direction for a significant product area, bridges IC excellence and people leadership. | 8 | ~49h | 19 wk (~4.5 mo) | 12–24 months |
@@ -81,7 +84,9 @@ Then two modifiers, each **+50%**:
 
 > **Tenure** = how long to actually work at that level before levelling up. **Sprints** = total weeks of deliberate, one-at-a-time study. The gap between the two columns is maturation — real, unavoidable, and impossible to accelerate.
 
-**Full path: 86 required resources · ~421 hours of reading · 258 sprint-weeks (~60 months) · 10–17 years of career time**
+**Full path: 96 required resources · ~452 hours of reading · 276 sprint-weeks (~64 months) · 10–17 years of career time**
+
+**Roadmap 0 is a separate track, not a seventh level.** It runs *before* the ladder starts and ends the day you accept an offer. Everything about getting hired — résumé, portfolio, interview practice, job search, negotiation — lives there and nowhere else. The six seniority roadmaps assume you already hold the job.
 
 ### Reading hours lie; the tenure gap doesn't
 
@@ -197,9 +202,184 @@ Regardless of level, these five alone cover the full arc from craft to company. 
 
 ---
 
+# Roadmap 0 — Getting Hired as a PM
+
+**Not a seniority level.** This is a campaign that runs before the ladder starts and ends the day you accept an offer.
+
+**Duration:** 3–6 months · **Sprints:** 18 weeks (~4 months) · **Reading:** 13 required resources, ~35 hours
+
+### Why this is separate
+
+Every other roadmap in this document answers *"how do I get good at this job?"* This one answers *"how do I get this job?"* — a different question with a different clock. A job hunt is a campaign with an end date, not a tenure. It has no maturation tail: the day you sign, it is over and Level 1 begins.
+
+Keeping it separate also fixes a real problem. Interview preparation was previously buried inside Level 1's Entry section, which meant a working APM was being handed résumé and interview material she had no use for, while a career-switcher got two books and no job-hunt plan at all. Those are different people with different needs.
+
+### Who this is for
+
+- Career-switchers moving into product from engineering, design, marketing, support, or consulting
+- Recent graduates targeting an APM or associate role
+- Working PMs changing companies — skip §1, and treat §2–3 as a refresh
+
+### The four phases
+
+| Phase | Question it answers | Sprints |
+|---|---|:--:|
+| **آماده‌سازی · Prepare** | Is this the right career, and does my story read as product? | 6 weeks |
+| **تمرین · Practice** | Can I perform in the three interview formats? | 9 weeks |
+| **اقدام · Apply** | How do I actually find and reach the roles? | 2 weeks (then ongoing) |
+| **پذیرش · Close** | How do I negotiate and accept well? | 1 week |
+
+Unlike the seniority roadmaps, **phases here overlap on purpose.** Applying starts while you are still practising — you cannot rehearse your way to readiness, and early interviews are the only honest feedback you will get.
+
+---
+
+## Phase 1 · آماده‌سازی — Prepare
+
+### 1 · Role clarity — is this actually the job you want?
+**Sprint: 1 week** · Matures over 1 month · Reading: 3.5h
+
+Most people entering product management are optimising for a title they cannot describe. Spend a week making sure you want the actual daily work — which is mostly writing, meetings, and saying no — rather than the idea of it.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| "What is product management?" — Lenny Rachitsky | Article (free) | 20m | ⭐ | 🔴 | required |
+| *Cracking the PM Career* — McDowell & Bavaro (role chapters) | Book | 3h | ⭐ | 🔴 | required |
+| *Inspired* — Cagan, ch. 1–5 | Book | 3h | ⭐⭐ | 🔴 | optional |
+
+**Homework:** Interview one working PM for 30 minutes — typical week, hardest part, what they wish they had known earlier. Write a one-page summary, then answer honestly in writing whether that week appeals to you.
+
+### 2 · Résumé & career narrative
+**Sprint: 2 weeks** · Matures over 2 months · Reading: 5h
+
+The most common failure is not a weak background — it is a résumé written in responsibility language for a job that hires on outcome language. Your existing work almost certainly contains product signal; it is usually just described wrong.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| *Cracking the PM Interview* — McDowell & Bavaro (résumé chapters) | Book | 3h | ⭐ | 🔴 | required |
+| PM résumé guidance — Lenny Rachitsky | Articles | 1h | ⭐ | 🔴 | required |
+| *Writing for Busy Readers* — Rogers & Levy | Book | 4h | ⭐ | 🔴 | optional |
+
+**Homework:** Rewrite every bullet on your résumé so it names an outcome and a number. Any bullet that survives as "responsible for…" gets deleted. Then hand it to someone who does not know your work and ask them what you actually achieved.
+
+### 3 · Portfolio & case studies
+**Sprint: 3 weeks** · Matures over 2 months · Reading: 4h
+
+A portfolio is the strongest asset a career-switcher can build, because it removes the need to be believed. Two written case studies beat a year of claiming.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| *Decode and Conquer* — Lewis Lin (CIRCLES framework) | Book | 4h | ⭐ | 🔴 | required |
+| *The Product Book* — Product School | Book | 5h | ⭐ | 🔴 | optional |
+
+**Homework:** Write two case studies. One from real work you have done — reframed as problem, decision, tradeoff, outcome. One from a product you use daily, treated as if you owned it: what you would change, why, and what you would measure. Publish both somewhere linkable.
+
+---
+
+## Phase 2 · تمرین — Practice
+
+Three interview formats, three different muscles. All three are habit competencies: reading about them produces almost nothing, and the only real reps come from mock interviews and live loops.
+
+### 4 · Product sense interview
+**Sprint: 4 weeks** · Matures over 3 months · Reading: 5h · *Habit*
+
+The format most people fail. Interviewers are testing whether you can structure an ambiguous question, pick a user, and defend a tradeoff — not whether your idea is clever.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| PM Exercises — pmexercises.com | Practice tool | ongoing | ⭐⭐ | 🔴 | required |
+| *Cracking the PM Interview* — product questions | Book | 3h | ⭐⭐ | 🔴 | required |
+| Lewis Lin's interview prep material | Guide | 2h | ⭐⭐ | 🔴 | optional |
+
+**Homework:** Answer one product design question out loud every day for two weeks, recorded, twenty minutes each. Watch three of them back. You are looking for one thing: did you state your structure before you started solving?
+
+### 5 · Analytical & estimation interview
+**Sprint: 3 weeks** · Matures over 3 months · Reading: 3h · *Habit*
+
+Market sizing, metric definition, and "this number dropped 20%, why?" Interviewers want a visible method, not a correct number.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| PM Exercises — analytical sets | Practice tool | ongoing | ⭐⭐ | 🔴 | required |
+| *Cracking the PM Interview* — estimation chapters | Book | 3h | ⭐⭐ | 🔴 | required |
+
+**Homework:** Take ten estimation questions and answer each in under six minutes, writing your assumptions before any arithmetic. Then go back and check which assumption, if wrong, would have changed your answer most — that is the one to say out loud in a real interview.
+
+### 6 · Behavioural interview
+**Sprint: 2 weeks** · Matures over 3 months · Reading: 2h · *Habit*
+
+The most preparable format and the most neglected. You need roughly eight stories that can be recombined to answer forty questions.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| *Cracking the PM Interview* — behavioural chapters | Book | 2h | ⭐ | 🔴 | required |
+| Lenny's Podcast — "How to break into PM" episodes | Podcast | 2h | ⭐ | 🔴 | optional |
+
+**Homework:** Write eight STAR stories: a conflict, a failure, a persuasion, a data-driven decision, a leadership moment without authority, a shipped thing, a killed thing, and a time you were wrong. Each under ninety seconds spoken. Time yourself.
+
+---
+
+## Phase 3 · اقدام — Apply
+
+### 7 · Job search & networking
+**Sprint: 2 weeks, then ongoing** · Matures over 4 months · Reading: 2h · *Habit*
+
+Applying cold is the lowest-yield channel and the one most people use exclusively. Start this phase **while you are still in Phase 2** — early interviews are the only honest measure of readiness, and the first few will be bad regardless of how long you prepare.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| "How to break into PM" — Lenny Rachitsky | Articles / Podcast | 2h | ⭐ | 🔴 | required |
+| Mind the Product · local PM communities | Community | ongoing | ⭐⭐ | 🔴 | optional |
+
+**Homework:** Build a tracker of 30 target companies. For each: one person you could plausibly reach, and one specific reason you want to work there that is not "they are big". Send five genuine messages a week — asking for a conversation, never for a job.
+
+**Persian-market note:** In Iran, referrals and community presence carry more weight than cold applications. A visible track record — writing publicly, speaking at a meetup, contributing to a PM community — substitutes for the referral network a switcher does not yet have.
+
+---
+
+## Phase 4 · پذیرش — Close
+
+### 8 · Negotiation & the offer
+**Sprint: 1 week** · Matures over 1 month · Reading: 8h
+
+The highest hourly-rate work of the entire campaign, and the phase most candidates skip out of relief.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| "Ten Rules for Negotiating a Job Offer" — Haseeb Qureshi | Article (free) | 1h | ⭐ | 🔴 | required |
+| *Never Split the Difference* — Chris Voss | Book | 7h | ⭐⭐ | 🇮🇷 | required |
+
+**Homework:** Before any offer arrives, write down your walk-away number, your target, and the three non-salary terms you care about most. Decide them while you have no offer in hand — the number you invent under pressure is always lower.
+
+---
+
+## Ready to apply when:
+- You can describe the daily work of a PM without using the word "manage"
+- Every résumé bullet names an outcome and a number
+- Two written case studies exist at a link you can send
+- You have answered 20+ practice questions out loud, recorded, and watched some back
+- Eight STAR stories exist, each under ninety seconds
+- You have had at least one real interview and know specifically what went wrong
+
+## Ready for Level 1 when:
+You have accepted an offer. **This roadmap is finished — everything after signing lives in [Level 1](#level-1--beginner-apm).**
+
+---
+
+## What this roadmap deliberately excludes
+
+| Excluded | Why |
+|---|---|
+| Doing the job well | That is Level 1 onward. This track ends at the signature. |
+| *The First 90 Days* | Post-offer. It sits in Level 1's Entry, where it belongs. |
+| Technical, data, or delivery skill-building | Interviews test structured thinking, not craft depth. Craft is Level 1. |
+| Certifications | No PM certification meaningfully improves hiring outcomes. |
+| Résumé-writing services | The point is to learn to describe your own work in outcome language. |
+
+---
+
 # Level 1 — Beginner (APM)
 
-**Tenure:** 12–24 months · **Sprints:** 31 weeks (~7 months) · **Reading:** 18 required resources, ~57 hours
+**Tenure:** 12–24 months · **Sprints:** 31 weeks (~7 months) · **Reading:** 15 required resources, ~53 hours
 
 ### What this level asks of you
 
@@ -222,19 +402,18 @@ Regardless of level, these five alone cover the full arc from craft to company. 
 
 *Reading only — no sprint, no maturation. This is pre-role.*
 
+> **Getting the job is not on this page.** Résumé, portfolio, interview practice, job search and negotiation all live in **[Roadmap 0 — Getting Hired](#roadmap-0--getting-hired-as-a-pm)**, a separate track that ends the day you accept an offer. This level assumes you already hold the title.
+
 | Resource | Type | Time | Diff | Persian |
 |---|---|---|---|---|
 | *Inspired* — Marty Cagan, ch. 1–5 | Book | 3h | ⭐⭐ | 🔴 |
-| "What is product management?" — Lenny Rachitsky | Article (free) | 20m | ⭐ | 🔴 |
-| *Decode and Conquer* — Lewis Lin | Book | 4h | ⭐ | 🔴 |
-| PM Exercises — pmexercises.com | Practice tool | ongoing | ⭐⭐ | 🔴 |
 | *The First 90 Days* — Michael Watkins | Book | 6h | ⭐⭐ | 🇮🇷 |
 
 > **Why *Inspired* and not a course first?** Cagan gives you the mental model; courses give you tasks. Build the model first, then the tasks make sense.
 
-**Persian-only route:** a Persian product-management course (e.g. مکتب‌خونه) substitutes for *Inspired* + *Decode and Conquer*.
+**Persian-only route:** a Persian product-management course (e.g. مکتب‌خونه) substitutes for *Inspired*.
 
-**Practice:** Interview one working PM for 30 minutes — typical week, hardest part, what they wish they'd known. Then write your own 30-60-90 day plan.
+**Practice:** Write your own 30-60-90 day plan for the role you just started — what you'll learn, who you'll meet, and what you'll deliver in each phase.
 
 ---
 
@@ -1158,7 +1337,8 @@ A Persian-speaking learner can go a long way on translated books — but not equ
 
 | Level | Required resources | Persian available | Free English |
 |---|:--:|:--:|:--:|
-| L1 APM | 18 | 5 | 9 |
+| **R0 Getting Hired** | 13 | 1 | 3 |
+| L1 APM | 15 | 3 | 4 |
 | L2 PM | 18 | 2 | 6 |
 | L3 Sr PM | 16 | 1 | 3 |
 | **L4 Lead** | **8** | **0** | **0** |
@@ -1166,6 +1346,8 @@ A Persian-speaking learner can go a long way on translated books — but not equ
 | L6 CPO | 11 | 3 | 1 |
 
 **Level 4 has zero Persian coverage** — the management-transition level, the sharpest discontinuity in the path, is the least served. Zhuo, Scott, Marquet, Wiseman, Stone & Heen, and Lencioni are all English-only. That is the single largest content gap in this roadmap and the highest-value place to write Persian book notes.
+
+**Roadmap 0 is the weakest-covered track of all** — only *Never Split the Difference* has a Persian edition. The interview canon (McDowell & Bavaro, Lewis Lin) is entirely untranslated, which is a real barrier for the exact audience this track exists to serve: career-switchers who may not read English comfortably. It is the strongest argument in this document for writing original Persian material rather than translating.
 
 **Levels 1 and 2 are close to viable in Persian alone** — *Mom Test*, *Scrum*, *Crucial Conversations*, *First 90 Days*, *Lean Startup*, *Never Split the Difference*, *Start With Why*, and *The Goal* cover a large share of what an APM and a new PM need.
 
@@ -1189,7 +1371,7 @@ The matrix, not the résumé, is the assessment instrument. A user rates herself
 
 ### Two entry points, one generator
 
-- **Self-assessment (primary):** 15 competency sliders plus a few context questions — years in role, scope owned, team size, and *"are you currently working as a PM?"* (that last one decides whether the Acquired-free competencies need resources after all). No PII, no file upload, no API cost.
+- **Self-assessment (primary):** 15 competency sliders plus a few context questions — years in role, scope owned, team size, and *"are you currently working as a PM?"* That last question does two jobs: it decides whether the Acquired-free competencies need resources after all, and — if the answer is no — it routes the user to **Roadmap 0 (Getting Hired)** instead of to a seniority level. Someone who has never held the job does not need a competency depth assessment; she needs a job-hunt plan. No PII, no file upload, no API cost.
 - **Résumé upload (optional, more accurate):** PDF/DOCX → text extraction → AI assessment against the same matrix. Catches what self-assessment misses — people systematically misjudge their own strategy and influence depth.
 
 Both produce the same output: an assessed level, a ranked gap list, and an ordered path. The assessed level is always **a suggestion the user can override**.

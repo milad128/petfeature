@@ -46,7 +46,7 @@
           </button>
           <div class="user-menu" id="user-menu" role="menu" hidden>
             <a href="{{ url_for('profile') }}" class="user-menu__item" role="menuitem">داشبورد من</a>
-            <a href="#" class="user-menu__item" role="menuitem">قفسه کتاب من</a>
+            <a href="{{ url_for('bookshelf') }}" class="user-menu__item" role="menuitem">قفسه کتاب من</a>
             <div class="user-menu__divider" role="separator"></div>
             <form method="post" action="{{ url_for('logout') }}" style="margin:0;">
               <button type="submit" class="user-menu__item user-menu__item--logout" role="menuitem">خروج</button>

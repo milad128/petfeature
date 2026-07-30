@@ -36,6 +36,13 @@ CONTEXT
 
 THE CONTENT MODEL (read this carefully — the design lives or dies on it)
 - 6 career LEVELS: APM → PM → Senior PM → Product Lead → Director → CPO.
+- PLUS one SEPARATE TRACK, "Roadmap 0 — Getting Hired" (مسیر استخدام), which
+  sits outside the ladder. It covers résumé, portfolio, the three interview
+  formats, job search and negotiation, and it ENDS when the user accepts an
+  offer. It has its own four phases (آماده‌سازی / تمرین / اقدام / پذیرش) — NOT
+  the Entry/Core/Supporting/Bridge structure the seniority levels use, because
+  a job hunt is a campaign with an end date, not a tenure. Its phases overlap
+  on purpose. Design it as a visibly different kind of page.
 - 15 COMPETENCIES (e.g. کشف محصول, تحویل و اجرا, استراتژی محصول), grouped in
   4 domains.
 - A DEPTH MATRIX: 15 × 6 grid. Each cell is a required depth 1–5, or "–"
@@ -60,8 +67,11 @@ THE CONTENT MODEL (read this carefully — the design lives or dies on it)
 
 DELIVERABLES — design these screens (details in the brief below):
 PUBLIC
-1. Roadmap landing (/path/) — the depth matrix, level summary, how-to-read
+1. Roadmap landing (/path/) — the depth matrix, level summary, how-to-read,
+   and a clear fork between "I want the job" and "I have the job"
 2. Level detail (/path/{level}/) — Entry/Core/Supporting/Bridge + sequencing
+2b. Getting-Hired track (/path/hiring/) — four phases, overlapping, campaign
+   framing rather than tenure framing
 3. Competency card — the repeating unit; collapsed + expanded states
 4. Resource row + its homework — the densest repeating element
 5. Sequencing table — week-by-week sprints with what's maturing alongside
@@ -101,7 +111,7 @@ Ask me clarifying questions before finalizing if anything is ambiguous.
 | **Stack** | FastAPI + Jinja2, server-rendered. Vanilla JS + CSS only. |
 | **Existing epics** | Library (کتابخانه), Blog (یادداشت), Tools (ابزارها) — all shipped |
 | **This epic** | Roadmap (مسیر یادگیری) — the fourth founding epic, never built |
-| **Public routes** | `/path/`, `/path/{level_slug}/` |
+| **Public routes** | `/path/`, `/path/hiring/`, `/path/{level_slug}/` |
 | **Admin routes** | `/admin/roadmap/`, `/admin/roadmap/{level}/`, resource form |
 
 **Existing prototypes to open first** (all in [`prototypes/`](../prototypes/)):
@@ -149,6 +159,23 @@ Structure, in order:
 - **عقب بکشید** (L4, L5 only) — competencies you deliberately *reduce*
 - **توالی** — week-by-week sequencing
 - **پل** — bridge resources + promotion checklist («آماده‌ی … هستید وقتی»)
+
+### Screen 2b — Getting-Hired Track (`/path/hiring/`)
+
+**A deliberately different page shape.** This is the only track that is a campaign rather than a tenure, and the design should make that legible at a glance — someone landing here should never think they are looking at a seventh seniority level.
+
+Structure:
+- Hero: framing as a 3–6 month campaign with an end condition ("ends the day you accept an offer")
+- Who it's for: career-switchers, graduates, PMs changing companies
+- **Four phases** — آماده‌سازی · تمرین · اقدام · پذیرش — with 8 areas across them
+- Each area: sprint weeks, reading, resources, and a homework task
+- Two closing checklists: «آماده‌ی اقدام هستید وقتی» (ready to apply) and the hand-off to Level 1
+- An explicit "what this track excludes" table
+
+Design problems specific to this page:
+- **The phases overlap on purpose** (applying begins during practising). The sequencing metaphor used on level pages — one sprint at a time, strictly sequential — is *wrong* here and must not be reused unchanged.
+- It needs an **exit**, not a bridge. The page ends with "you accepted an offer → go to Level 1."
+- The three interview formats (product sense, analytical, behavioural) are parallel siblings, not a sequence.
 
 ### Screen 3 — Competency Card
 
@@ -202,7 +229,9 @@ Lower visual priority; correctness and speed matter more than polish. Uses the e
 
 **3.7 Progressive disclosure without hiding the answer.** Someone asking "what do I study first?" should get it in seconds. Someone reading deeply wants the rationale quotes and homework. Currently native `<details>`; the trade-off is that closed cards hide the resource list entirely.
 
-**3.8 Unlinked resources.** ~39 of 112 resources have no destination. They render as plain text today. They should look intentional rather than broken — and ideally hint that the Persian book note is coming.
+**3.8 The fork on the landing page.** Two audiences arrive at `/path/`: people who want a PM job and people who have one. They need different first clicks. The matrix is meaningless to someone who has never held the role — she needs Roadmap 0, not a depth self-assessment. Getting this fork right without cluttering the landing page is unsolved in the current prototypes, which do not include Roadmap 0 at all.
+
+**3.9 Unlinked resources.** ~39 of 112 resources have no destination. They render as plain text today. They should look intentional rather than broken — and ideally hint that the Persian book note is coming.
 
 ---
 
@@ -229,6 +258,7 @@ Lower visual priority; correctness and speed matter more than polish. Uses the e
 | Certificates, badges, leaderboards, streaks | Explicitly rejected — this is not a gamified product |
 | Book detail pages, library, blog | Already shipped; only *link into* them |
 | Creating new roadmap content | The content is finished and frozen |
+| Job board, application tracking, CV upload | Roadmap 0 teaches the job hunt; it does not run it |
 
 ---
 

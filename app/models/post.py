@@ -116,6 +116,9 @@ class PostComment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"))
+    user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     author_name: Mapped[str] = mapped_column(String(150))
     author_email: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     body: Mapped[str] = mapped_column(Text)

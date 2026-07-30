@@ -157,9 +157,15 @@ def has_rated(post: Post, visitor_token: str) -> bool:
     return any(r.visitor_token == visitor_token for r in post.ratings)
 
 
-async def add_comment(session: AsyncSession, post: Post, data: CommentForm) -> PostComment:
+async def add_comment(
+    session: AsyncSession,
+    post: Post,
+    data: CommentForm,
+    user_id: Optional[int] = None,
+) -> PostComment:
     comment = PostComment(
         post_id=post.id,
+        user_id=user_id,
         author_name=data.author_name,
         author_email=data.author_email or None,
         body=data.body,

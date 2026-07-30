@@ -471,3 +471,20 @@ tr:has(+ tr.hw) > td { border-bottom: none; }
 .dtable td.pfa a { color: var(--accent); text-decoration: none; }
 .dtable td.pfa a:hover { text-decoration: underline; }
 .dtable td.pfa .ext { font-size: .78em; opacity: .65; }
+
+/* ── Landing fork: two audiences, two first clicks ─────────── */
+.fork { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.fork-card {
+  display: block; padding: 1.3rem 1.4rem; border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 12px); background: var(--surface);
+  text-decoration: none; color: inherit; transition: border-color .15s, transform .15s;
+}
+.fork-card:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+.fork-card--hiring { border-color: var(--accent); background: var(--accent-bg); }
+.fork-k {
+  font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+  color: var(--muted); text-transform: none; margin-bottom: .35rem;
+}
+.fork-card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: .45rem; }
+.fork-card p { color: var(--text-2); font-size: .89rem; line-height: 1.75; margin-bottom: .7rem; }
+.fork-cta { color: var(--accent); font-weight: 700; font-size: .88rem; }

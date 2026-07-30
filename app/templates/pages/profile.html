@@ -2,7 +2,6 @@
 
 {% block extra_head %}
 <style>
-  /* Accent swatch picker persists in localStorage — JS below */
   .profile-swatch[aria-checked="true"] { transform: scale(1.12); box-shadow: 0 0 0 2px var(--text), 0 0 14px currentColor; }
 </style>
 {% endblock %}
@@ -27,7 +26,7 @@
             <span>عضو از: <span>{{ current_user.created_at | jalali }}</span></span>
           </div>
           <div class="profile-info__actions">
-            <a href="#" class="btn btn--primary">قفسه کتاب من</a>
+            <a href="{{ url_for('bookshelf') }}" class="btn btn--primary">قفسه کتاب من</a>
             <a href="{{ url_for('library') }}" class="btn btn--outline">رفتن به کتابخانه</a>
           </div>
         </div>
@@ -35,7 +34,7 @@
         {# Right: desk illustration + color swatches #}
         <div class="profile-desk">
           <div class="profile-desk__scene">
-            {# Lamp (interactive – same toggle as header, plus color picker) #}
+            {# Lamp (interactive – same toggle as header) #}
             <button id="lamp-toggle-profile" class="profile-lamp" title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ" aria-pressed="true">
               <span class="profile-lamp__cone"></span>
               <span class="profile-lamp__shade"></span>
@@ -75,49 +74,140 @@
     </div>
   </section>
 
-  {# ── Section A: Telegram ──────────────────────────────────────── #}
-  <section class="profile-section" style="border-top:1px solid var(--border);">
+  {# ── Section A: Newsletter ──────────────────────────────────────── #}
+  <section class="profile-section" id="newsletter" style="border-top:1px solid var(--border);">
     <div class="container">
       <div class="section-header">
         <span class="section-kicker">خبرنامه</span>
       </div>
-      <div class="profile-tg-card">
-        <div class="profile-tg-card__copy">
-          <b>کانال تلگرام پت فیچر</b>
-          <p>خبرنامه فقط در تلگرام منتشر می‌شود: هر کتاب تازه، ابزار جدید و یادداشت خواندنی. دو تا سه پیام در ماه — هر وقت خواستید لفت بدهید.</p>
+
+      <div class="profile-newsletter">
+        {# Email subscription card #}
+        <div class="profile-newsletter__email-card">
+          <div class="profile-newsletter__email-info">
+            {% if is_subscribed %}
+            <span class="status-badge status-badge--ok">✓ مشترک ایمیل هستید</span>
+            <p>ایمیل <span dir="ltr">{{ current_user.email }}</span> در لیست خبرنامه ثبت شده است.</p>
+            {% else %}
+            <span class="profile-newsletter__email-label">خبرنامه ایمیلی</span>
+            <p>با ایمیل گوگل خود در خبرنامه عضو شوید — بدون وارد کردن چیزی.</p>
+            {% endif %}
+          </div>
+          <div class="profile-newsletter__email-action">
+            {% if is_subscribed %}
+            <form method="post" action="{{ url_for('newsletter_unsubscribe') }}">
+              <button type="submit" class="btn btn--outline btn--sm">لغو اشتراک</button>
+            </form>
+            {% else %}
+            <form method="post" action="{{ url_for('newsletter_subscribe') }}">
+              <button type="submit" class="btn btn--primary btn--sm">عضویت در خبرنامه</button>
+            </form>
+            {% endif %}
+          </div>
         </div>
-        <div class="profile-tg-card__action">
-          <a href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer" class="tg-join-btn">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3l-3.3 15.5c-.25 1.1-.9 1.37-1.83.85l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15L18.1 5.9c.4-.36-.09-.56-.63-.2L6.24 12.8l-4.98-1.56c-1.08-.34-1.1-1.08.23-1.6L20.5 2.87c.9-.34 1.68.2 1.4 1.43z"/></svg>
-            عضویت در کانال تلگرام
-          </a>
-          <span class="profile-tg-card__handle" dir="ltr">@petfeature</span>
+
+        {# Telegram card #}
+        <div class="profile-tg-card">
+          <div class="profile-tg-card__copy">
+            <b>کانال تلگرام پت فیچر</b>
+            <p>برای دریافت سریع‌تر محتوای جدید، کانال تلگرام ما رو دنبال کنید.</p>
+          </div>
+          <div class="profile-tg-card__action">
+            <a href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer" class="tg-join-btn">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3l-3.3 15.5c-.25 1.1-.9 1.37-1.83.85l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15L18.1 5.9c.4-.36-.09-.56-.63-.2L6.24 12.8l-4.98-1.56c-1.08-.34-1.1-1.08.23-1.6L20.5 2.87c.9-.34 1.68.2 1.4 1.43z"/></svg>
+              عضویت در کانال تلگرام
+            </a>
+            <span class="profile-tg-card__handle" dir="ltr">@petfeature</span>
+          </div>
         </div>
       </div>
+
     </div>
   </section>
 
-  {# ── Section B: My Comments (placeholder for v14) ─────────────── #}
-  <section class="profile-section" style="border-top:1px solid var(--border);">
+  {# ── Section B: My Comments ────────────────────────────────────── #}
+  <section class="profile-section" id="my-comments" style="border-top:1px solid var(--border);">
     <div class="container">
       <div class="section-header">
         <span class="section-kicker">نظرات من</span>
+        {% if total_comments > 0 %}
+        <span class="section-count">{{ total_comments }} نظر</span>
+        {% endif %}
       </div>
+
+      {% if comments %}
+      <div class="profile-comments">
+        {% for c in comments %}
+        <article class="pcomment">
+          <div class="pcomment__header">
+            <span class="pcomment__badge pcomment__badge--{{ c.kind }}">
+              {% if c.kind == "post" %}یادداشت{% else %}کتاب{% endif %}
+            </span>
+            <a href="{{ url_for('post_detail' if c.kind == 'post' else 'book_detail', slug=c.content_slug) }}#comments"
+               class="pcomment__title">{{ c.content_title }}</a>
+            <span class="pcomment__date">{{ c.created_at | jalali }}</span>
+            <span class="status-badge status-badge--{{ 'ok' if c.status == 'approved' else ('bad' if c.status == 'rejected' else 'pending') }}">
+              {{ c.status_label }}
+            </span>
+          </div>
+
+          <div class="pcomment__body">
+            <p class="pcomment__text" id="comment-text-{{ c.id }}" data-full="{{ c.body | e }}" data-short="{{ c.body_truncated | e }}">
+              {{ c.body_truncated }}
+            </p>
+            {% if c.body | length > 200 %}
+            <button class="pcomment__expand" onclick="toggleComment({{ c.id }})" aria-expanded="false">بیشتر</button>
+            {% endif %}
+          </div>
+
+          {% if c.reply %}
+          <div class="pcomment__reply">
+            <div class="pcomment__reply-header">
+              <span class="pcomment__reply-label">پاسخ پت فیچر:</span>
+              {% if c.reply_at %}
+              <span class="pcomment__reply-date">{{ c.reply_at | jalali }}</span>
+              {% endif %}
+            </div>
+            <p class="pcomment__reply-text">{{ c.reply }}</p>
+          </div>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+
+      {# Pagination #}
+      {% if total_pages > 1 %}
+      <nav class="admin-pagination" aria-label="صفحه‌بندی نظرات">
+        {% if page > 1 %}
+        <a href="?page={{ page - 1 }}#my-comments" class="admin-pagination__btn">← قبلی</a>
+        {% endif %}
+        <span class="admin-pagination__info">صفحه {{ page }} از {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}#my-comments" class="admin-pagination__btn">بعدی →</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+
+      {% else %}
       <div class="profile-placeholder">
         <div class="auth-lamp auth-lamp--sm" aria-hidden="true">
           <span class="auth-lamp__shade"></span>
           <span class="auth-lamp__pole"></span>
           <span class="auth-lamp__foot"></span>
         </div>
-        <b>قابلیت‌های بیشتر به زودی اضافه می‌شن</b>
-        <p>به‌زودی می‌توانید نظرات خود را در این‌جا ببینید و پاسخ‌های من را پیگیری کنید.</p>
+        <b>هنوز نظری ندادی</b>
+        <p>کتاب‌ها و یادداشت‌ها رو بخون و نظرت رو بنویس — اینجا می‌بینیشون و پاسخ‌هام رو پیگیری می‌کنی.</p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem;">
+          <a href="{{ url_for('library') }}" class="btn btn--primary">کتابخانه</a>
+          <a href="{{ url_for('blog') }}" class="btn btn--outline">یادداشت‌ها</a>
+        </div>
       </div>
+      {% endif %}
+
     </div>
   </section>
 
 </div>
-
-{# ── Logout form (accessible from dropdown in header) ── #}
 {% endblock %}
 
 {% block extra_scripts %}
@@ -142,11 +232,10 @@
   else { markActive('#a6c3a0'); }
 
   document.addEventListener('DOMContentLoaded', function () {
-    // Wire profile lamp toggle (same behavior as header lamp)
+    // Wire profile lamp toggle
     var profileLamp = document.getElementById('lamp-toggle-profile');
     if (profileLamp) {
       var lampKey = 'pf-lamp';
-      // reflect current state
       var lampOff = document.documentElement.getAttribute('data-lamp') === 'off';
       profileLamp.setAttribute('aria-pressed', lampOff ? 'false' : 'true');
 
@@ -175,5 +264,21 @@
     });
   });
 })();
+
+function toggleComment(id) {
+  var el = document.getElementById('comment-text-' + id);
+  var btn = el.nextElementSibling;
+  if (!el || !btn) return;
+  var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+  if (isExpanded) {
+    el.textContent = el.dataset.short;
+    btn.textContent = 'بیشتر';
+    btn.setAttribute('aria-expanded', 'false');
+  } else {
+    el.textContent = el.dataset.full;
+    btn.textContent = 'کمتر';
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
 </script>
 {% endblock %}

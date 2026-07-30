@@ -5,14 +5,17 @@ from __future__ import annotations
 import logging
 
 from authlib.integrations.base_client.errors import MismatchingStateError, OAuthError
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi import Form
 
 from app.core.auth import get_current_user, login_user, logout_user, oauth
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.templates import templates
+from app.services import bookshelf as bookshelf_service
 from app.services import users as user_service
 
 logger = logging.getLogger(__name__)
@@ -108,13 +111,131 @@ async def logout(request: Request):
 # ── Profile / dashboard ───────────────────────────────────────────────────────
 
 @router.get("/profile/", name="profile")
-async def profile(request: Request):
+async def profile(
+    request: Request,
+    page: int = 1,
+    db: AsyncSession = Depends(get_db),
+):
     current_user = get_current_user(request)
     if not current_user:
         request.session["next"] = "/profile/"
         return RedirectResponse(url="/login/", status_code=303)
+
+    from app.services import users as user_service
+
+    is_subscribed = await user_service.is_subscribed_to_newsletter(db, current_user.email)
+    comments, total_comments = await user_service.get_user_comments(db, current_user.id, page=page)
+    per_page = 10
+    total_pages = max(1, -(-total_comments // per_page))  # ceiling division
+
     return templates.TemplateResponse(
         request,
         "pages/profile.html",
-        {"page_title": "داشبورد من", "current_user": current_user},
+        {
+            "page_title": "داشبورد من",
+            "current_user": current_user,
+            "is_subscribed": is_subscribed,
+            "comments": comments,
+            "total_comments": total_comments,
+            "page": page,
+            "total_pages": total_pages,
+        },
     )
+
+
+# ── Newsletter subscribe / unsubscribe ────────────────────────────────────────
+
+@router.post("/profile/newsletter/subscribe/", name="newsletter_subscribe")
+async def newsletter_subscribe(
+    request: Request, db: AsyncSession = Depends(get_db)
+):
+    current_user = get_current_user(request)
+    if not current_user:
+        return RedirectResponse(url="/login/", status_code=303)
+    from app.services import users as user_service
+    await user_service.subscribe_to_newsletter(db, current_user)
+    return RedirectResponse(url="/profile/#newsletter", status_code=303)
+
+
+@router.post("/profile/newsletter/unsubscribe/", name="newsletter_unsubscribe")
+async def newsletter_unsubscribe(
+    request: Request, db: AsyncSession = Depends(get_db)
+):
+    current_user = get_current_user(request)
+    if not current_user:
+        return RedirectResponse(url="/login/", status_code=303)
+    from app.services import users as user_service
+    await user_service.unsubscribe_from_newsletter(db, current_user)
+    return RedirectResponse(url="/profile/#newsletter", status_code=303)
+
+
+# ── Bookshelf (قفسه کتاب) — v15 ──────────────────────────────────────────────
+
+@router.get("/profile/bookshelf/", name="bookshelf")
+async def bookshelf_page(request: Request, db: AsyncSession = Depends(get_db)):
+    current_user = get_current_user(request)
+    if not current_user:
+        request.session["next"] = "/profile/bookshelf/"
+        return RedirectResponse(url="/login/", status_code=303)
+
+    shelf = await bookshelf_service.get_user_bookshelf(db, current_user.id)
+    summary = await bookshelf_service.get_bookshelf_summary(db, current_user.id)
+
+    return templates.TemplateResponse(
+        request,
+        "pages/profile_bookshelf.html",
+        {
+            "page_title": "قفسه کتاب من",
+            "current_user": current_user,
+            "shelf": shelf,
+            "summary": summary,
+        },
+    )
+
+
+@router.post("/profile/bookshelf/add/", name="bookshelf_add")
+async def bookshelf_add(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    book_id: int = Form(...),
+    status: str = Form(...),
+):
+    current_user = get_current_user(request)
+    if not current_user:
+        return RedirectResponse(url="/login/", status_code=303)
+
+    try:
+        _, newly_read = await bookshelf_service.upsert_item(
+            db, current_user.id, book_id, status
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="وضعیت نامعتبر است")
+
+    # Determine where to redirect back to
+    referer = request.headers.get("referer", "")
+    # If newly marked as read → redirect to book detail with ?review flag so the modal opens
+    if newly_read and "/library/" in referer:
+        # extract slug from referer path, then rebuild with review param
+        from urllib.parse import urlparse
+        parsed = urlparse(referer)
+        path = parsed.path.rstrip("/")
+        return RedirectResponse(url=f"{path}/?review={book_id}", status_code=303)
+
+    # Otherwise go back to referer or bookshelf
+    back = referer if referer else "/profile/bookshelf/"
+    return RedirectResponse(url=back, status_code=303)
+
+
+@router.post("/profile/bookshelf/remove/", name="bookshelf_remove")
+async def bookshelf_remove(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    book_id: int = Form(...),
+):
+    current_user = get_current_user(request)
+    if not current_user:
+        return RedirectResponse(url="/login/", status_code=303)
+
+    await bookshelf_service.remove_item(db, current_user.id, book_id)
+    referer = request.headers.get("referer", "/profile/bookshelf/")
+    return RedirectResponse(url=referer, status_code=303)

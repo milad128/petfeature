@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from app.schemas.contact import ContactForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.core.rate_limit import is_rate_limited
 from app.core.templates import templates
@@ -15,11 +16,13 @@ from app.core.visitor import ensure_visitor_cookie, peek_visitor_token
 from app.schemas.book import BookCommentForm
 from app.schemas.post import CommentForm
 from app.services import about as about_service
+from app.services import bookshelf as bookshelf_service
 from app.services import books as book_service
 from app.services import categories as category_service
 from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
+from app.services import users as user_service
 
 router = APIRouter()
 
@@ -61,10 +64,30 @@ async def book_detail(request: Request, slug: str, db: AsyncSession = Depends(ge
     visitor_token = peek_visitor_token(request)
     has_rated = book_service.has_rated_book(book, visitor_token) if book else False
 
+    # Bookshelf state for the logged-in user (v15)
+    current_user = get_current_user(request)
+    shelf_item = None
+    save_count = 0
+    if book:
+        save_count = await bookshelf_service.get_book_save_count(db, book.id)
+        if current_user:
+            shelf_item = await bookshelf_service.get_item_for_book(db, current_user.id, book.id)
+
+    # ?review=<book_id> opens the review modal after marking as read
+    open_review = request.query_params.get("review")
+
     response = templates.TemplateResponse(
         request,
         "pages/book_detail.html",
-        {"page_title": book.title if book else slug, "slug": slug, "book": book, "has_rated": has_rated},
+        {
+            "page_title": book.title if book else slug,
+            "slug": slug,
+            "book": book,
+            "has_rated": has_rated,
+            "shelf_item": shelf_item,
+            "save_count": save_count,
+            "open_review": open_review,
+        },
     )
     if book:
         ensure_visitor_cookie(request, response, visitor_token)
@@ -113,7 +136,10 @@ async def book_comment(
     except ValidationError:
         return RedirectResponse(url=f"/library/{slug}/#comments", status_code=303)
 
-    await book_service.add_book_comment(db, book, data)
+    current_user = get_current_user(request)
+    await book_service.add_book_comment(
+        db, book, data, user_id=current_user.id if current_user else None
+    )
     return RedirectResponse(url=f"/library/{slug}/?commented=1#comments", status_code=303)
 
 
@@ -213,7 +239,10 @@ async def post_comment(
     except ValidationError:
         return RedirectResponse(url=f"/blog/{slug}/#comments", status_code=303)
 
-    await post_service.add_comment(db, post, data)
+    current_user = get_current_user(request)
+    await post_service.add_comment(
+        db, post, data, user_id=current_user.id if current_user else None
+    )
     return RedirectResponse(url=f"/blog/{slug}/?commented=1#comments", status_code=303)
 
 

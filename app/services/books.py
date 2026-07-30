@@ -257,9 +257,15 @@ def has_rated_book(book: Book, visitor_token: str) -> bool:
     return any(r.visitor_token == visitor_token for r in book.ratings)
 
 
-async def add_book_comment(session: AsyncSession, book: Book, data: BookCommentForm) -> BookComment:
+async def add_book_comment(
+    session: AsyncSession,
+    book: Book,
+    data: BookCommentForm,
+    user_id: Optional[int] = None,
+) -> BookComment:
     comment = BookComment(
         book_id=book.id,
+        user_id=user_id,
         author_name=data.author_name,
         author_email=data.author_email or None,
         body=data.body,

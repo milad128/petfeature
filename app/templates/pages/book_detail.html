@@ -122,6 +122,41 @@
         </div>
       </div>
 
+      {# ── Bookshelf (v15) ────────────────────────────────────────── #}
+      <div class="bookshelf-widget" id="bookshelf-widget">
+        {% if request.state.current_user %}
+          {# Status picker — always visible; current status shown as active pill #}
+          <div class="bsw-label">افزودن به قفسه‌ام</div>
+          <div class="bsw-pills">
+            {% for val, label in [('want', 'می‌خواهم بخوانم'), ('reading', 'در حال خواندن'), ('read', 'خواندم')] %}
+            <form method="post" action="{{ url_for('bookshelf_add') }}" style="display:contents;">
+              <input type="hidden" name="book_id" value="{{ book.id }}">
+              <input type="hidden" name="status" value="{{ val }}">
+              <button type="submit"
+                class="bsw-pill {% if shelf_item and shelf_item.status == val %}bsw-pill--active{% endif %}"
+                aria-pressed="{{ 'true' if shelf_item and shelf_item.status == val else 'false' }}">
+                {% if shelf_item and shelf_item.status == val %}✓ {% endif %}{{ label }}
+              </button>
+            </form>
+            {% endfor %}
+            {% if shelf_item %}
+            <form method="post" action="{{ url_for('bookshelf_remove') }}" style="display:contents;">
+              <input type="hidden" name="book_id" value="{{ book.id }}">
+              <button type="submit" class="bsw-remove">حذف از قفسه</button>
+            </form>
+            {% endif %}
+          </div>
+        {% else %}
+          {# Not logged in — redirect to login #}
+          <a href="{{ url_for('login') }}?next={{ request.url.path }}" class="bsw-cta">
+            افزودن به قفسه ←
+          </a>
+        {% endif %}
+        {% if save_count >= 2 %}
+        <p class="bsw-save-count">{{ save_count | fa_digits }} نفر این کتاب را در قفسه‌شان دارند</p>
+        {% endif %}
+      </div>
+
       {# Note #}
       {% if book.note %}
       <section class="book-section">
@@ -264,31 +299,122 @@
   {% endif %}
 
 </div>
+
+{# ── Review modal — fires when ?review=<book_id> is present (new "خواندم" transition) #}
+{% if open_review and book %}
+<div class="review-modal-overlay" id="review-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+  <div class="review-modal">
+    <button class="review-modal__close" id="review-modal-close" aria-label="بستن">✕</button>
+    <h2 class="review-modal__title" id="review-modal-title">کتاب رو خوندی! نظرت چیه؟</h2>
+
+    <div class="review-modal__book">
+      {% if book.cover %}
+      <img src="{{ book.cover }}" alt="{{ book.title }}" class="review-modal__cover">
+      {% endif %}
+      <span class="review-modal__book-title">{{ book.title }}</span>
+    </div>
+
+    {# Star rating form (reuses v4 endpoint) #}
+    <div class="review-modal__section">
+      <label class="review-modal__label">امتیاز شما:</label>
+      <form method="post" action="{{ url_for('book_rate', slug=book.slug) }}" class="bd2-stars review-modal__stars" id="review-star-form">
+        {% for n in [1, 2, 3, 4, 5] %}
+        <button type="submit" name="stars" value="{{ n }}" class="bd2-star-btn" aria-label="{{ n }} ستاره">★</button>
+        {% endfor %}
+      </form>
+    </div>
+
+    {# Comment form (reuses v4 endpoint) #}
+    <div class="review-modal__section">
+      <form method="post" action="{{ url_for('book_comment', slug=book.slug) }}" id="review-comment-form">
+        <input type="hidden" name="website" value="">
+        {% if request.state.current_user %}
+        <input type="hidden" name="author_name" value="{{ request.state.current_user.name }}">
+        <input type="hidden" name="author_email" value="{{ request.state.current_user.email }}">
+        {% endif %}
+        <label class="review-modal__label" for="review-comment-body">نظر شما (اختیاری):</label>
+        <textarea name="body" id="review-comment-body" class="form-control review-modal__textarea" rows="3" placeholder="چه چیزی از این کتاب به دردت خورد؟"></textarea>
+        <button type="submit" class="btn btn--primary review-modal__submit" id="review-submit-btn" disabled>ثبت نظر</button>
+      </form>
+    </div>
+
+    <button class="review-modal__skip" id="review-modal-skip">بعداً</button>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
 (function () {
   var form = document.getElementById("star-form");
-  if (!form) return;
+  if (form) {
+    var stars = Array.from(form.querySelectorAll(".bd2-star-btn"));
+    function highlight(upToValue) {
+      stars.forEach(function (s) {
+        s.classList.toggle("filled", parseInt(s.value) <= upToValue);
+      });
+    }
+    stars.forEach(function (star) {
+      star.addEventListener("mouseenter", function () { highlight(parseInt(this.value)); });
+    });
+    form.addEventListener("mouseleave", function () { highlight(0); });
+  }
 
-  var stars = Array.from(form.querySelectorAll(".bd2-star-btn"));
+  // ── Review modal ─────────────────────────────────────
+  var overlay = document.getElementById("review-modal-overlay");
+  if (!overlay) return;
 
-  function highlight(upToValue) {
-    stars.forEach(function (s) {
-      s.classList.toggle("filled", parseInt(s.value) <= upToValue);
+  function closeModal() {
+    overlay.hidden = true;
+    // Clean up ?review param from URL without page reload
+    var url = new URL(window.location.href);
+    url.searchParams.delete("review");
+    history.replaceState(null, "", url.toString());
+  }
+
+  document.getElementById("review-modal-close").addEventListener("click", closeModal);
+  document.getElementById("review-modal-skip").addEventListener("click", closeModal);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  // Enable submit when star selected OR comment filled
+  var submitBtn = document.getElementById("review-submit-btn");
+  var textarea = document.getElementById("review-comment-body");
+  var reviewStarForm = document.getElementById("review-star-form");
+  var selectedStar = null;
+
+  if (reviewStarForm) {
+    var reviewStars = Array.from(reviewStarForm.querySelectorAll(".bd2-star-btn"));
+    function highlightReview(upToValue) {
+      reviewStars.forEach(function (s) {
+        s.classList.toggle("filled", parseInt(s.value) <= upToValue);
+      });
+    }
+    reviewStars.forEach(function (star) {
+      star.addEventListener("mouseenter", function () { highlightReview(parseInt(this.value)); });
+      star.addEventListener("click", function (e) {
+        e.preventDefault(); // intercept — we submit rating separately
+        selectedStar = parseInt(this.value);
+        highlightReview(selectedStar);
+        checkSubmitEnabled();
+        // Actually submit the rating form
+        this.closest("form").submit();
+      });
+    });
+    reviewStarForm.addEventListener("mouseleave", function () {
+      highlightReview(selectedStar || 0);
     });
   }
 
-  stars.forEach(function (star) {
-    star.addEventListener("mouseenter", function () {
-      highlight(parseInt(this.value));
-    });
-  });
+  if (textarea) {
+    textarea.addEventListener("input", checkSubmitEnabled);
+  }
 
-  form.addEventListener("mouseleave", function () {
-    highlight(0); // reset all to unfilled
-  });
+  function checkSubmitEnabled() {
+    var hasComment = textarea && textarea.value.trim().length > 0;
+    submitBtn.disabled = !selectedStar && !hasComment;
+  }
 })();
 </script>
 {% endblock %}

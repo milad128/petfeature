@@ -149,6 +149,8 @@ async def admin_books_list(
         ]
     book_view_counts = await analytics_service.view_counts_by_type(db, "book")
     all_categories = await category_service.list_categories(db)
+    from app.services import bookshelf as bookshelf_service
+    book_save_counts = await bookshelf_service.get_all_book_save_counts(db)
     return templates.TemplateResponse(
         request,
         "admin/books_list.html",
@@ -159,6 +161,7 @@ async def admin_books_list(
             books=books,
             search_query=q,
             view_counts=book_view_counts,
+            save_counts=book_save_counts,
             all_categories=all_categories,
             filter_status=clean_status,
             filter_library_visibility=clean_library_visibility,

@@ -18,6 +18,8 @@ from app.models.page_view import PageView  # noqa: F401
 from app.models.tool import Tool, ToolFile  # noqa: F401
 from app.models.media_file import MediaFile  # noqa: F401
 from app.models.newsletter import NewsletterCampaign  # noqa: F401
+from app.models.reading_list import ReadingListItem  # noqa: F401
+from app.models.subscriber import Subscriber  # noqa: F401
 from app.models.user import User  # noqa: F401
 
 config = context.config

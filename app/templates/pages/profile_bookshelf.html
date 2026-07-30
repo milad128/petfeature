@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container bookshelf-page">
+
+  <nav class="breadcrumb" aria-label="مسیر">
+    <a href="{{ url_for('profile') }}">داشبورد من</a>
+    <span aria-hidden="true">‹</span>
+    <span>قفسه کتاب</span>
+  </nav>
+
+  <header class="bookshelf-page__header">
+    <h1 class="bookshelf-page__title">قفسه کتاب من</h1>
+
+    {# Summary bar #}
+    {% if summary.total > 0 %}
+    <div class="bsp-summary">
+      <span class="bsp-summary__item">
+        <span class="bsp-summary__num">{{ summary.total | fa_digits }}</span> کتاب در قفسه
+      </span>
+      <span class="bsp-summary__sep" aria-hidden="true">·</span>
+      <span class="bsp-summary__item bsp-summary__item--read">
+        <span class="bsp-summary__num">{{ summary.read | fa_digits }}</span> خواندم
+      </span>
+      <span class="bsp-summary__sep" aria-hidden="true">·</span>
+      <span class="bsp-summary__item">
+        <span class="bsp-summary__num">{{ summary.reading | fa_digits }}</span> در حال خواندن
+      </span>
+      <span class="bsp-summary__sep" aria-hidden="true">·</span>
+      <span class="bsp-summary__item">
+        <span class="bsp-summary__num">{{ summary.want | fa_digits }}</span> می‌خواهم بخوانم
+      </span>
+    </div>
+    {% endif %}
+  </header>
+
+  {% if shelf %}
+  <div class="bsp-list">
+    {% for item, book in shelf %}
+    <div class="bsp-card {% if item.status == 'read' %}bsp-card--read{% endif %}">
+
+      {# Cover #}
+      <a href="{{ url_for('book_detail', slug=book.slug) }}" class="bsp-card__cover-link" tabindex="-1" aria-hidden="true">
+        <div class="bsp-card__cover">
+          {% if book.cover %}
+          <img src="{{ book.cover }}" alt="{{ book.title }}">
+          {% else %}
+          <span class="bsp-card__cover-icon" aria-hidden="true">📖</span>
+          {% endif %}
+        </div>
+      </a>
+
+      {# Info #}
+      <div class="bsp-card__info">
+        <a href="{{ url_for('book_detail', slug=book.slug) }}" class="bsp-card__title">
+          {% if item.status == 'read' %}<span class="bsp-card__check" aria-hidden="true">✓</span> {% endif %}{{ book.title }}
+        </a>
+        {% if book.authors_display %}
+        <span class="bsp-card__author">{{ book.authors_display }}</span>
+        {% endif %}
+        <span class="bsp-card__date">افزوده شده: {{ item.added_at | jalali }}</span>
+
+        {# Status change pills #}
+        <div class="bsp-card__pills">
+          {% for val, label in [('want', 'می‌خواهم بخوانم'), ('reading', 'در حال خواندن'), ('read', 'خواندم')] %}
+          <form method="post" action="{{ url_for('bookshelf_add') }}" style="display:contents;">
+            <input type="hidden" name="book_id" value="{{ book.id }}">
+            <input type="hidden" name="status" value="{{ val }}">
+            <button type="submit"
+              class="bsw-pill bsw-pill--sm {% if item.status == val %}bsw-pill--active{% endif %}"
+              aria-pressed="{{ 'true' if item.status == val else 'false' }}">
+              {{ label }}
+            </button>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# Remove button #}
+      <form method="post" action="{{ url_for('bookshelf_remove') }}" class="bsp-card__remove-form">
+        <input type="hidden" name="book_id" value="{{ book.id }}">
+        <button type="submit" class="bsp-card__remove" title="حذف از قفسه" aria-label="حذف {{ book.title }} از قفسه">✕</button>
+      </form>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="profile-placeholder" style="margin-top:2.5rem;">
+    <div class="auth-lamp auth-lamp--sm" aria-hidden="true">
+      <span class="auth-lamp__shade"></span>
+      <span class="auth-lamp__pole"></span>
+      <span class="auth-lamp__foot"></span>
+    </div>
+    <b>هنوز کتابی به قفسه‌ات اضافه نکردی</b>
+    <p>از کتابخانه شروع کن — هر کتابی که می‌خوای بخونی رو بزن «افزودن به قفسه».</p>
+    <div style="margin-top:1.25rem;">
+      <a href="{{ url_for('library') }}" class="btn btn--primary">رفتن به کتابخانه ←</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
