@@ -69,9 +69,7 @@ async def auth_google_callback(
     request: Request, db: AsyncSession = Depends(get_db)
 ):
     try:
-        token = await oauth.google.authorize_access_token(
-            request, redirect_uri=settings.google_redirect_uri
-        )
+        token = await oauth.google.authorize_access_token(request)
         userinfo = await _fetch_google_userinfo(request, token)
         google_id = userinfo["sub"]
         email = userinfo["email"].lower()
