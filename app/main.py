@@ -10,7 +10,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.admin.routes import router as admin_router, _inject_comment_badges
 from app.api.v1.router import router as api_v1_router
 from app.core.analytics import AnalyticsMiddleware
+from app.core.auth import UserAuthMiddleware
 from app.core.config import settings
+from app.web.auth_routes import router as auth_router
 from app.web.routes import router as web_router
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -36,6 +38,7 @@ async def lifespan(app: FastAPI):
             PostRating,
             Tool,
             ToolFile,
+            User,
         )
 
         async with engine.begin() as conn:
@@ -50,13 +53,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Session middleware must be first (outermost)
-app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
-# Analytics middleware — runs after session, before routing
-app.add_middleware(AnalyticsMiddleware)
+# Middleware stack — add_middleware wraps in reverse: last added = outermost.
+# Desired request flow: Analytics → Session → UserAuth → App
+# So add order: UserAuth first (innermost), then Session, then Analytics.
+app.add_middleware(UserAuthMiddleware)                                    # innermost: reads session → sets request.state.current_user
+app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)    # decodes cookie → request.session
+app.add_middleware(AnalyticsMiddleware)                                   # outermost: logs page views
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+app.include_router(auth_router)
 app.include_router(web_router)
 app.include_router(
     admin_router,

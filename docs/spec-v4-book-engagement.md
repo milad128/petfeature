@@ -1,6 +1,6 @@
 # Product Spec v4 — پت فیچر (Book Engagement)
 
-> **Prerequisite:** [Product Spec v3](./product-spec-v3.md) must be shipped first · **Parent:** [Product overview](./product-spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Prerequisite:** [Product Spec v3](./spec-v3-tools.md) must be shipped first · **Parent:** [Product overview](./spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 
 ## 1. Summary
 

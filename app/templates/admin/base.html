@@ -74,6 +74,13 @@
         </div>
 
         <div class="admin-nav-group">
+          <div class="admin-nav-group-label">👤 کاربران</div>
+          <a href="{{ url_for('admin_users') }}" class="admin-nav-sub {% if active_nav == 'users' %}active{% endif %}">
+            کاربران
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
           <div class="admin-nav-group-label">⚙️ عمومی</div>
           <a href="{{ url_for('admin_about') }}" class="admin-nav-sub {% if active_nav == 'about' %}active{% endif %}">
             درباره من

@@ -1,6 +1,6 @@
 # Product Spec v2 — پت فیچر (Blog)
 
-> **Status: Shipped** · **Prerequisite:** [Product Spec v1](./product-spec-v1.md) · **Parent:** [Product overview](./product-spec.md) · **Next:** [Product Spec v3](./product-spec-v3.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Status: Shipped** · **Prerequisite:** [Product Spec v1](./spec-v1-library.md) · **Parent:** [Product overview](./spec.md) · **Next:** [Product Spec v3](./spec-v3-tools.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 
 ## 1. Summary
 
@@ -9,7 +9,7 @@
 | **Version** | v2 — Blog |
 | **Status** | Shipped |
 | **Goal** | Publish personal PM essays with clean URLs, social sharing, view counts, star ratings, and a comment section |
-| **Builds on** | [Product Spec v1](./product-spec-v1.md) |
+| **Builds on** | [Product Spec v1](./spec-v1-library.md) |
 | **Design files** | `petfeature redesign/project/Petfeature Blog.dc.html`, `Petfeature Post.dc.html` |
 | **New in v2** | Blog list page, post detail page, featured posts, view counts, star rating on posts, post comments, admin post management |
 
@@ -46,7 +46,7 @@
 
 ## 4. Information Architecture (additions)
 
-Extends [v1 IA](./product-spec-v1.md#6-information-architecture):
+Extends [v1 IA](./spec-v1-library.md#6-information-architecture):
 
 ```
 Home (/)
@@ -201,7 +201,7 @@ All routes under `/admin/`.
 
 ## 6. Content Model (v2 additions)
 
-New entities on top of [v1 content model](./product-spec-v1.md#8-content-model-v1):
+New entities on top of [v1 content model](./spec-v1-library.md#8-content-model-v1):
 
 | Entity | Key fields |
 |--------|------------|

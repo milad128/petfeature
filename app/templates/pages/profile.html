@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+  /* Accent swatch picker persists in localStorage — JS below */
+  .profile-swatch[aria-checked="true"] { transform: scale(1.12); box-shadow: 0 0 0 2px var(--text), 0 0 14px currentColor; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+  {# ── Hero / desk section ──────────────────────────────────────── #}
+  <section class="profile-hero">
+    <div class="profile-hero__glow" aria-hidden="true"></div>
+    <div class="container profile-hero__inner">
+
+      <span class="section-kicker">داشبورد من</span>
+
+      <div class="profile-desk-layout">
+
+        {# Left: user info card #}
+        <div class="profile-info">
+          <h1 class="profile-info__greeting">سلام {{ current_user.name.split()[0] }} 👋</h1>
+          <div class="profile-info__meta">
+            <span>ایمیل: <span dir="ltr" class="profile-info__email">{{ current_user.email }}</span></span>
+            <span>عضو از: <span>{{ current_user.created_at | jalali }}</span></span>
+          </div>
+          <div class="profile-info__actions">
+            <a href="#" class="btn btn--primary">قفسه کتاب من</a>
+            <a href="{{ url_for('library') }}" class="btn btn--outline">رفتن به کتابخانه</a>
+          </div>
+        </div>
+
+        {# Right: desk illustration + color swatches #}
+        <div class="profile-desk">
+          <div class="profile-desk__scene">
+            {# Lamp (interactive – same toggle as header, plus color picker) #}
+            <button id="lamp-toggle-profile" class="profile-lamp" title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ" aria-pressed="true">
+              <span class="profile-lamp__cone"></span>
+              <span class="profile-lamp__shade"></span>
+              <span class="profile-lamp__pole"></span>
+              <span class="profile-lamp__foot"></span>
+            </button>
+            {# Stack of books on desk #}
+            <div class="profile-desk__books" aria-hidden="true">
+              <span class="profile-desk__book" style="width:104px;height:11px;background:#4f3a26;"></span>
+              <span class="profile-desk__book" style="width:118px;height:13px;background:#3a2a1d;"></span>
+              <span class="profile-desk__book" style="width:96px;height:10px;background:#5c3f28;"></span>
+            </div>
+            {# Mug #}
+            <div class="profile-desk__mug" aria-hidden="true">
+              <span class="profile-desk__mug-body"></span>
+              <span class="profile-desk__mug-handle"></span>
+            </div>
+          </div>
+          <div class="profile-desk__surface" aria-hidden="true"></div>
+          <div class="profile-desk__edge" aria-hidden="true"></div>
+
+          {# Accent color swatches #}
+          <div class="profile-swatches">
+            <span class="profile-swatches__label">رنگ چراغ مطالعه‌ی من</span>
+            <div role="radiogroup" aria-label="انتخاب رنگ چراغ" class="profile-swatches__row">
+              <button class="profile-swatch" data-color="#a6c3a0" role="radio" title="سبز مریم‌گلی" aria-label="سبز مریم‌گلی" style="background:#a6c3a0;"></button>
+              <button class="profile-swatch" data-color="#d9a05f" role="radio" title="کهربایی" aria-label="کهربایی" style="background:#d9a05f;"></button>
+              <button class="profile-swatch" data-color="#c98a5e" role="radio" title="مسی" aria-label="مسی" style="background:#c98a5e;"></button>
+              <button class="profile-swatch" data-color="#b9a98a" role="radio" title="کتانی" aria-label="کتانی" style="background:#b9a98a;"></button>
+              <button class="profile-swatch" data-color="#a3b5c9" role="radio" title="آبی مهتابی" aria-label="آبی مهتابی" style="background:#a3b5c9;"></button>
+            </div>
+          </div>
+          <p class="profile-desk__hint">روی چراغ بزنید تا خاموش/روشن شود — رنگش در همه‌ی صفحات ذخیره می‌ماند.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {# ── Section A: Telegram ──────────────────────────────────────── #}
+  <section class="profile-section" style="border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">خبرنامه</span>
+      </div>
+      <div class="profile-tg-card">
+        <div class="profile-tg-card__copy">
+          <b>کانال تلگرام پت فیچر</b>
+          <p>خبرنامه فقط در تلگرام منتشر می‌شود: هر کتاب تازه، ابزار جدید و یادداشت خواندنی. دو تا سه پیام در ماه — هر وقت خواستید لفت بدهید.</p>
+        </div>
+        <div class="profile-tg-card__action">
+          <a href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer" class="tg-join-btn">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3l-3.3 15.5c-.25 1.1-.9 1.37-1.83.85l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15L18.1 5.9c.4-.36-.09-.56-.63-.2L6.24 12.8l-4.98-1.56c-1.08-.34-1.1-1.08.23-1.6L20.5 2.87c.9-.34 1.68.2 1.4 1.43z"/></svg>
+            عضویت در کانال تلگرام
+          </a>
+          <span class="profile-tg-card__handle" dir="ltr">@petfeature</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ── Section B: My Comments (placeholder for v14) ─────────────── #}
+  <section class="profile-section" style="border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">نظرات من</span>
+      </div>
+      <div class="profile-placeholder">
+        <div class="auth-lamp auth-lamp--sm" aria-hidden="true">
+          <span class="auth-lamp__shade"></span>
+          <span class="auth-lamp__pole"></span>
+          <span class="auth-lamp__foot"></span>
+        </div>
+        <b>قابلیت‌های بیشتر به زودی اضافه می‌شن</b>
+        <p>به‌زودی می‌توانید نظرات خود را در این‌جا ببینید و پاسخ‌های من را پیگیری کنید.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+{# ── Logout form (accessible from dropdown in header) ── #}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  var ACCENT_KEY = 'pf-accent';
+
+  function applyAccent(color) {
+    document.documentElement.style.setProperty('--accent', color);
+  }
+
+  function markActive(color) {
+    document.querySelectorAll('.profile-swatch').forEach(function (btn) {
+      var on = btn.dataset.color === color;
+      btn.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  }
+
+  // Restore saved accent
+  var saved = localStorage.getItem(ACCENT_KEY);
+  if (saved) { applyAccent(saved); markActive(saved); }
+  else { markActive('#a6c3a0'); }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Wire profile lamp toggle (same behavior as header lamp)
+    var profileLamp = document.getElementById('lamp-toggle-profile');
+    if (profileLamp) {
+      var lampKey = 'pf-lamp';
+      // reflect current state
+      var lampOff = document.documentElement.getAttribute('data-lamp') === 'off';
+      profileLamp.setAttribute('aria-pressed', lampOff ? 'false' : 'true');
+
+      profileLamp.addEventListener('click', function () {
+        var isOff = document.documentElement.getAttribute('data-lamp') === 'off';
+        if (isOff) {
+          document.documentElement.removeAttribute('data-lamp');
+          localStorage.setItem(lampKey, 'on');
+          profileLamp.setAttribute('aria-pressed', 'true');
+        } else {
+          document.documentElement.setAttribute('data-lamp', 'off');
+          localStorage.setItem(lampKey, 'off');
+          profileLamp.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
+
+    // Wire accent swatches
+    document.querySelectorAll('.profile-swatch').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var color = btn.dataset.color;
+        applyAccent(color);
+        markActive(color);
+        localStorage.setItem(ACCENT_KEY, color);
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

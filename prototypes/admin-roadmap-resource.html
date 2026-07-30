@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ویرایش منبع | مدیریت | پت فیچر</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="admin-roadmap.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-brand">
+      <b>پت فیچر</b>
+      <small class="admin-sidebar-sub">پنل مدیریت</small>
+    </div>
+    <nav class="admin-nav" aria-label="ناوبری مدیریت">
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">📚 کتابخانه</div>
+        <a href="#" class="admin-nav-sub">کتاب‌ها</a>
+        <a href="#" class="admin-nav-sub">دسته‌بندی‌ها</a>
+        <a href="#" class="admin-nav-sub">نظرها</a>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">✍️ بلاگ</div>
+        <a href="#" class="admin-nav-sub">یادداشت‌ها</a>
+        <a href="#" class="admin-nav-sub">نظرها</a>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">🗺️ مسیر یادگیری</div>
+        <a href="admin-roadmap.html" class="admin-nav-sub active">سطح‌ها و منابع</a>
+        <a href="admin-roadmap-links.html" class="admin-nav-sub ">
+          لینک‌های ناقص <span class="nav-badge">۳۹</span>
+        </a>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">🛠️ ابزارها</div>
+        <a href="#" class="admin-nav-sub">قالب‌ها</a>
+      </div>
+      <div class="admin-nav-group">
+        <div class="admin-nav-group-label">🗂️ رسانه</div>
+        <a href="#" class="admin-nav-sub">کتابخانه رسانه</a>
+      </div>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1>ویرایش منبع</h1>
+        <div class="crumb"><a href="admin-roadmap.html">مسیر یادگیری</a><span class="sep">/</span><a href="admin-roadmap-level-1.html">سطح ۱</a><span class="sep">/</span>ویرایش منبع</div>
+      </div>
+      <span class="proto-flag">پیش‌نمایش طراحی</span>
+    </div>
+    <div class="admin-content">
+
+      <form onsubmit="return false;">
+      <div class="card">
+        <div class="card-head">
+          <h2>ویرایش منبع <span class="sub">سطح ۱ · هسته · تحویل و اجرا</span></h2>
+          <span class="badge badge-required">الزامی</span>
+        </div>
+        <div class="card-body">
+
+          <div class="form-row">
+            <label for="title">عنوان منبع <span class="req-star">*</span></label>
+            <input class="form-control pfa" id="title" value="Scrum — Jeff Sutherland">
+            <span class="form-hint">عنوان به زبان اصلی نوشته می‌شود؛ ترجمه نکنید.</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="type">نوع</label>
+              <select class="form-control" id="type">
+                <option selected>کتاب</option><option>مقاله</option><option>دوره</option>
+                <option>راهنما</option><option>پادکست</option><option>بلاگ</option>
+                <option>قالب</option><option>ابزار تمرین</option><option>خبرنامه</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="time">زمان مطالعه</label>
+              <input class="form-control" id="time" value="۴ ساعت">
+            </div>
+            <div class="form-row">
+              <label for="diff">سختی</label>
+              <select class="form-control" id="diff">
+                <option selected>⭐ آسان</option><option>⭐⭐ متوسط</option><option>⭐⭐⭐ سخت</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="fa">ترجمه فارسی</label>
+              <select class="form-control" id="fa">
+                <option selected>🇮🇷 موجود است</option><option>🔴 موجود نیست</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="status">وضعیت</label>
+              <select class="form-control" id="status">
+                <option selected>الزامی</option><option>اختیاری</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="order">ترتیب نمایش</label>
+              <input class="form-control" id="order" type="number" value="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>لینک برای کاربر</h2>
+          <span class="sub">این بخش تعیین می‌کند کاربر با کلیک روی عنوان کجا می‌رود</span>
+        </div>
+        <div class="card-body">
+          <div class="callout" style="margin-bottom:1.1rem;">
+            <p>یکی از این دو را پر کنید. اگر هر دو خالی بماند، عنوان منبع در صفحه‌ی عمومی
+            به‌صورت <strong>متن ساده و غیرقابل‌کلیک</strong> نمایش داده می‌شود.</p>
+          </div>
+
+          <div class="form-row">
+            <label for="url">۱. لینک بیرونی</label>
+            <input class="form-control pfa" id="url" type="url" dir="ltr"
+                   placeholder="https://example.com/resource">
+            <span class="form-hint">برای منابع آنلاین رایگان: مقاله، دوره، راهنما، پادکست.
+            برای کتاب‌های چاپی معمولاً خالی می‌ماند.</span>
+          </div>
+
+          <div class="form-row">
+            <label for="book">۲. اتصال به کتاب کتابخانه <span class="badge badge-cat">ترجیح داده می‌شود</span></label>
+            <select class="form-control" id="book">
+              <option value="">— متصل نیست —</option>
+              <option selected>اسکرام — جف ساترلند (کتابخانه)</option>
+              <option>تست مادر — راب فیتزپاتریک (کتابخانه)</option>
+              <option>استارتاپ ناب — اریک ریس (کتابخانه)</option>
+              <option>مکالمات حیاتی (کتابخانه)</option>
+              <option>۹۰ روز اول (کتابخانه)</option>
+            </select>
+            <span class="form-hint">اگر برای این کتاب در کتابخانه یادداشت دارید، اتصال بدهید.
+            کاربر به یادداشت فارسی خودتان می‌رسد، نه به یک سایت بیرونی —
+            و می‌تواند کتاب را به قفسه‌اش اضافه کند.</span>
+          </div>
+
+          <div class="form-row">
+            <label>پیش‌نمایش در صفحه‌ی عمومی</label>
+            <div class="card" style="margin:0; box-shadow:none;">
+              <div class="card-body" style="padding:.8rem 1rem;">
+                <span class="pfa"><a href="#"><em>Scrum</em> — Jeff Sutherland</a></span>
+                <span class="badge badge-optional" style="margin-inline-start:.5rem;">→ /library/scrum/</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>تکلیف کاربر</h2>
+          <span class="sub">زیر همین منبع در صفحه‌ی عمومی نمایش داده می‌شود</span>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <label for="hw">متن تکلیف</label>
+            <textarea class="form-control" id="hw" rows="3">یک اسپرینت کامل تیم را از برنامه‌ریزی تا بازنگری دنبال کنید و بنویسید کدام جلسه واقعاً تصمیمی را عوض کرد و کدام فقط برگزار شد.</textarea>
+            <span class="form-hint">یک کار مشخص و قابل‌انجام که مستقیماً از همین منبع می‌آید.
+            اگر خالی بماند، بخش تکلیف برای این منبع نمایش داده نمی‌شود.</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:2rem;">
+        <button class="btn btn-primary">ذخیره‌ی تغییرات</button>
+        <a class="btn btn-ghost" href="admin-roadmap-level-1.html">انصراف</a>
+        <span style="flex:1;"></span>
+        <button class="btn btn-danger">حذف منبع</button>
+      </div>
+      </form>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>

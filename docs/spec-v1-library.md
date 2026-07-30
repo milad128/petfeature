@@ -1,6 +1,6 @@
 # Product Spec v1 — پت فیچر (Library Launch)
 
-> **Status: Shipped** · **Parent:** [Product overview](./product-spec.md) · **Next:** [Product Spec v2](./product-spec-v2.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Status: Shipped** · **Parent:** [Product overview](./spec.md) · **Next:** [Product Spec v2](./spec-v2-blog.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 
 ## 1. Summary
 
@@ -9,7 +9,7 @@
 | **Version** | v1 — Library launch |
 | **Status** | Shipped |
 | **Goal** | A clean, fast book library with complete detail pages and an about-author page, managed by an admin CMS |
-| **Prerequisite for** | [Product Spec v2](./product-spec-v2.md) |
+| **Prerequisite for** | [Product Spec v2](./spec-v2-blog.md) |
 
 **Scope in one sentence:** Book library (browse + detail), about-author page, and a session-authenticated admin CMS — no blog, no path, no newsletter.
 
@@ -200,7 +200,7 @@ Home (/)              → entry to library and about
 
 ## 10. Out of Scope (v1)
 
-Deferred to [v2](./product-spec-v2.md) or [v3](./product-spec-v3.md):
+Deferred to [v2](./spec-v2-blog.md) or [v3](./spec-v3-tools.md):
 
 - Blog / notes (یادداشت) → v2
 - Newsletter subscription → v2

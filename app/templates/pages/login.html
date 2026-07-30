@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-page">
+
+  {# Radial glow behind content #}
+  <div class="auth-page__glow" aria-hidden="true"></div>
+
+  <div class="auth-page__inner">
+
+    {# Lamp mark #}
+    <div class="auth-lamp" aria-hidden="true">
+      <span class="auth-lamp__shade"></span>
+      <span class="auth-lamp__pole"></span>
+      <span class="auth-lamp__foot"></span>
+    </div>
+
+    <h1 class="auth-page__title">ورود به پت فیچر</h1>
+    <p class="auth-page__sub">برای ساختن قفسه‌ی کتاب شخصی و پیگیری نظرات خود وارد شوید.</p>
+
+    {% if error %}
+    <div class="auth-page__error" role="alert">
+      <span aria-hidden="true">⚠</span>
+      {% if error == "disabled" %}
+      حساب کاربری شما غیرفعال شده است.
+      {% else %}
+      خطا در ورود. لطفاً دوباره امتحان کنید.
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <form method="get" action="{{ url_for('auth_google') }}" class="auth-page__form">
+      <button type="submit" class="google-btn">
+        <span class="google-btn__icon" aria-hidden="true">G</span>
+        ورود با گوگل
+      </button>
+    </form>
+
+    <p class="auth-page__fine">با ورود، حساب شما به‌صورت خودکار ساخته می‌شود.</p>
+
+    <div class="auth-page__perks">
+      <span class="auth-page__perks-label">بعد از ورود چه چیزی به دست می‌آورید؟</span>
+      <span>— قفسه‌ی کتاب شخصی با سه وضعیت خواندن</span>
+      <span>— پیگیری نظرها و پاسخ‌های من به آن‌ها</span>
+      <span>— عضویت در خبرنامه بدون وارد کردن ایمیل</span>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

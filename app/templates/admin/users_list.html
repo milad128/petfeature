@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<p class="admin-meta-line">{{ total | fa_digits }} کاربر ثبت‌نام‌شده</p>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>نام</th>
+        <th>ایمیل</th>
+        <th>تاریخ عضویت</th>
+        <th>وضعیت</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td><b>{{ user.name }}</b></td>
+        <td dir="ltr" style="text-align:left; color:var(--text);">{{ user.email }}</td>
+        <td class="muted">{{ user.created_at | jalali }}</td>
+        <td>
+          {% if user.is_active %}
+          <span class="status-badge status-badge--ok"><span aria-hidden="true">✓</span> فعال</span>
+          {% else %}
+          <span class="status-badge status-badge--bad"><span aria-hidden="true">✕</span> غیرفعال</span>
+          {% endif %}
+        </td>
+        <td style="text-align:left;">
+          {% if user.is_active %}
+          <form method="post" action="{{ url_for('admin_user_deactivate', user_id=user.id) }}" style="margin:0;">
+            <button type="submit" class="btn-table btn-table--muted">غیرفعال‌سازی</button>
+          </form>
+          {% else %}
+          <form method="post" action="{{ url_for('admin_user_reactivate', user_id=user.id) }}" style="margin:0;">
+            <button type="submit" class="btn-table btn-table--ok">فعال‌سازی</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="muted" style="text-align:center; padding:2rem;">هنوز کاربری ثبت‌نام نکرده است.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav class="admin-pagination" aria-label="صفحه‌بندی کاربران">
+  {% if page > 1 %}
+  <a href="?page={{ page - 1 }}" class="admin-pagination__btn">→ قبلی</a>
+  {% else %}
+  <span class="admin-pagination__btn admin-pagination__btn--disabled" aria-disabled="true">→ قبلی</span>
+  {% endif %}
+  <span class="admin-pagination__info">صفحه {{ page | fa_digits }} از {{ total_pages | fa_digits }}</span>
+  {% if page < total_pages %}
+  <a href="?page={{ page + 1 }}" class="admin-pagination__btn">بعدی ←</a>
+  {% else %}
+  <span class="admin-pagination__btn admin-pagination__btn--disabled" aria-disabled="true">بعدی ←</span>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

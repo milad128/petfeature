@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     telegram_channel_id: str = "@petfeature"
     telegram_proxy: str = ""  # optional HTTP/SOCKS5 proxy, e.g. http://127.0.0.1:7890
 
+    # Google OAuth
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    google_redirect_uri: str = "https://petfeature.ir/auth/google/callback/"
+
     # GapGPT (Anthropic-compatible proxy)
     gapgpt_api_key: str = ""
     gapgpt_base_url: str = "https://api.gapgpt.app/v1"

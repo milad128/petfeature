@@ -1,6 +1,6 @@
 # Product Spec v6 — پت فیچر (Visitor Analytics)
 
-> **Prerequisite:** [Product Spec v5](./product-spec-v5.md) must be shipped · **Parent:** [Product overview](./product-spec.md)
+> **Prerequisite:** [Product Spec v5](./spec-v5-about-contact.md) must be shipped · **Parent:** [Product overview](./spec.md)
 
 ## 1. Summary
 

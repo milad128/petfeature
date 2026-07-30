@@ -1,6 +1,7 @@
 """SQLAlchemy ORM models."""
 
 from app.models.about import AboutPage
+from app.models.user import User
 from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, MediaLinkType, book_references
 from app.models.category import Category, book_categories
 from app.models.contact import ContactMessage
@@ -11,6 +12,7 @@ from app.models.tool import Tool, ToolFile, ToolStatus, tool_books, tool_posts
 
 __all__ = [
     "AboutPage",
+    "User",
     "Book",
     "BookComment",
     "BookCommentStatus",

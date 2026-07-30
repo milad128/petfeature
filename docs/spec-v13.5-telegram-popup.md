@@ -1,7 +1,7 @@
 # Product Spec v13.5 — Telegram Subscription Popup (پاپ‌آپ کانال تلگرام)
 
 **Version:** v13.5
-**Status:** Shipped
+**Status:** Backlog
 **Author:** Milad Mirzaei
 **Date:** July 2026
 **Depends on:** v11.5 (Telegram channel live)
@@ -17,11 +17,15 @@ This is a pure frontend feature: one JS snippet + one CSS modal. No route, no mo
 
 ---
 
+
+
 ## Problem Statement
 
 The Telegram channel join strip in the footer (v11.5) is passive — only visitors who scroll to the bottom see it. Most visitors leave without ever noticing it. The popup creates an active, timed prompt that captures attention without blocking the initial reading experience (30-second delay = after the visitor has shown genuine interest).
 
 ---
+
+
 
 ## User Stories
 
@@ -31,15 +35,23 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 
 ---
 
+
+
 ## Acceptance Criteria
 
+
+
 ### Trigger
+
 - [ ] Popup appears **30 seconds** after the page finishes loading (`DOMContentLoaded` + `setTimeout(30000)`)
 - [ ] Popup appears on **all public pages** (home, library, book detail, blog, post detail, tools, tool detail, about, contact)
 - [ ] Popup does **not** appear on any `/admin/` page
 - [ ] Popup does **not** appear if `localStorage.getItem('pf_tg_popup_seen')` is set to `'1'`
 
+
+
 ### Popup content
+
 - [ ] Modal overlay (semi-transparent dark background, RTL)
 - [ ] Close button (×) in the top-left corner
 - [ ] Telegram icon or logo
@@ -48,7 +60,10 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 - [ ] Primary CTA button: **"عضویت در کانال @petfeature"** → opens `https://t.me/petfeature` in a new tab (`target="_blank" rel="noopener"`)
 - [ ] Secondary link below button: **"بعداً"** (no styling — plain text link)
 
+
+
 ### Dismiss behaviour
+
 - [ ] Clicking the × button → closes popup → sets `localStorage.pf_tg_popup_seen = '1'`
 - [ ] Clicking "بعداً" → closes popup → sets `localStorage.pf_tg_popup_seen = '1'`
 - [ ] Clicking the CTA button → opens Telegram in new tab → closes popup → sets `localStorage.pf_tg_popup_seen = '1'`
@@ -56,7 +71,10 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 - [ ] After any of the above, popup **never appears again** on this browser
 - [ ] Pressing `Escape` key → same as clicking ×
 
+
+
 ### Accessibility & UX
+
 - [ ] Popup traps keyboard focus while open (tabbing stays within modal)
 - [ ] `aria-modal="true"` and `role="dialog"` on the modal element
 - [ ] `aria-label` on close button: "بستن"
@@ -66,7 +84,11 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 
 ---
 
+
+
 ## Implementation
+
+
 
 ### JS (inline in `base.html` or a small `popup.js` file)
 
@@ -98,6 +120,8 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 })();
 ```
 
+
+
 ### HTML (added to `base.html`, hidden by default)
 
 ```html
@@ -116,36 +140,49 @@ The Telegram channel join strip in the footer (v11.5) is passive — only visito
 </div>
 ```
 
+
+
 ### Files to touch
 
-| File | Change |
-|------|--------|
+
+| File                      | Change                      |
+| ------------------------- | --------------------------- |
 | `app/templates/base.html` | Add popup HTML + script tag |
-| `app/static/css/main.css` | Add `.tg-popup` styles |
+| `app/static/css/main.css` | Add `.tg-popup` styles      |
+
 
 **No new route. No new model. No migration.**
 
 ---
 
+
+
 ## Out of Scope
 
-| Item | Reason |
-|------|--------|
-| Email capture in popup | User said Telegram only |
-| Popup on admin pages | Admin doesn't need this prompt |
-| A/B testing popup timing | Not needed at current scale |
-| Server-side "seen" tracking | localStorage is sufficient — simpler, zero latency |
-| Countdown timer visible to user | Unnecessary friction |
-| Different copy per page type | One message covers all pages |
+
+| Item                            | Reason                                             |
+| ------------------------------- | -------------------------------------------------- |
+| Email capture in popup          | User said Telegram only                            |
+| Popup on admin pages            | Admin doesn't need this prompt                     |
+| A/B testing popup timing        | Not needed at current scale                        |
+| Server-side "seen" tracking     | localStorage is sufficient — simpler, zero latency |
+| Countdown timer visible to user | Unnecessary friction                               |
+| Different copy per page type    | One message covers all pages                       |
+
 
 ---
 
+
+
 ## Effort Estimate
 
-| Task | Estimate |
-|------|----------|
-| HTML modal structure in `base.html` | 30 min |
-| CSS (overlay, box, animations, responsive) | 1 hour |
-| JS (timer, dismiss, localStorage) | 30 min |
-| QA (keyboard, mobile, repeat visit) | 30 min |
-| **Total** | **~2.5 hours** |
+
+| Task                                       | Estimate       |
+| ------------------------------------------ | -------------- |
+| HTML modal structure in `base.html`        | 30 min         |
+| CSS (overlay, box, animations, responsive) | 1 hour         |
+| JS (timer, dismiss, localStorage)          | 30 min         |
+| QA (keyboard, mobile, repeat visit)        | 30 min         |
+| **Total**                                  | **~2.5 hours** |
+
+

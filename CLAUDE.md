@@ -82,7 +82,7 @@ app/
 | v14 | User Dashboard (newsletter subscribe/unsubscribe + My Comments with admin replies; expands v12 profile page; requires v12) | **Backlog** |
 | Backlog | Reading List (v15+), Roadmap | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/product-spec.md` (index), `docs/product-spec-v1.md` through `docs/product-spec-v13.md`.
+Product specs: `docs/spec.md` (index), `docs/spec-v1-library.md` through `docs/spec-v13-newsletter-ai-agent.md`.
 
 ## Environment variables
 

@@ -1,6 +1,6 @@
 # Product Spec v5 — پت فیچر (About Redesign + Contact Page)
 
-> **Prerequisite:** [Product Spec v4](./product-spec-v4.md) must be shipped · **Parent:** [Product overview](./product-spec.md)
+> **Prerequisite:** [Product Spec v4](./spec-v4-book-engagement.md) must be shipped · **Parent:** [Product overview](./spec.md)
 
 ## 1. Summary
 

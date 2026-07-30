@@ -4,7 +4,7 @@
 
 **Planned:** v10 Post Related Books
 
-See [product-spec.md](./product-spec.md) for the versioned roadmap. Nothing below has a committed version or timeline. Items move into a versioned spec when prioritized and scoped.
+See [spec.md](./spec.md) for the versioned roadmap. Nothing below has a committed version or timeline. Items move into a versioned spec when prioritized and scoped.
 
 ---
 
@@ -17,7 +17,7 @@ Both shipped July 2026.
 
 **Why Telegram primary:** Iranian market open rates ~60–80% vs email ~15–25%. No payment friction, no deliverability issues.
 
-**Next:** v13 Newsletter Bot — Telegram auto-post on publish + AI draft agent (Claude Haiku generates Persian digest from new content diff). See [product-spec-v13.md](./product-spec-v13.md).
+**Next:** v13 Newsletter Bot — Telegram auto-post on publish + AI draft agent (Claude Haiku generates Persian digest from new content diff). See [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md).
 
 ---
 
@@ -45,35 +45,17 @@ A structured, opinionated learning path guiding readers through the library and 
 
 ## ~~Epic: User Registration + Auth~~ → Scoped as v12
 
-**Moved to spec.** See [product-spec-v12.md](./product-spec-v12.md).
+**Moved to spec.** See [spec-v12-user-auth.md](./spec-v12-user-auth.md).
 
 Key decisions recorded: email-only auth (no social login in v12); single opt-in (no email verification); server-side session via signed cookie (no JWT); "مرا به خاطر بسپار" = 30-day cookie; password reset requires email provider (Resend recommended — graceful disable if not configured); social login deferred; ship v12 together with v13 Reading List (auth alone has no user-visible value).
 
 ---
 
-## Epic: Reading List (لیست مطالعه)
+## ~~Epic: Reading List~~ → Scoped as v15 (Bookshelf / قفسه کتاب)
 
-Let registered users build a personal list of books they want to read, are reading, or have finished. The primary "save for later" feature for the site.
+**Moved to spec.** See [spec-v15-bookshelf.md](./spec-v15-bookshelf.md).
 
-| Idea | Description |
-|------|-------------|
-| **"افزودن به لیست" button on book detail** | Single-click add; button state toggles to "در لیست من" if already added; requires login — unauthenticated users are prompted to register |
-| **Reading List page** (`/profile/reading-list/`) | User's personal list of saved books; sorted by date added (newest first) |
-| **Reading status** | Optional per-book status: می‌خواهم بخوانم / در حال خواندن / خواندم — lets users track progress |
-| **Remove from list** | Remove button on reading list page and/or book detail toggle |
-| **Empty state** | "هنوز کتابی به لیستت اضافه نکردی. از کتابخانه شروع کن." with a link to `/library/` |
-| **Book count badge** | "X کتاب در لیست" summary on profile page |
-| **Admin visibility** | Admin can see aggregate reading list counts per book (how many users saved it) — signals popularity |
-
-**Open questions when scoping:**
-- Is reading status (want/reading/read) in scope for v1 reading list, or just a simple saved/unsaved toggle?
-- Should the reading list be public (shareable URL) or private by default?
-- Should the book detail page show a total "X نفر این کتاب را به لیستشان اضافه کرده‌اند" counter (social proof)?
-- Order options on the list page — by date added, by title, by status?
-
-**Data model:** `ReadingListItem` (id, user_id FK→User, book_id FK→Book, status ENUM[want/reading/read], added_at); unique constraint on (user_id, book_id)
-
-**Dependency:** Requires User Registration + Auth epic.
+Key decisions recorded: renamed from "Reading List" to **Bookshelf** (قفسه کتاب); all 3 reading statuses in scope (می‌خواهم بخوانم / در حال خواندن / خواندم); private only (no shareable URL); social proof save count shown on book detail when count ≥ 2; sort by date added only; admin save count column on books list. Blocked on v12 User Auth.
 
 ---
 

@@ -1,6 +1,6 @@
 # Product Spec v7 — پت فیچر (Admin Reply to Post Comments)
 
-> **Prerequisite:** [Product Spec v6](./product-spec-v6.md) must be shipped · **Parent:** [Product overview](./product-spec.md)
+> **Prerequisite:** [Product Spec v6](./spec-v6-analytics.md) must be shipped · **Parent:** [Product overview](./spec.md)
 
 ## 1. Summary
 

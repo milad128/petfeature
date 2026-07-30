@@ -2,7 +2,7 @@
 
 > **Maintained doc:** Update this file whenever the project layout, stack, env vars, or Hamravesh deploy steps change.
 >
-> **Parent:** [Product overview](./product-spec.md)
+> **Parent:** [Product overview](./spec.md)
 
 ## Changelog
 
@@ -328,10 +328,10 @@ CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --proxy-headers
 
 | Doc | Purpose |
 |-----|---------|
-| [product-spec.md](./product-spec.md) | Product overview and version roadmap |
-| [product-spec-v1.md](./product-spec-v1.md) | v1 scope: library + about (shipped) |
-| [product-spec-v2.md](./product-spec-v2.md) | v2 scope: blog (shipped) |
-| [product-spec-v3.md](./product-spec-v3.md) | v3 scope: tools (shipped) |
+| [spec.md](./spec.md) | Product overview and version roadmap |
+| [spec-v1-library.md](./spec-v1-library.md) | v1 scope: library + about (shipped) |
+| [spec-v2-blog.md](./spec-v2-blog.md) | v2 scope: blog (shipped) |
+| [spec-v3-tools.md](./spec-v3-tools.md) | v3 scope: tools (shipped) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled: roadmap, newsletter, analytics |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1 + v2 + v3) |
 

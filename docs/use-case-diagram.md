@@ -2,7 +2,7 @@
 
 UML use case diagram for **petfeature.ir** — v1 Library, v2 Blog, v3 Tools, and v4 Book Engagement (all shipped). Backlog epics (Roadmap, newsletter, analytics) are not shown here until scoped into a version.
 
-**Specs:** [v1](./product-spec-v1.md) · [v2](./product-spec-v2.md) · [v3](./product-spec-v3.md) · [v4](./product-spec-v4.md) · [Backlog](./product%20backlog.md) · [Overview](./product-spec.md)
+**Specs:** [v1](./spec-v1-library.md) · [v2](./spec-v2-blog.md) · [v3](./spec-v3-tools.md) · [v4](./spec-v4-book-engagement.md) · [Backlog](./product%20backlog.md) · [Overview](./spec.md)
 
 ## Diagram
 
@@ -67,4 +67,4 @@ Visitor
 
 ---
 
-*See also: [product-spec.md](./product-spec.md) · [product backlog.md](./product%20backlog.md)*
+*See also: [spec.md](./spec.md) · [product backlog.md](./product%20backlog.md)*

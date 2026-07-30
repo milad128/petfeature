@@ -63,23 +63,23 @@ flowchart LR
 
 | Version | Document | Epic | Scope | Status |
 |---------|----------|------|-------|--------|
-| **v1** | [Product Spec v1](./product-spec-v1.md) | Library | Book library, about page, admin CMS | **Shipped** |
-| **v2** | [Product Spec v2](./product-spec-v2.md) | Blog | Posts, featured, view counts, star ratings, comments, social sharing | **Shipped** |
-| **v3** | [Product Spec v3](./product-spec-v3.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | **Shipped** |
-| **v4** | [Product Spec v4](./product-spec-v4.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
-| **v5** | [Product Spec v5](./product-spec-v5.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Shipped** |
-| **v6** | [Product Spec v6](./product-spec-v6.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Shipped** |
-| **v7** | [Product Spec v7](./product-spec-v7.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Shipped** |
-| **v8** | [Product Spec v8](./product-spec-v8.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
-| **v9** | [Product Spec v9](./product-spec-v9.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
-| **v10** | [Product Spec v10](./product-spec-v10.md) | Post Related Books | Related books widget in admin post form; related books section on public post detail page | **Planned** |
-| **v11** | [Product Spec v11](./product-spec-v11.md) | Newsletter | Email subscriber form + admin subscriber list + `Subscriber` model | **Shipped** |
-| **v11.5** | [Product Spec v11.5](./product-spec-v11.5.md) | Telegram Channel | Replace public footer email form with @petfeature Telegram join strip; subscriber admin remains live | **Shipped** |
-| **v12** | [Product Spec v12](./product-spec-v12.md) | User Auth via Google Login | Google OAuth only (no email/password, no SMTP); auto-registration on first login; profile page; admin user list | **Backlog** |
-| **v13** | [Product Spec v13](./product-spec-v13.md) | Newsletter AI Draft Agent | Campaign log + AI draft agent (Claude Haiku generates Persian digest from new content diff); admin compose panel; no auto-posting | **Shipped** |
-| **v13.5** | [Product Spec v13.5](./product-spec-v13.5.md) | Telegram Popup | 30-second popup inviting visitors to join @petfeature; dismissed once via localStorage; no DB | **Backlog** |
-| **v14** | [Product Spec v14](./product-spec-v14.md) | User Dashboard | Newsletter subscribe/unsubscribe + My Comments with admin replies; expands v12 profile page | **Backlog** |
-| **Backlog** | [Product Backlog](./product%20backlog.md) | — | Reading List (v15+), Roadmap | Unscheduled |
+| **v1** | [Product Spec v1](./spec-v1-library.md) | Library | Book library, about page, admin CMS | **Shipped** |
+| **v2** | [Product Spec v2](./spec-v2-blog.md) | Blog | Posts, featured, view counts, star ratings, comments, social sharing | **Shipped** |
+| **v3** | [Product Spec v3](./spec-v3-tools.md) | Tools | Template library — downloadable PM artifacts with usage guides, cross-linked to books and posts | **Shipped** |
+| **v4** | [Product Spec v4](./spec-v4-book-engagement.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
+| **v5** | [Product Spec v5](./spec-v5-about-contact.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Shipped** |
+| **v6** | [Product Spec v6](./spec-v6-analytics.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Shipped** |
+| **v7** | [Product Spec v7](./spec-v7-comment-replies.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Shipped** |
+| **v8** | [Product Spec v8](./spec-v8-content-enhancements.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
+| **v9** | [Product Spec v9](./spec-v9-media-library.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
+| **v10** | [Product Spec v10](./spec-v10-post-related-books.md) | Post Related Books | Related books widget in admin post form; related books section on public post detail page | **Planned** |
+| **v11** | [Product Spec v11](./spec-v11-newsletter.md) | Newsletter | Email subscriber form + admin subscriber list + `Subscriber` model | **Shipped** |
+| **v11.5** | [Product Spec v11.5](./spec-v11.5-telegram-channel.md) | Telegram Channel | Replace public footer email form with @petfeature Telegram join strip; subscriber admin remains live | **Shipped** |
+| **v12** | [Product Spec v12](./spec-v12-user-auth.md) | User Auth via Google Login | Google OAuth only (no email/password, no SMTP); auto-registration on first login; profile page; admin user list | **Backlog** |
+| **v13** | [Product Spec v13](./spec-v13-newsletter-ai-agent.md) | Newsletter AI Draft Agent | Campaign log + AI draft agent (Claude Haiku generates Persian digest from new content diff); admin compose panel; no auto-posting | **Shipped** |
+| **v13.5** | [Product Spec v13.5](./spec-v13.5-telegram-popup.md) | Telegram Popup | 30-second popup inviting visitors to join @petfeature; dismissed once via localStorage; no DB | **Backlog** |
+| **v14** | [Product Spec v14](./spec-v14-user-dashboard.md) | User Dashboard | Newsletter subscribe/unsubscribe + My Comments with admin replies; expands v12 profile page | **Backlog** |
+| **v15** | [Product Spec v15](./spec-v15-bookshelf.md) | Bookshelf (قفسه کتاب) | Personal bookshelf with reading statuses; social proof save count; admin save counts; requires v12 | **Backlog** |
 
 ---
 
@@ -96,23 +96,24 @@ flowchart LR
 | Doc | Purpose |
 |-----|---------|
 | [project-structure-and-deployment.md](./project-structure-and-deployment.md) | Project layout, stack, Hamravesh deploy, local dev |
-| [product-spec-v1.md](./product-spec-v1.md) | PRD for Library epic (shipped) |
-| [product-spec-v2.md](./product-spec-v2.md) | PRD for Blog epic (shipped) |
-| [product-spec-v3.md](./product-spec-v3.md) | PRD for Tools epic (shipped) |
-| [product-spec-v4.md](./product-spec-v4.md) | PRD for Book Engagement epic (shipped) |
-| [product-spec-v5.md](./product-spec-v5.md) | PRD for About Redesign + Contact Page (shipped) |
-| [product-spec-v6.md](./product-spec-v6.md) | PRD for Visitor Analytics (shipped) |
-| [product-spec-v7.md](./product-spec-v7.md) | PRD for Post Comment Replies (shipped) |
-| [product-spec-v8.md](./product-spec-v8.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
-| [product-spec-v9.md](./product-spec-v9.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |
-| [product-spec-v10.md](./product-spec-v10.md) | PRD for Post Related Books — admin post form widget + public post detail display (planned) |
-| [product-spec-v11.md](./product-spec-v11.md) | PRD for Newsletter — email subscriber form + admin list + Subscriber model (shipped) |
-| [product-spec-v11.5.md](./product-spec-v11.5.md) | PRD for Telegram Channel — replace footer email form with @petfeature join strip (shipped) |
-| [product-spec-v12.md](./product-spec-v12.md) | PRD for User Auth — Google Login only; no email/password; auto-registration; profile page; admin user list (backlog) |
-| [product-spec-v13.md](./product-spec-v13.md) | PRD for Newsletter AI Draft Agent — campaign log + AI draft via Claude Haiku + admin compose panel; no auto-posting (shipped) |
-| [product-spec-v13.5.md](./product-spec-v13.5.md) | PRD for Telegram Popup — 30s delay popup inviting visitors to join @petfeature; localStorage dismiss; no DB (backlog) |
-| [product-spec-v14.md](./product-spec-v14.md) | PRD for User Dashboard — newsletter subscribe/unsubscribe + My Comments with admin replies (backlog) |
-| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap, newsletter |
+| [spec-v1-library.md](./spec-v1-library.md) | PRD for Library epic (shipped) |
+| [spec-v2-blog.md](./spec-v2-blog.md) | PRD for Blog epic (shipped) |
+| [spec-v3-tools.md](./spec-v3-tools.md) | PRD for Tools epic (shipped) |
+| [spec-v4-book-engagement.md](./spec-v4-book-engagement.md) | PRD for Book Engagement epic (shipped) |
+| [spec-v5-about-contact.md](./spec-v5-about-contact.md) | PRD for About Redesign + Contact Page (shipped) |
+| [spec-v6-analytics.md](./spec-v6-analytics.md) | PRD for Visitor Analytics (shipped) |
+| [spec-v7-comment-replies.md](./spec-v7-comment-replies.md) | PRD for Post Comment Replies (shipped) |
+| [spec-v8-content-enhancements.md](./spec-v8-content-enhancements.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
+| [spec-v9-media-library.md](./spec-v9-media-library.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |
+| [spec-v10-post-related-books.md](./spec-v10-post-related-books.md) | PRD for Post Related Books — admin post form widget + public post detail display (planned) |
+| [spec-v11-newsletter.md](./spec-v11-newsletter.md) | PRD for Newsletter — email subscriber form + admin list + Subscriber model (shipped) |
+| [spec-v11.5-telegram-channel.md](./spec-v11.5-telegram-channel.md) | PRD for Telegram Channel — replace footer email form with @petfeature join strip (shipped) |
+| [spec-v12-user-auth.md](./spec-v12-user-auth.md) | PRD for User Auth — Google Login only; no email/password; auto-registration; profile page; admin user list (backlog) |
+| [spec-v13-newsletter-ai-agent.md](./spec-v13-newsletter-ai-agent.md) | PRD for Newsletter AI Draft Agent — campaign log + AI draft via Claude Haiku + admin compose panel; no auto-posting (shipped) |
+| [spec-v13.5-telegram-popup.md](./spec-v13.5-telegram-popup.md) | PRD for Telegram Popup — 30s delay popup inviting visitors to join @petfeature; localStorage dismiss; no DB (backlog) |
+| [spec-v14-user-dashboard.md](./spec-v14-user-dashboard.md) | PRD for User Dashboard — newsletter subscribe/unsubscribe + My Comments with admin replies (backlog) |
+| [spec-v15-bookshelf.md](./spec-v15-bookshelf.md) | PRD for Bookshelf (قفسه کتاب) — personal reading list with statuses, social proof, admin save counts (backlog) |
+| [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
 | [admin-panel-design-spec.md](./admin-panel-design-spec.md) | Admin CMS design spec — all pages, fields, actions, constraints |
@@ -234,4 +235,4 @@ See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 
 ---
 
-*July 2026 · v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next.*
+*July 2026 · v1–v9, v11 (Newsletter), v11.5 (Telegram Channel) all shipped. v10 (Post Related Books) is next. v15 Bookshelf spec written — blocked on v12 User Auth.*

@@ -39,6 +39,7 @@ from app.services import uploads as upload_service
 from app.services.media import delete_media_file, get_media_files, human_size, upload_media_file
 from app.services import newsletters as newsletter_service
 from app.services import newsletter_ai
+from app.services import users as user_service
 
 router = APIRouter()
 
@@ -2155,3 +2156,53 @@ async def admin_newsletter_delete(
         await newsletter_service.delete_campaign(db, campaign)
 
     return RedirectResponse("/admin/newsletters/", status_code=303)
+
+# ── Admin: Users (v12) ────────────────────────────────────────────────────────
+
+@router.get("/users/", name="admin_users")
+async def admin_users(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    users, total = await user_service.list_users(db, page=page, per_page=50)
+    total_pages = max(1, (total + 49) // 50)
+    return templates.TemplateResponse(
+        request,
+        "admin/users_list.html",
+        {
+            "page_title": "کاربران",
+            "active_nav": "users",
+            "users": users,
+            "total": total,
+            "page": page,
+            "total_pages": total_pages,
+        },
+    )
+
+
+@router.post("/users/{user_id}/deactivate/", name="admin_user_deactivate")
+async def admin_user_deactivate(
+    request: Request,
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    await user_service.deactivate_user(db, user_id)
+    return RedirectResponse("/admin/users/", status_code=303)
+
+
+@router.post("/users/{user_id}/reactivate/", name="admin_user_reactivate")
+async def admin_user_reactivate(
+    request: Request,
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    await user_service.reactivate_user(db, user_id)
+    return RedirectResponse("/admin/users/", status_code=303)

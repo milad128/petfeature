@@ -1,6 +1,6 @@
 # Product Spec v3 — پت فیچر (Tools / Template Library)
 
-> **Status: Shipped** · **Prerequisite:** [Product Spec v2](./product-spec-v2.md) · **Parent:** [Product overview](./product-spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
+> **Status: Shipped** · **Prerequisite:** [Product Spec v2](./spec-v2-blog.md) · **Parent:** [Product overview](./spec.md) · **Diagrams:** [Use case diagram](./use-case-diagram.md)
 > **Design files:** `petfeature redesign/project/Petfeature Tools.dc.html`, `Petfeature Tool Detail.dc.html`
 
 ## 1. Summary
@@ -10,7 +10,7 @@
 | **Version** | v3 — Tools |
 | **Status** | Shipped |
 | **Goal** | A curated Persian PM template library — ready-to-use downloadable artifacts with usage guides, cross-linked to books and posts |
-| **Builds on** | [Product Spec v2](./product-spec-v2.md) |
+| **Builds on** | [Product Spec v2](./spec-v2-blog.md) |
 | **Epic** | Tools |
 | **Migration source** | Old petfeature.ir `/Templates/` section (3 categories) |
 
