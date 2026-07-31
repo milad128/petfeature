@@ -314,7 +314,7 @@
 </div>
 
 {# ── Review modal — fires when ?review=<book_id> is present (new "خواندم" transition) #}
-{% if open_review and book %}
+{% if show_review_modal and book %}
 <div class="review-modal-overlay" id="review-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
   <div class="review-modal">
     <button class="review-modal__close" id="review-modal-close" aria-label="بستن">✕</button>

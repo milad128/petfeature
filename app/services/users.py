@@ -68,41 +68,6 @@ async def reactivate_user(db: AsyncSession, user_id: int) -> Optional[User]:
     return user
 
 
-# ── Newsletter subscription (v14) ─────────────────────────────────────────────
-
-async def is_subscribed_to_newsletter(db: AsyncSession, email: str) -> bool:
-    """Return True if the email has an active subscriber record."""
-    from app.models.subscriber import Subscriber
-    sub = await db.scalar(
-        select(Subscriber).where(Subscriber.email == email.lower())
-    )
-    return sub is not None and sub.is_active
-
-
-async def subscribe_to_newsletter(db: AsyncSession, user: User) -> None:
-    """Add or reactivate the user's email in the Subscriber table."""
-    from app.models.subscriber import Subscriber
-    existing = await db.scalar(
-        select(Subscriber).where(Subscriber.email == user.email.lower())
-    )
-    if existing:
-        existing.is_active = True
-    else:
-        db.add(Subscriber(name=user.name, email=user.email.lower(), is_active=True))
-    await db.commit()
-
-
-async def unsubscribe_from_newsletter(db: AsyncSession, user: User) -> None:
-    """Set the user's Subscriber record to inactive."""
-    from app.models.subscriber import Subscriber
-    existing = await db.scalar(
-        select(Subscriber).where(Subscriber.email == user.email.lower())
-    )
-    if existing:
-        existing.is_active = False
-        await db.commit()
-
-
 # ── User comments (v14) ───────────────────────────────────────────────────────
 
 @dataclass

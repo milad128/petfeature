@@ -75,6 +75,9 @@ async def book_detail(request: Request, slug: str, db: AsyncSession = Depends(ge
 
     # ?review=<book_id> opens the review modal after marking as read
     open_review = request.query_params.get("review")
+    show_review_modal = bool(
+        book and open_review and str(book.id) == str(open_review)
+    )
 
     response = templates.TemplateResponse(
         request,
@@ -87,6 +90,7 @@ async def book_detail(request: Request, slug: str, db: AsyncSession = Depends(ge
             "shelf_item": shelf_item,
             "save_count": save_count,
             "open_review": open_review,
+            "show_review_modal": show_review_modal,
         },
     )
     if book:

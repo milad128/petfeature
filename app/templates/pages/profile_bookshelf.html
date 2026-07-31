@@ -67,9 +67,9 @@
             <input type="hidden" name="book_id" value="{{ book.id }}">
             <input type="hidden" name="status" value="{{ val }}">
             <button type="submit"
-              class="bsw-pill bsw-pill--sm {% if item.status == val %}bsw-pill--active{% endif %}"
+              class="bd2-bs-pill bd2-bs-pill--{{ val }} bd2-bs-pill--sm {% if item.status == val %}bd2-bs-pill--on{% endif %}"
               aria-pressed="{{ 'true' if item.status == val else 'false' }}">
-              {{ label }}
+              {{ label }}{% if item.status == val %} ✓{% endif %}
             </button>
           </form>
           {% endfor %}

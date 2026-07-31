@@ -1,6 +1,6 @@
 # Design Brief (Temporary) — User Features: Registration, Dashboard & Bookshelf
 
-> **Purpose:** A throwaway design brief handed to **Claude Design** to design the UI for three linked features: User Registration (v12), User Dashboard (v14), and Bookshelf (v15). Delete after designs are produced. Source of truth remains the individual specs: [v12](./spec-v12-user-auth.md) · [v14](./spec-v14-user-dashboard.md) · [v15](./spec-v15-bookshelf.md).
+> **Purpose:** A throwaway design brief handed to **Claude Design** to design the UI for three linked features: User Registration (v12), User Dashboard (v14), and Bookshelf (v15). Delete after designs are produced. Source of truth remains the individual specs: [v12](../spec-v12-user-auth.md) · [v14](../spec-v14-user-dashboard.md) · [v15](../spec-v15-bookshelf.md).
 
 ---
 
@@ -201,9 +201,9 @@ Match the existing admin panel styling.
 
 | Screen | Feature | Spec |
 |--------|---------|------|
-| Login, Header auth, Admin users | v12 User Auth | [spec-v12-user-auth.md](./spec-v12-user-auth.md) |
+| Login, Header auth, Admin users | v12 User Auth | [spec-v12-user-auth.md](../spec-v12-user-auth.md) |
 | Dashboard (Telegram + My Comments) | v14 User Dashboard | [spec-v14-user-dashboard.md](../spec-v14-user-dashboard.md) |
-| Bookshelf, Book detail additions, Review modal, Admin column | v15 Bookshelf | [spec-v15-bookshelf.md](./spec-v15-bookshelf.md) |
+| Bookshelf, Book detail additions, Review modal, Admin column | v15 Bookshelf | [spec-v15-bookshelf.md](../spec-v15-bookshelf.md) |
 
 ---
 

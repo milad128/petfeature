@@ -3195,34 +3195,12 @@ main { padding: 0; }
 .admin-pagination__info { font-size: .85rem; color: var(--muted); }
 .admin-meta-line { font-size: .78rem; color: var(--muted); margin-bottom: 16px; }
 
-/* ── Newsletter section (v14) ─────────────────────────────────────────── */
-.profile-newsletter {
+/* ── Telegram section (v14) ───────────────────────────────────────────── */
+.profile-telegram {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
-.profile-newsletter__email-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.1rem 1.25rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.profile-newsletter__email-info { flex: 1; min-width: 0; }
-.profile-newsletter__email-info p {
-  font-size: .9rem;
-  color: var(--muted);
-  margin: 6px 0 0;
-  line-height: 1.8;
-}
-.profile-newsletter__email-label {
-  font-size: .95rem;
-  font-weight: 600;
-}
-.profile-newsletter__email-action { flex-shrink: 0; }
 .btn--sm { font-size: .82rem; padding: 6px 14px; border-radius: 8px; }
 
 /* ── My Comments (v14) ────────────────────────────────────────────────── */
@@ -3426,8 +3404,9 @@ main { padding: 0; }
   text-align: center;
   margin: 0;
 }
-/* Bookshelf page pill (reuse with smaller size) */
-.bsw-pill--sm { font-size: .77rem; padding: 4px 11px; }
+/* Bookshelf page pill (smaller, horizontal row) */
+.bd2-bs-pill--sm { font-size: .77rem; padding: 4px 11px; }
+.bsp-card__pills .bd2-bs-pill { width: auto; }
 
 /* ── Review modal (v15) ────────────────────────────────────────────────── */
 .review-modal-overlay {
@@ -3492,7 +3471,29 @@ main { padding: 0; }
 .review-modal__section { display: flex; flex-direction: column; gap: .5rem; }
 .review-modal__label { font-size: .82rem; color: var(--muted); font-weight: 600; }
 .review-modal__stars { gap: 4px; }
-.review-modal__textarea { resize: vertical; min-height: 80px; }
+#review-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  width: 100%;
+}
+.review-modal__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font);
+  font-size: .88rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.9;
+  transition: border-color .15s;
+}
+.review-modal__textarea:focus { outline: none; border-color: var(--border-2); }
+.review-modal__textarea::placeholder { color: var(--faint); }
 .review-modal__submit { align-self: flex-start; }
 .review-modal__submit:disabled { opacity: .45; cursor: not-allowed; }
 .review-modal__skip {
@@ -3596,8 +3597,7 @@ main { padding: 0; }
   .profile-desk-layout { flex-direction: column; align-items: flex-start; gap: 28px; }
   .profile-desk { width: 100%; }
   .profile-tg-card { flex-direction: column; align-items: flex-start; }
-  .profile-newsletter__email-card { flex-direction: column; align-items: flex-start; }
-  .bsp-card { flex-wrap: wrap; }
+    .bsp-card { flex-wrap: wrap; }
 }
 @media (max-width: 640px) {
   .site-nav .login-btn,

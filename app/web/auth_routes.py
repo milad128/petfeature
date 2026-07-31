@@ -17,10 +17,21 @@ from app.core.database import get_db
 from app.core.templates import templates
 from app.services import bookshelf as bookshelf_service
 from app.services import users as user_service
+from app.models.book import Book
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _google_redirect_uri(request: Request) -> str:
+    """OAuth callback URL. In DEBUG, derive from the current host (localhost). In prod, use env."""
+    if settings.debug:
+        path = request.url_for("auth_google_callback")
+        base = request.base_url
+        return f"{base.scheme}://{base.netloc}{path.path}"
+    return settings.google_redirect_uri.rstrip("/") + "/"
 
 
 async def _fetch_google_userinfo(request: Request, token: dict) -> dict:
@@ -60,9 +71,8 @@ async def login_page(request: Request):
 
 @router.get("/auth/google/", name="auth_google")
 async def auth_google(request: Request):
-    return await oauth.google.authorize_redirect(
-        request, settings.google_redirect_uri
-    )
+    redirect_uri = _google_redirect_uri(request)
+    return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
 # ── Google OAuth callback ─────────────────────────────────────────────────────
@@ -123,7 +133,6 @@ async def profile(
 
     from app.services import users as user_service
 
-    is_subscribed = await user_service.is_subscribed_to_newsletter(db, current_user.email)
     comments, total_comments = await user_service.get_user_comments(db, current_user.id, page=page)
     per_page = 10
     total_pages = max(1, -(-total_comments // per_page))  # ceiling division
@@ -134,39 +143,12 @@ async def profile(
         {
             "page_title": "داشبورد من",
             "current_user": current_user,
-            "is_subscribed": is_subscribed,
             "comments": comments,
             "total_comments": total_comments,
             "page": page,
             "total_pages": total_pages,
         },
     )
-
-
-# ── Newsletter subscribe / unsubscribe ────────────────────────────────────────
-
-@router.post("/profile/newsletter/subscribe/", name="newsletter_subscribe")
-async def newsletter_subscribe(
-    request: Request, db: AsyncSession = Depends(get_db)
-):
-    current_user = get_current_user(request)
-    if not current_user:
-        return RedirectResponse(url="/login/", status_code=303)
-    from app.services import users as user_service
-    await user_service.subscribe_to_newsletter(db, current_user)
-    return RedirectResponse(url="/profile/#newsletter", status_code=303)
-
-
-@router.post("/profile/newsletter/unsubscribe/", name="newsletter_unsubscribe")
-async def newsletter_unsubscribe(
-    request: Request, db: AsyncSession = Depends(get_db)
-):
-    current_user = get_current_user(request)
-    if not current_user:
-        return RedirectResponse(url="/login/", status_code=303)
-    from app.services import users as user_service
-    await user_service.unsubscribe_from_newsletter(db, current_user)
-    return RedirectResponse(url="/profile/#newsletter", status_code=303)
 
 
 # ── Bookshelf (قفسه کتاب) — v15 ──────────────────────────────────────────────
@@ -211,19 +193,16 @@ async def bookshelf_add(
     except ValueError:
         raise HTTPException(status_code=400, detail="وضعیت نامعتبر است")
 
-    # Determine where to redirect back to
+    # Determine redirect target
     referer = request.headers.get("referer", "")
-    # If newly marked as read → redirect to book detail with ?review flag so the modal opens
-    if newly_read and "/library/" in referer:
-        # extract slug from referer path, then rebuild with review param
-        from urllib.parse import urlparse
-        parsed = urlparse(referer)
-        path = parsed.path.rstrip("/")
-        return RedirectResponse(url=f"{path}/?review={book_id}", status_code=303)
+    redirect_url = referer if referer else "/profile/bookshelf/"
+    # Newly marked as read → book detail + review modal (from bookshelf or library)
+    if newly_read:
+        book = await db.scalar(select(Book).where(Book.id == book_id))
+        if book:
+            redirect_url = f"/library/{book.slug}/?review={book_id}"
 
-    # Otherwise go back to referer or bookshelf
-    back = referer if referer else "/profile/bookshelf/"
-    return RedirectResponse(url=back, status_code=303)
+    return RedirectResponse(url=redirect_url, status_code=303)
 
 
 @router.post("/profile/bookshelf/remove/", name="bookshelf_remove")

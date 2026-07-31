@@ -2,7 +2,7 @@
 
 > **Purpose:** A throwaway design brief handed to **Claude Design** to design the UI for the Learning Roadmap epic — a public, browsable PM career curriculum plus its admin CMS. Delete after designs are produced.
 >
-> **Source of truth for content:** [pm-learning-roadmap.md](./New%20idea/pm-learning-roadmap.md) — the complete, finished content spec (~1,230 lines). Everything the designer needs to know about *what* goes on these pages is in that file.
+> **Source of truth for content:** [pm-learning-roadmap.md](../New%20idea/pm-learning-roadmap.md) — the complete, finished content spec (~1,230 lines). Everything the designer needs to know about *what* goes on these pages is in that file.
 >
 > **Working prototypes already exist** in [`prototypes/`](../prototypes/) — 7 public pages + 4 admin pages, RTL, functional. They are a **starting point to improve on, not a spec to reproduce.** Open them before designing.
 
@@ -266,12 +266,12 @@ Lower visual priority; correctness and speed matter more than polish. Uses the e
 
 | Need | Where |
 |---|---|
-| **All content** — levels, competencies, resources, numbers, Persian copy source | [pm-learning-roadmap.md](./New%20idea/pm-learning-roadmap.md) |
+| **All content** — levels, competencies, resources, numbers, Persian copy source | [pm-learning-roadmap.md](../New%20idea/pm-learning-roadmap.md) |
 | Working public prototypes | [`prototypes/roadmap*.html`](../prototypes/) |
 | Working admin prototypes | [`prototypes/admin-roadmap*.html`](../prototypes/) |
 | Existing public site design system | `app/static/css/main.css`, `app/templates/base.html` |
 | Existing admin design system | `app/static/css/admin.css`, `app/templates/admin/base.html` |
-| How this epic fits the roadmap | [spec.md](./spec.md) · [product backlog.md](./product%20backlog.md) |
+| How this epic fits the roadmap | [spec.md](../spec.md) · [product backlog.md](../product%20backlog.md) |
 
 ---
 
