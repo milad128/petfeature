@@ -7,12 +7,14 @@
 | Field | Value |
 |-------|-------|
 | **Version** | v16 — Roadmap (مسیر یادگیری) |
-| **Status** | Planned |
+| **Status** | Shipped |
 | **Goal** | Ship the fourth founding epic — a public, browsable PM career curriculum for Persian-speaking PMs, with an admin CMS to manage resource links and metadata |
 | **Builds on** | v1 (Library — books are linkable from resources), v9 (Media Library) |
 | **Epic** | Roadmap |
 
-**Scope in two sentences:** Publish the complete PM Learning Roadmap as a set of server-rendered pages — landing page with depth matrix and fork, L0 Getting Hired track, and L1 APM detail page — using the current site theme and design system. L2–L6 levels show as "در دسترس نیست" / disabled on the landing until a future version ships them; an admin CMS lets Milad manage the resource rows (links, metadata, homework text) for all levels without touching code.
+**Scope in two sentences:** Publish the complete PM Learning Roadmap as a set of server-rendered pages — landing page with depth matrix and fork, L0 Getting Hired track, and L1 APM detail page — using the current site theme and design system. L2–L6 levels show as "در دسترس نیست" / disabled on the landing until a future version ships them; an admin CMS lets Milad manage the resource rows (links, metadata) and immigration video links for all levels without touching code.
+
+**Shipped July 2026.** All routes, templates, model, migrations, seed script, and admin CMS live in production.
 
 **v16 ships:** L0 (مسیر استخدام) + L1 (APM) as full pages, L2–L6 as disabled cards on the landing.
 
@@ -87,14 +89,14 @@ One table for all resource rows across all levels and areas. Each row:
 | `area_slug` | varchar | e.g. `role-clarity`; `null` for level resources |
 | `category` | varchar | `entry`, `core`, `supporting`, `bridge`; `null` for L0 |
 | `title` | varchar(300) | English title (renders `dir="ltr"`) |
-| `resource_type` | varchar | `book`, `article`, `podcast`, `course`, `tool`, `guide` |
+| `subtitle` | varchar(300) | nullable; free-text shown in parens after resource type, e.g. "رایگان" |
+| `resource_type` | varchar | `book`, `article`, `podcast`, `course`, `tool`, `guide`, `video`, `practice-tool` |
 | `reading_time` | varchar(30) | Display string, e.g. `"3h"`, `"20m"`, `"ongoing"` |
 | `difficulty` | smallint | 1, 2, or 3 (stars) |
 | `has_persian` | boolean | True if Persian translation exists |
 | `is_required` | boolean | True = اجباری, False = اختیاری |
 | `external_url` | varchar(500) | nullable; external link |
-| `book_id` | FK → Book | nullable; links to library book detail |
-| `homework_text` | text | Persian homework text; nullable |
+| `book_id` | FK → Book | nullable; links to library book detail (`ondelete="SET NULL"`) |
 | `sort_order` | int | Display order within its group |
 | `created_at` | datetime | |
 | `updated_at` | datetime | |
@@ -388,6 +390,23 @@ class RoadmapResource(Base):
     book = relationship("Book", lazy="joined")
 ```
 
+**Computed properties (on the ORM model):** `link_url`, `is_linked`, `link_type` (book/external/none), `reading_time_display`, `difficulty_stars`, `resource_type_fa`, `type_display` — all derived, not stored.
+
+**Note:** `homework_text` was removed from the DB model during implementation. Homework text lives in the hardcoded `roadmap_data.py` constants per level/competency, not per resource row.
+
+### New model: `ImmigrationVideo`
+
+A second model added during implementation to support the hiring page's immigration section:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | int PK | |
+| `title` | varchar(300) | Video title |
+| `where` | varchar(200) | nullable; context label, e.g. "گفت‌وگو با یک مدیر محصول مهاجرت‌کرده" |
+| `url` | varchar(500) | Video URL (YouTube etc.) |
+| `sort_order` | int | Display order |
+| `created_at` | datetime | |
+
 **Migration:** `alembic revision --autogenerate -m "add roadmap_resources table"`
 
 **Seeding:** A one-time seed script (`scripts/seed_roadmap.py`) populates all known resources from the markdown spec — with `external_url = None` and `book_id = None` for every row. Milad fills all links via the admin CMS after seeding. No pre-linking in the seed script. Script is idempotent (skip if title+level_slug+competency_slug already exists).
@@ -417,7 +436,7 @@ async def get_landing_context(db) -> dict
     # Returns: LEVELS, COMPETENCIES, DEPTH_MATRIX, level summary cards with sprint bars
 
 async def get_hiring_context(db) -> dict
-    # Returns: L0 static data + resources from DB for all 8 areas
+    # Returns: L0 static data + resources from DB for all 8 areas + immigration videos
 
 async def get_level_context(db, level_slug: str) -> dict | None
     # Returns None if slug not in ('apm',) for v16 (triggers stub render)
@@ -426,10 +445,23 @@ async def get_level_context(db, level_slug: str) -> dict | None
 async def get_roadmap_resources(db, level_slug: str | None = None) -> list[RoadmapResource]
     # Admin list, optionally filtered by level
 
-async def create_resource(db, data: ResourceCreate) -> RoadmapResource
-async def update_resource(db, id: int, data: ResourceUpdate) -> RoadmapResource
-async def delete_resource(db, id: int) -> None
+async def get_resource(db, resource_id: int) -> RoadmapResource
+async def create_resource(db, data: dict) -> RoadmapResource
+async def update_resource(db, resource_id: int, data: dict) -> RoadmapResource
+async def delete_resource(db, resource_id: int) -> None
 async def get_missing_links(db) -> list[RoadmapResource]
+async def count_missing_links(db) -> int          # used for admin sidebar badge
+
+async def get_immigration_videos(db) -> list[ImmigrationVideo]
+async def get_immigration_video(db, video_id: int) -> ImmigrationVideo
+async def create_immigration_video(db, data: dict) -> ImmigrationVideo
+async def update_immigration_video(db, video_id: int, data: dict) -> ImmigrationVideo
+async def delete_immigration_video(db, video_id: int) -> None
+
+# Internal helpers (not called by routes directly):
+# _build_matrix_rows() -> list[dict]
+# _build_asks_table(level_slug, comp_data) -> list[dict]
+# _build_sequence_gantt(level_slug, comp_data) -> list[dict]
 ```
 
 ---
@@ -447,13 +479,20 @@ GET  /path/{level_slug}/       → L1 full page (apm) | stub page (pm, senior-pm
 ### Admin routes (add to `app/admin/routes.py`)
 
 ```python
-GET  /admin/roadmap/                    → resource list (with level filter)
-GET  /admin/roadmap/new/               → create resource form
-POST /admin/roadmap/new/               → create resource action
-GET  /admin/roadmap/{id}/edit/         → edit resource form
-POST /admin/roadmap/{id}/edit/         → update resource action
-POST /admin/roadmap/{id}/delete/       → delete resource (POST for CSRF safety)
-GET  /admin/roadmap/missing-links/     → unlinked resources queue
+GET  /admin/roadmap/                         → resource list (with level filter)
+GET  /admin/roadmap/missing-links/           → unlinked resources queue
+GET  /admin/roadmap/new/                     → create resource form
+POST /admin/roadmap/new/                     → create resource action
+GET  /admin/roadmap/{id}/edit/               → edit resource form
+POST /admin/roadmap/{id}/edit/               → update resource action
+POST /admin/roadmap/{id}/delete/             → delete resource (POST for CSRF safety)
+
+GET  /admin/immigration-videos/              → immigration video list
+GET  /admin/immigration-videos/new/          → create video form
+POST /admin/immigration-videos/new/          → create video action
+GET  /admin/immigration-videos/{id}/edit/    → edit video form
+POST /admin/immigration-videos/{id}/edit/    → update video action
+POST /admin/immigration-videos/{id}/delete/  → delete video
 ```
 
 ---
@@ -495,7 +534,7 @@ GET  /admin/roadmap/missing-links/     → unlinked resources queue
 
 | Question | Owner | Notes |
 |----------|-------|-------|
-| When does v17 (L2 PM) get built? | Milad | Helps decide whether to invest in more admin infrastructure now |
+| When does v17 (L2 PM) get built? | Milad | Helps decide when to invest in L2+ content |
 
 **Resolved (July 2026):**
 
@@ -504,7 +543,10 @@ GET  /admin/roadmap/missing-links/     → unlinked resources queue
 | Seed script pre-links | No pre-linking — seed creates all resource rows with links null; Milad fills all links via admin |
 | Habit/knowledge badge wording | "عادتی" / "دانشی" confirmed |
 | Depth matrix L2–L6 column headers | Unlinked — plain text, no href |
-| Persian copy for L1 section texts | Milad authors all body text, quotes, and practice exercises in Persian directly in `roadmap_data.py` before launch — no English placeholders |
+| Persian copy for L1 section texts | Milad authors all body text, quotes, and practice exercises in Persian directly in `roadmap_data.py` — no English placeholders |
+| `homework_text` on resource rows | Moved to hardcoded constants in `roadmap_data.py` per level/competency — not stored per resource in DB |
+| Immigration video content | Added `ImmigrationVideo` model + admin CRUD for hiring page's immigration section — not in original spec |
+| `subtitle` field on resources | Added to display extra free-text context (e.g. "رایگان") in parens after resource type |
 
 ---
 
@@ -527,4 +569,4 @@ Recommended implementation order within v16:
 
 ---
 
-*July 2026 · v16 spec written. Status: Planned. Prerequisite: none (independent of v12–v15).*
+*July 2026 · v16 spec written and shipped. Status: Shipped. Prerequisite: none (independent of v12–v15).*

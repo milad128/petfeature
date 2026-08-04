@@ -3645,7 +3645,22 @@ main { padding: 0; }
 .rm-lamp-pole { width: 4px; height: 140px; background: #3d3125; display: block; }
 .rm-lamp-base { width: 44px; height: 9px; background: #3d3125; border-radius: 5px 5px 0 0; display: block; }
 
-@media (max-width: 960px) { .rm-lamp-btn { display: none; } }
+@media (max-width: 960px) {
+  .rm-hero-visual {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    padding-bottom: 4px;
+  }
+  .rm-lamp-btn {
+    height: 180px;
+    margin-inline-end: 14px;
+  }
+  .rm-lamp-pole { height: 90px; }
+  .rm-lamp-cone { width: 150px; height: 85px; }
+  .rm-stairs { padding-top: 24px; flex-shrink: 0; }
+  .rm-step { width: 58px; }
+}
 
 @media (max-width: 640px) {
   .site-nav .login-btn,

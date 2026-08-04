@@ -394,7 +394,7 @@ L0_AREAS: list[L0Area] = [
     L0Area(
         slug="interview-behavior",
         n="۵",
-        name="مصاحبه‌ی رفتاری",
+        name="مصاحبه طراحی محصول",
         short="مصاحبه طراحی محصول",
         phase_slug="practice",
         sprint_weeks=2,

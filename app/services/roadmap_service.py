@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.roadmap import ImmigrationVideo, RoadmapResource
-from app.core.jalali import format_reading_hours
+from app.core.jalali import format_reading_hours, parse_reading_time_to_hours
 from app.services.roadmap_data import (
     APM_COMPETENCY_DATA,
     APM_CORE_RATIONALE,
@@ -172,6 +172,10 @@ def _build_matrix_rows() -> list[dict]:
 
 # ── Hiring page context ──────────────────────────────────────────────────────
 
+def _sum_resource_reading_hours(resources: list[RoadmapResource]) -> float:
+    return sum(parse_reading_time_to_hours(r.reading_time) for r in resources)
+
+
 async def get_hiring_context(db: AsyncSession) -> dict:
     """Build context dict for GET /path/hiring/."""
     hiring_lv = LEVEL_BY_SLUG["hiring"]
@@ -215,6 +219,9 @@ async def get_hiring_context(db: AsyncSession) -> dict:
         phase_map[area.phase_slug]["areas"].append({
             "area": area,
             "resources": resources_by_area.get(area.slug, []),
+            "reading_display": format_reading_hours(
+                _sum_resource_reading_hours(resources_by_area.get(area.slug, []))
+            ),
         })
 
     phase_area_groups = [phase_map[slug] for slug in seen_phases]
@@ -257,9 +264,18 @@ async def get_hiring_context(db: AsyncSession) -> dict:
             })
 
     # Stats for the hero aside
+    total_reading_hours = sum(
+        _sum_resource_reading_hours(resources_by_area.get(area.slug, []))
+        for area in L0_AREAS
+    )
+    reading_fact = (
+        f"~{format_reading_hours(total_reading_hours)}"
+        if total_reading_hours > 0
+        else "—"
+    )
     facts = [
         {"label": "منابع اجباری", "value": "۹",           "accent": False},
-        {"label": "مطالعه",       "value": "~۱۸٫۵ ساعت",  "accent": False},
+        {"label": "مطالعه",       "value": reading_fact,  "accent": False},
         {"label": "زمان کار",     "value": "۱۲ هفته",      "accent": True},
         {"label": "طول مسیر",     "value": "۳ تا ۶ ماه",   "accent": True},
     ]
