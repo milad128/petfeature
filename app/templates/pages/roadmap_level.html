@@ -131,7 +131,10 @@ details[open] .rl-chev { transform:rotate(180deg); }
 .rl-chip { font-size:.68rem; color:var(--faint); background:rgba(236,229,220,.06); border-radius:5px; padding:2px 8px; white-space:nowrap; }
 
 /* Passive table */
-.rl-passive-table { width:100%; border-collapse:collapse; }
+.rl-passive-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.rl-passive-scroll::-webkit-scrollbar { height:8px; }
+.rl-passive-scroll::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
+.rl-passive-table { width:100%; border-collapse:collapse; min-width:560px; }
 .rl-passive-table th { text-align:start; font-size:.78rem; color:var(--faint); padding:10px 14px; border-bottom:1px solid var(--border-2); }
 .rl-passive-table td { padding:14px; border-bottom:1px solid var(--border); font-size:.86rem; line-height:1.9; vertical-align:middle; }
 .rl-passive-table tr:last-child td { border-bottom:none; }
@@ -159,6 +162,7 @@ details[open] .rl-chev { transform:rotate(180deg); }
 @media (max-width:640px) {
   .rl-res { grid-template-columns:1fr; }
   .rl-res-meta { justify-content:flex-start; }
+  .rl-inner { padding-inline:1rem; }
 }
 </style>
 {% endblock %}
@@ -502,6 +506,7 @@ details[open] .rl-chev { transform:rotate(180deg); }
     <p class="rl-note">{{ tx.passive_note }}</p>
     {% endif %}
     <div style="background:var(--surface); border:1px dashed var(--border-2); border-radius:14px; overflow:hidden;">
+      <div class="rl-passive-scroll">
       <table class="rl-passive-table">
         <thead>
           <tr>
@@ -523,6 +528,7 @@ details[open] .rl-chev { transform:rotate(180deg); }
           {% endfor %}
         </tbody>
       </table>
+      </div>
     </div>
   </div>
 </section>

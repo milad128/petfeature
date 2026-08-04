@@ -82,11 +82,16 @@
 }
 @media (max-width:760px) {
   .h2-pad { padding-left:18px; padding-right:18px; }
+  .h2-inner { padding-left:18px; padding-right:18px; }
   .h2-hero h1 { font-size:2.2rem; }
   .h2-facts { grid-template-columns:1fr; }
   .h2-levels { grid-template-columns:1fr 1fr; }
   .h2-res { grid-template-columns:1fr; gap:8px; }
   .h2-res-meta { justify-content:flex-start; }
+  .h2-breadcrumb-inner { padding-inline:18px; }
+}
+@media (max-width:480px) {
+  .h2-levels { grid-template-columns:1fr; }
 }
 </style>
 {% endblock %}

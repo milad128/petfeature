@@ -12,8 +12,9 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
+  <div class="admin-shell" id="admin-shell">
+    <div class="admin-sidebar-backdrop" id="admin-sidebar-backdrop" hidden></div>
+    <aside class="admin-sidebar" id="admin-sidebar">
       <div class="admin-sidebar-brand">
         <img src="{{ asset_url(request, 'img/petfeature-website-logo.png') }}" alt="پت فیچر" class="brand-logo">
         <small class="admin-sidebar-sub">پنل مدیریت</small>
@@ -120,6 +121,12 @@
 
     <div class="admin-main">
       <header class="admin-topbar">
+        <button type="button" class="admin-nav-toggle" id="admin-nav-toggle"
+                aria-expanded="false" aria-controls="admin-sidebar" aria-label="باز کردن منو">
+          <span class="admin-nav-toggle-bar" aria-hidden="true"></span>
+          <span class="admin-nav-toggle-bar" aria-hidden="true"></span>
+          <span class="admin-nav-toggle-bar" aria-hidden="true"></span>
+        </button>
         <h1>{{ page_title }}</h1>
         <div class="admin-topbar-actions">
           {% block topbar_actions %}{% endblock %}

@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  initAdminNav();
   initChipInputs();
   initCoverUpload();
   initDownloadUpload();
@@ -32,6 +33,47 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeleteForms();
   syncFormsBeforeSubmit();
 });
+
+function initAdminNav() {
+  const shell = document.getElementById("admin-shell");
+  const toggle = document.getElementById("admin-nav-toggle");
+  const backdrop = document.getElementById("admin-sidebar-backdrop");
+  const sidebar = document.getElementById("admin-sidebar");
+  if (!shell || !toggle || !sidebar) return;
+
+  function closeNav() {
+    shell.classList.remove("is-nav-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "باز کردن منو");
+    if (backdrop) backdrop.hidden = true;
+    document.body.classList.remove("admin-nav-open");
+  }
+
+  function openNav() {
+    shell.classList.add("is-nav-open");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "بستن منو");
+    if (backdrop) backdrop.hidden = false;
+    document.body.classList.add("admin-nav-open");
+  }
+
+  toggle.addEventListener("click", () => {
+    shell.classList.contains("is-nav-open") ? closeNav() : openNav();
+  });
+
+  backdrop?.addEventListener("click", closeNav);
+  sidebar.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeNav);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && shell.classList.contains("is-nav-open")) closeNav();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 860) closeNav();
+  });
+}
 
 function initCoverUpload() {
   const input = document.getElementById("cover-file");
