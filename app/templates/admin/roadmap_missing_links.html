@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_roadmap_resources') }}" class="btn btn-ghost">← همه منابع</a>
+<a href="{{ url_for('admin_roadmap_new') }}" class="btn btn-primary">+ منبع جدید</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="form-hint" style="margin-bottom:1.5rem;">
+  {{ total }} منبع بدون لینک — برای هر منبع یا یک لینک خارجی اضافه کنید یا آن را به یک کتاب از کتابخانه وصل کنید.
+</div>
+
+{% if not total %}
+<div class="card">
+  <div class="empty-state">
+    <p>همه منابع لینک دارند 🎉</p>
+  </div>
+</div>
+{% else %}
+  {% for level_slug, items in by_level.items() %}
+  {% set lv = level_by_slug.get(level_slug) %}
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-section">
+      <div class="card-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+        <span>{{ lv.num if lv else level_slug }} — {{ lv.fa if lv else '' }}</span>
+        <span class="nav-badge" style="background:rgba(217,136,120,.15); color:#d98878; border:1px solid rgba(217,136,120,.3);">{{ items | length }} بدون لینک</span>
+      </div>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>عنوان</th>
+          <th>دسته / حوزه</th>
+          <th>نوع</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in items %}
+        <tr>
+          <td>
+            <span dir="ltr" style="unicode-bidi:embed; font-weight:600;">{{ r.title }}</span>
+          </td>
+          <td style="font-size:.82rem; color:var(--text-muted);">
+            {% if r.competency_slug %}{{ r.competency_slug }}{% elif r.area_slug %}{{ r.area_slug }}{% else %}—{% endif %}
+            {% if r.category %}<span style="opacity:.6;">({{ r.category }})</span>{% endif %}
+          </td>
+          <td>
+            <span class="status-badge status-badge--draft" style="font-size:.72rem;">{{ r.resource_type_fa }}</span>
+          </td>
+          <td class="row-actions">
+            <a href="{{ url_for('admin_roadmap_edit', resource_id=r.id) }}" class="btn btn-primary btn-sm">افزودن لینک</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+{% endif %}
+
+{% endblock %}

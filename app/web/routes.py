@@ -23,6 +23,8 @@ from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
 from app.services import users as user_service
+from app.services import roadmap_service
+from app.services.roadmap_data import LEVEL_BY_SLUG, FULL_PAGE_SLUGS, STUB_SLUGS, LEVELS
 
 router = APIRouter()
 
@@ -365,3 +367,52 @@ async def contact_post(
     )
 
 
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROADMAP public pages — v16
+# ══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/path/", name="roadmap_landing")
+async def roadmap_landing(request: Request, db: AsyncSession = Depends(get_db)):
+    ctx = await roadmap_service.get_landing_context(db)
+    ctx["page_title"] = "مسیر یادگیری"
+    return templates.TemplateResponse(request, "pages/roadmap.html", ctx)
+
+
+@router.get("/path/hiring/", name="roadmap_hiring")
+async def roadmap_hiring(request: Request, db: AsyncSession = Depends(get_db)):
+    ctx = await roadmap_service.get_hiring_context(db)
+    ctx["page_title"] = "مسیر استخدام | مسیر یادگیری"
+    return templates.TemplateResponse(request, "pages/roadmap_hiring.html", ctx)
+
+
+@router.get("/path/{level_slug}/", name="roadmap_level")
+async def roadmap_level(
+    request: Request,
+    level_slug: str,
+    db: AsyncSession = Depends(get_db),
+):
+    ctx = await roadmap_service.get_level_context(db, level_slug)
+    if ctx is None:
+        # Unknown slug — 404
+        return templates.TemplateResponse(
+            request,
+            "pages/roadmap_stub.html",
+            {"page_title": "صفحه‌ای یافت نشد", "level": None, "not_found": True},
+            status_code=404,
+        )
+    if ctx.get("is_stub"):
+        lv = ctx["level"]
+        return templates.TemplateResponse(
+            request,
+            "pages/roadmap_stub.html",
+            {
+                "page_title": f"{lv.num} — {lv.fa} | مسیر یادگیری",
+                "level": lv,
+                "not_found": False,
+            },
+        )
+    lv = ctx["level"]
+    ctx["page_title"] = f"{lv.num} — {lv.fa} | مسیر یادگیری"
+    return templates.TemplateResponse(request, "pages/roadmap_level.html", ctx)

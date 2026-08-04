@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_roadmap_missing_links') }}" class="btn btn-ghost">
+  منابع بدون لینک
+  {% if request.state.missing_links_count %}
+  <span class="nav-badge" style="background:var(--accent); color:#1a1a1a; border-radius:10px; padding:1px 7px; font-size:.7rem; margin-inline-start:4px;">{{ request.state.missing_links_count }}</span>
+  {% endif %}
+</a>
+<a href="{{ url_for('admin_roadmap_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> منبع جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<form method="get" action="{{ url_for('admin_roadmap_resources') }}" class="toolbar">
+  <select class="form-control" name="level" style="width:auto;" aria-label="فیلتر بر اساس سطح">
+    <option value="">همه سطح‌ها</option>
+    {% for slug, label in level_choices %}
+    <option value="{{ slug }}" {% if filter_level == slug %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-ghost btn-sm">اعمال فیلتر</button>
+  {% if filter_level %}
+  <a href="{{ url_for('admin_roadmap_resources') }}" class="btn btn-ghost btn-sm">حذف فیلتر</a>
+  {% endif %}
+  <span class="form-hint">{{ resources | length }} منبع</span>
+</form>
+
+<div class="card">
+  {% if resources %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>عنوان</th>
+        <th>نوع</th>
+        <th>سطح</th>
+        <th>دسته / حوزه</th>
+        <th>لینک</th>
+        <th>اجباری</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in resources %}
+      <tr>
+        <td>
+          <span dir="ltr" style="unicode-bidi:embed; font-weight:600;">{{ r.title }}</span>
+        </td>
+        <td>
+          <span class="status-badge status-badge--draft" style="font-size:.72rem;">{{ r.resource_type_fa }}</span>
+        </td>
+        <td>
+          {% set lv = level_by_slug.get(r.level_slug) %}
+          <span style="font-size:.82rem; color:var(--text-muted);">{{ lv.num if lv else r.level_slug }}</span>
+        </td>
+        <td style="font-size:.82rem; color:var(--text-muted);">
+          {% if r.competency_slug %}{{ r.competency_slug }}{% elif r.area_slug %}{{ r.area_slug }}{% else %}—{% endif %}
+          {% if r.category %}
+          <span style="font-size:.7rem; opacity:.6;">({{ r.category }})</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.link_type == 'book' %}
+          <span style="font-size:.78rem; color:var(--accent);">📚 کتابخانه</span>
+          {% elif r.link_type == 'external' %}
+          <span style="font-size:.78rem; color:var(--text-muted);">🔗 خارجی</span>
+          {% else %}
+          <span style="font-size:.78rem; color:#d98878;">— ندارد</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.is_required %}
+          <span style="font-size:.78rem; color:var(--accent);">اجباری</span>
+          {% else %}
+          <span style="font-size:.78rem; color:var(--text-muted);">اختیاری</span>
+          {% endif %}
+        </td>
+        <td class="row-actions">
+          <a href="{{ url_for('admin_roadmap_edit', resource_id=r.id) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+          <form method="post" action="{{ url_for('admin_roadmap_delete', resource_id=r.id) }}"
+                onsubmit="return confirm('حذف «{{ r.title }}»؟')" style="display:inline;">
+            <button type="submit" class="btn btn-ghost btn-sm btn-danger">حذف</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <p>هیچ منبعی یافت نشد.</p>
+    <a href="{{ url_for('admin_roadmap_new') }}" class="btn btn-primary">افزودن اولین منبع</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

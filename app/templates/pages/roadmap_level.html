@@ -1,0 +1,650 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── Level detail page ──────────────────────────── */
+.rl-section { border-top:1px solid var(--border); scroll-margin-top:70px; }
+.rl-inner { max-width:1000px; margin:0 auto; padding:56px 1.5rem; }
+.rl-h2 { font-size:1.4rem; font-weight:700; margin-bottom:8px; }
+.rl-sub { font-size:.82rem; color:var(--faint); }
+.rl-note { font-size:.92rem; color:var(--muted); max-width:640px; margin-bottom:26px; line-height:2.1; }
+
+/* Level strip */
+.rl-strip-wrap { border-bottom:1px solid var(--border); background:var(--surface); overflow:hidden; }
+.rl-strip { max-width:1000px; margin:0 auto; padding:0 1.5rem; display:flex; gap:4px; overflow-x:auto; }
+.rl-strip::-webkit-scrollbar { height:6px; }
+.rl-strip::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:6px; }
+.rl-strip-btn {
+  flex-shrink:0; background:none; border:none; cursor:pointer;
+  font-family:inherit; font-size:.82rem; padding:12px 16px; color:var(--muted);
+  border-bottom:2px solid transparent; transition:color .15s, border-color .15s;
+  text-decoration:none; display:inline-block;
+}
+.rl-strip-btn:hover { color:var(--text); text-decoration:none; }
+.rl-strip-btn[aria-current="true"] { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+.rl-strip-btn[aria-disabled="true"] { opacity:.45; cursor:default; pointer-events:none; }
+
+/* Hero */
+.rl-hero { max-width:1000px; margin:0 auto; padding:56px 1.5rem 0; }
+.rl-hero h1 { font-size:2.6rem; font-weight:800; letter-spacing:-.02em; line-height:1.35; }
+
+/* Stats */
+.rl-stats {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  background:var(--border); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden; margin-top:32px;
+}
+.rl-stat { background:var(--surface); padding:18px 20px; }
+.rl-stat-lbl { display:flex; align-items:center; gap:8px; margin-bottom:4px; font-size:.76rem; color:var(--faint); }
+.rl-stat-dot { width:9px; height:9px; border-radius:50%; display:block; }
+.rl-stat-val { font-size:1.35rem; font-weight:700; line-height:1.3; }
+
+/* Tenure bar */
+.rl-tenure-card { margin-top:28px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 24px; }
+.rl-tenure-bar {
+  height:26px; border-radius:8px; overflow:hidden; display:flex;
+  background:repeating-linear-gradient(-45deg, rgba(143,191,134,.18) 0 6px, transparent 6px 12px);
+  border:1px solid var(--border-2);
+}
+.rl-tenure-sprint { display:flex; align-items:center; padding:0 12px; font-size:.72rem; font-weight:600; color:#171210; background:var(--accent); }
+.rl-tenure-mat { flex:1; display:flex; align-items:center; padding:0 12px; font-size:.72rem; color:#8fbf86; font-weight:600; }
+
+/* Competency table (asks) */
+.rl-asks-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+.rl-asks-scroll::-webkit-scrollbar { height:8px; }
+.rl-asks-scroll::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
+.rl-asks-table { width:100%; border-collapse:collapse; min-width:660px; }
+.rl-asks-table th { text-align:start; font-size:.74rem; font-weight:600; color:var(--faint); padding:14px 18px 12px; border-bottom:1px solid var(--border-2); }
+.rl-asks-table th.center { text-align:center; }
+.rl-asks-table td { padding:10px 18px; border-bottom:1px solid var(--border); font-size:.86rem; vertical-align:middle; }
+.rl-asks-table td.center { text-align:center; }
+.rl-asks-table tr:last-child td { border-bottom:none; }
+.rl-depth-chip { display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; border-radius:7px; font-size:.78rem; font-weight:700; }
+.rl-cat-chip { font-size:.72rem; border-radius:5px; padding:2px 8px; }
+.rl-cat-chip--entry { color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); }
+.rl-cat-chip--core { color:#8fbf86; background:color-mix(in srgb, #8fbf86 12%, transparent); }
+.rl-cat-chip--supporting { color:var(--muted); background:rgba(236,229,220,.07); }
+.rl-cat-chip--bridge { color:#d9a05f; background:color-mix(in srgb, #d9a05f 12%, transparent); }
+
+/* Phase nav (sticky) */
+.rl-phase-nav {
+  position:sticky; top:var(--header-h); z-index:20;
+  background:rgba(23,18,16,.92); backdrop-filter:blur(8px);
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.rl-phase-nav-inner {
+  max-width:1000px; margin:0 auto; padding:0 1.5rem;
+  display:flex; align-items:center; gap:6px; overflow-x:auto; height:52px;
+}
+.rl-phase-link {
+  flex-shrink:0; font-size:.82rem; color:var(--muted); text-decoration:none;
+  padding:6px 14px; border-radius:20px; border:1px solid var(--border);
+  transition:color .15s, border-color .15s;
+}
+.rl-phase-link:hover { color:var(--text); border-color:var(--border-2); text-decoration:none; }
+
+/* Resource rows (shared for entry / core / supporting / bridge) */
+.rl-res { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; }
+.rl-res-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.rl-req-badge { font-size:.72rem; border-radius:5px; padding:2px 8px; }
+.rl-req-badge--req { color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); }
+.rl-req-badge--opt { color:var(--muted); background:rgba(236,229,220,.05); }
+.rl-meta-tag { font-size:.72rem; color:var(--faint); background:rgba(236,229,220,.06); border-radius:5px; padding:2px 8px; }
+.rl-no-link { font-size:.68rem; color:var(--faint); border:1px dashed var(--border-2); border-radius:5px; padding:2px 8px; white-space:nowrap; }
+.rl-hw-block {
+  margin-top:10px; background:rgba(236,229,220,.04); border:1px solid var(--border);
+  border-inline-start:3px solid var(--accent); border-radius:8px; padding:10px 14px;
+}
+
+/* Quote callout */
+.rl-quote {
+  margin-top:24px; padding:16px 20px; border-inline-start:3px solid var(--accent);
+  background:rgba(166,195,160,.06); border-radius:0 8px 8px 0;
+  font-size:.92rem; color:var(--muted); line-height:2.1; font-style:italic;
+}
+
+/* Core competency <details> cards */
+.rl-core-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.rl-core-summary { padding:20px 22px; display:block; cursor:pointer; }
+.rl-core-summary::-webkit-details-marker { display:none; }
+.rl-core-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.rl-core-n {
+  width:26px; height:26px; border-radius:8px;
+  background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0;
+}
+.rl-chev { color:var(--faint); font-size:.8rem; transition:transform .2s; }
+details[open] .rl-chev { transform:rotate(180deg); }
+.rl-core-body { padding:0 22px 22px; }
+.rl-core-rationale { font-size:.9rem; color:var(--muted); line-height:2.1; margin-bottom:16px; }
+.rl-habit-badge {
+  font-size:.7rem; font-weight:700; color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 12%, transparent); border-radius:5px; padding:2px 8px;
+}
+.rl-know-badge {
+  font-size:.7rem; font-weight:700; color:var(--muted);
+  background:rgba(236,229,220,.07); border-radius:5px; padding:2px 8px;
+}
+
+/* Chips row (sprint/mat/reading) */
+.rl-chips { display:flex; gap:6px; flex-wrap:wrap; }
+.rl-chip { font-size:.68rem; color:var(--faint); background:rgba(236,229,220,.06); border-radius:5px; padding:2px 8px; white-space:nowrap; }
+
+/* Passive table */
+.rl-passive-table { width:100%; border-collapse:collapse; }
+.rl-passive-table th { text-align:start; font-size:.78rem; color:var(--faint); padding:10px 14px; border-bottom:1px solid var(--border-2); }
+.rl-passive-table td { padding:14px; border-bottom:1px solid var(--border); font-size:.86rem; line-height:1.9; vertical-align:middle; }
+.rl-passive-table tr:last-child td { border-bottom:none; }
+
+/* Sequence Gantt */
+.rl-seq-scroll { overflow-x:auto; }
+.rl-seq-scroll::-webkit-scrollbar { height:8px; }
+.rl-seq-scroll::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
+.rl-seq-wrap { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px 26px; min-width:560px; }
+.rl-seq-bar {
+  height:36px; border-radius:6px; background:var(--accent); opacity:.75;
+  display:flex; align-items:center; padding:0 12px; font-size:.82rem; font-weight:700; color:#171210;
+  white-space:nowrap; overflow:hidden;
+}
+.rl-seq-mat { font-size:.72rem; color:#8fbf86; margin-top:4px; padding-inline-start:4px; }
+
+/* Bridge checklist */
+.rl-bridge-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:.88rem; line-height:1.9; }
+.rl-bridge-item:last-child { border-bottom:none; }
+
+@media (max-width:900px) {
+  .rl-hero h1 { font-size:2rem; }
+  .rl-stats { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:640px) {
+  .rl-res { grid-template-columns:1fr; }
+  .rl-res-meta { justify-content:flex-start; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% set lv = level %}
+{% set tx = texts %}
+
+<!-- Level strip -->
+<div class="rl-strip-wrap">
+  <div class="rl-strip" role="navigation" aria-label="سطوح مسیر">
+    <a href="{{ url_for('roadmap_hiring') }}" class="rl-strip-btn">مسیر ۰</a>
+    {% for l in levels %}
+    {% if l.slug != 'hiring' %}
+    {% if l.slug == lv.slug %}
+    <span class="rl-strip-btn" aria-current="true">{{ l.en.split(' ')[0] }}</span>
+    {% elif l.slug in ['apm'] %}
+    <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}" class="rl-strip-btn">{{ l.en.split(' ')[0] }}</a>
+    {% else %}
+    <span class="rl-strip-btn" aria-disabled="true" title="به زودی">{{ l.en.split(' ')[0] }} <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="rl-hero">
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+    <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+    <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">{{ lv.num }}</span>
+  </div>
+  <h1>{{ lv.fa }}</h1>
+  <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:4px;">{{ lv.en }}</p>
+  <p style="margin-top:18px; font-size:1.02rem; color:var(--muted); max-width:640px; line-height:2.1;">{{ lv.spec }}</p>
+  {% if lv.thesis and not lv.thesis.startswith('TODO') %}
+  <p style="margin-top:14px; font-size:.98rem; color:var(--text); max-width:660px; line-height:2.1; font-weight:500;">{{ lv.thesis }}</p>
+  {% endif %}
+
+  <!-- Stats -->
+  <div class="rl-stats">
+    <div class="rl-stat">
+      <div class="rl-stat-lbl"><span class="rl-stat-dot" style="background:var(--muted);"></span>مطالعه</div>
+      <div class="rl-stat-val" style="color:var(--text);">{{ lv.required }} منبع</div>
+      <div style="font-size:.72rem; color:var(--faint);">{{ lv.reading }}</div>
+    </div>
+    <div class="rl-stat">
+      <div class="rl-stat-lbl"><span class="rl-stat-dot" style="background:var(--accent);"></span>اسپرینت</div>
+      <div class="rl-stat-val" style="color:var(--accent);">{{ lv.sprint_weeks }} هفته</div>
+      <div style="font-size:.72rem; color:var(--faint);">~{{ (lv.sprint_weeks / 4.33) | round(0) | int }} ماه</div>
+    </div>
+    <div class="rl-stat">
+      <div class="rl-stat-lbl"><span class="rl-stat-dot" style="background:#8fbf86;"></span>بلوغ</div>
+      <div class="rl-stat-val" style="color:#8fbf86;">{{ lv.tenure_months }} ماه</div>
+      <div style="font-size:.72rem; color:var(--faint);">بدون مطالعه‌ی جدید</div>
+    </div>
+    <div class="rl-stat">
+      <div class="rl-stat-lbl"><span class="rl-stat-dot" style="background:var(--faint);"></span>تصدی</div>
+      <div class="rl-stat-val" style="color:var(--text);">{{ lv.tenure }}</div>
+    </div>
+  </div>
+
+  <!-- Tenure bar -->
+  <div class="rl-tenure-card">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+      <b style="font-size:1rem; font-weight:700;">مطالعه در دل تصدی</b>
+      {% if not tx.tenure_bar_note.startswith('TODO') %}
+      <span style="font-size:.8rem; color:var(--muted);">{{ tx.tenure_bar_note }}</span>
+      {% endif %}
+    </div>
+    {% set sprint_pct = ((lv.sprint_weeks / (lv.tenure_months * 4.33)) * 100) | round(0) | int if lv.tenure_months else 100 %}
+    <div class="rl-tenure-bar">
+      <span class="rl-tenure-sprint" style="width:{{ [sprint_pct, 95] | min }}%;">اسپرینت</span>
+      <span class="rl-tenure-mat">بلوغ — بدون مطالعه‌ی جدید</span>
+    </div>
+    {% if not tx.tenure_bar_body.startswith('TODO') %}
+    <p style="margin-top:14px; font-size:.86rem; color:var(--muted); line-height:2.05;">{{ tx.tenure_bar_body }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- WHAT THIS LEVEL ASKS -->
+<section class="rl-section" style="margin-top:64px;">
+  <div class="rl-inner">
+    <h2 class="rl-h2">این سطح چه می‌خواهد</h2>
+    {% if not tx.asks_note.startswith('TODO') %}
+    <p style="font-size:.9rem; color:var(--muted); margin-bottom:24px; max-width:620px;">{{ tx.asks_note }}</p>
+    {% endif %}
+    <div class="rl-asks-scroll">
+      <table class="rl-asks-table">
+        <thead>
+          <tr>
+            <th scope="col">شایستگی</th>
+            <th scope="col" class="center">عمق</th>
+            <th scope="col">دسته</th>
+            <th scope="col" class="center">اسپرینت</th>
+            <th scope="col" class="center">بلوغ</th>
+            <th scope="col" class="center">مطالعه</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in asks_table %}
+          {% set tint = 26 + row.depth * 14 %}
+          <tr>
+            <th scope="row" style="font-weight:600; text-align:start; padding:10px 18px; border-bottom:1px solid var(--border);">{{ row.fa }}</th>
+            <td class="center">
+              <span class="rl-depth-chip" style="color:{% if row.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ row.depth }}</span>
+            </td>
+            <td>
+              <span class="rl-cat-chip rl-cat-chip--{{ row.category }}">{{ row.category_fa }}</span>
+            </td>
+            <td class="center" style="color:var(--accent);">{% if row.sprint_weeks %}{{ row.sprint_weeks }}w{% else %}—{% endif %}</td>
+            <td class="center" style="color:#8fbf86;">{% if row.maturation_months %}{{ row.maturation_months }}m{% else %}—{% endif %}</td>
+            <td class="center" style="color:var(--muted);">{% if row.reading_hours_display %}{{ row.reading_hours_display }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- STICKY PHASE NAV -->
+<div class="rl-phase-nav">
+  <div class="rl-phase-nav-inner">
+    <a href="#entry"      class="rl-phase-link">ورود</a>
+    <a href="#core"       class="rl-phase-link">هسته</a>
+    <a href="#supporting" class="rl-phase-link">حمایتی</a>
+    <a href="#passive"    class="rl-phase-link">بدون مطالعه</a>
+    <a href="#sequence"   class="rl-phase-link">توالی</a>
+    <a href="#bridge"     class="rl-phase-link">پل</a>
+  </div>
+</div>
+
+<!-- ── ENTRY ──────────────────────────────────────────────────── -->
+<section class="rl-section" id="entry" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">ورود</h2>
+      <span class="rl-sub">پیش از آن‌که عنوان را داشته باشید</span>
+    </div>
+    {% if not tx.entry_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.entry_note }}</p>
+    {% endif %}
+
+    {% if not tx.entry_callout.startswith('TODO') %}
+    <div style="display:flex; align-items:flex-start; gap:14px; padding:14px 18px; background:rgba(143,191,134,.06); border:1px solid rgba(143,191,134,.2); border-radius:10px; margin-bottom:24px;">
+      <b style="font-size:.72rem; font-weight:700; color:#8fbf86; white-space:nowrap;">مسیر ۰</b>
+      <span style="font-size:.88rem; color:var(--muted); line-height:2.05;">{{ tx.entry_callout }} <a href="{{ url_for('roadmap_hiring') }}" style="color:#8fbf86; border-bottom:1px solid rgba(143,191,134,.4);">مسیر استخدام ←</a></span>
+    </div>
+    {% endif %}
+
+    {% for r in entry_resources %}
+    <div style="border-top:1px solid var(--border); padding:16px 0;">
+      <div class="rl-res">
+        <div>
+          {% if r.is_linked %}
+          <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+             dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+          {% else %}
+          <span dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+          <span class="rl-no-link">هنوز لینکی ندارد — یادداشت فارسی در راه است</span>
+          {% endif %}
+          <div style="font-size:.78rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+        </div>
+        <div class="rl-res-meta">
+          <span class="rl-req-badge {% if r.is_required %}rl-req-badge--req{% else %}rl-req-badge--opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
+          {% if r.reading_time %}<span class="rl-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
+          {% if r.difficulty %}<span class="rl-meta-tag">{{ r.difficulty_stars }}</span>{% endif %}
+          {% if r.has_persian %}<span class="rl-meta-tag" style="color:#8fbf86;">فارسی</span>{% endif %}
+        </div>
+      </div>
+      {% if r.homework_text %}
+      <div class="rl-hw-block">
+        <b style="font-size:.72rem; font-weight:700; color:var(--accent);">تکلیف</b>
+        <span style="font-size:.88rem; color:var(--muted); line-height:2; margin-right:8px;">{{ r.homework_text }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+    <div style="border-top:1px solid var(--border);"></div>
+
+    {% if not tx.entry_quote.startswith('TODO') %}
+    <div class="rl-quote">{{ tx.entry_quote }}</div>
+    {% endif %}
+    {% if not tx.entry_homework.startswith('TODO') %}
+    <div class="rl-hw-block" style="margin-top:20px;">
+      <b style="font-size:.72rem; font-weight:700; color:var(--accent);">تکلیف ورود</b>
+      <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ tx.entry_homework }}</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── CORE ───────────────────────────────────────────────────── -->
+<section class="rl-section" id="core" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">هسته</h2>
+      <span class="rl-sub">کاری که روزانه شخصاً پاسخ‌گویش هستید</span>
+    </div>
+    {% if not tx.core_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.core_note }}</p>
+    {% endif %}
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      {% for comp in core_competencies %}
+      <details class="rl-core-card" {% if loop.first %}open{% endif %}>
+        <summary class="rl-core-summary">
+          <div class="rl-core-head">
+            <span class="rl-core-n">{{ loop.index }}</span>
+            <b style="font-size:1.06rem; font-weight:700;">{{ comp.fa }}</b>
+            {% set tint = 26 + comp.depth * 14 %}
+            <span class="rl-depth-chip" style="font-size:.76rem; color:{% if comp.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ comp.depth }}</span>
+            <span class="{% if comp.is_habit %}rl-habit-badge{% else %}rl-know-badge{% endif %}">{% if comp.is_habit %}عادتی{% else %}دانشی{% endif %}</span>
+            <div class="rl-chips" style="margin-inline-start:auto;">
+              <span class="rl-chip">اسپرینت {{ comp.sprint_weeks }}w</span>
+              <span class="rl-chip">بلوغ {{ comp.maturation_months }}m</span>
+              <span class="rl-chip">{{ comp.reading_hours_display }}</span>
+            </div>
+            <span class="rl-chev">▾</span>
+          </div>
+        </summary>
+        <div class="rl-core-body">
+          {% if comp.rationale and not comp.rationale.startswith('TODO') %}
+          <p class="rl-core-rationale">{{ comp.rationale }}</p>
+          {% endif %}
+
+          {% for r in comp.resources %}
+          <div style="border-top:1px solid var(--border); padding:14px 0;">
+            <div class="rl-res">
+              <div>
+                {% if r.is_linked %}
+                <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                   dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+                {% else %}
+                <span dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed;">{{ r.title }}</span>
+                <span class="rl-no-link">هنوز لینکی ندارد — یادداشت فارسی در راه است</span>
+                {% endif %}
+                <div style="font-size:.78rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+              </div>
+              <div class="rl-res-meta">
+                <span class="rl-req-badge {% if r.is_required %}rl-req-badge--req{% else %}rl-req-badge--opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
+                {% if r.reading_time %}<span class="rl-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
+                {% if r.difficulty %}<span class="rl-meta-tag">{{ r.difficulty_stars }}</span>{% endif %}
+                {% if r.has_persian %}<span class="rl-meta-tag" style="color:#8fbf86;">فارسی</span>{% endif %}
+              </div>
+            </div>
+            {% if r.homework_text %}
+            <div class="rl-hw-block">
+              <b style="font-size:.72rem; font-weight:700; color:var(--accent);">تکلیف</b>
+              <span style="font-size:.88rem; color:var(--muted); line-height:2; margin-right:8px;">{{ r.homework_text }}</span>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          <div style="border-top:1px solid var(--border);"></div>
+
+          {% if comp.quote and not comp.quote.startswith('TODO') %}
+          <div class="rl-quote">{{ comp.quote }}</div>
+          {% endif %}
+          {% if comp.practice and not comp.practice.startswith('TODO') %}
+          <div class="rl-hw-block" style="margin-top:16px; border-inline-start-color:#8fbf86;">
+            <b style="font-size:.72rem; font-weight:700; color:#8fbf86;">تمرین</b>
+            <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ comp.practice }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── SUPPORTING ──────────────────────────────────────────────── -->
+<section class="rl-section" id="supporting" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">حمایتی</h2>
+      <span class="rl-sub">سهم دارید، اما مالکش کسِ دیگری است</span>
+    </div>
+    {% if not tx.supporting_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.supporting_note }}</p>
+    {% endif %}
+
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      {% for comp in supporting_competencies %}
+      <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 24px;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+          <b style="font-size:1.06rem; font-weight:700;">{{ comp.fa }}</b>
+          {% set tint = 26 + comp.depth * 14 %}
+          <span class="rl-depth-chip" style="font-size:.76rem; color:{% if comp.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ comp.depth }}</span>
+          <div class="rl-chips">
+            <span class="rl-chip">اسپرینت {{ comp.sprint_weeks }}w</span>
+            <span class="rl-chip">بلوغ {{ comp.maturation_months }}m</span>
+          </div>
+        </div>
+        {% if comp.owner_note and not comp.owner_note.startswith('TODO') %}
+        <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-bottom:14px;">{{ comp.owner_note }}</p>
+        {% endif %}
+        {% for r in comp.resources %}
+        <div style="border-top:1px solid var(--border); padding:14px 0;">
+          <div class="rl-res">
+            <div>
+              {% if r.is_linked %}
+              <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                 dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+              {% else %}
+              <span dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed;">{{ r.title }}</span>
+              <span class="rl-no-link">هنوز لینکی ندارد</span>
+              {% endif %}
+              <div style="font-size:.78rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+            </div>
+            <div class="rl-res-meta">
+              <span class="rl-req-badge {% if r.is_required %}rl-req-badge--req{% else %}rl-req-badge--opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
+              {% if r.reading_time %}<span class="rl-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
+            </div>
+          </div>
+          {% if r.homework_text %}
+          <div class="rl-hw-block">
+            <b style="font-size:.72rem; font-weight:700; color:var(--accent);">تکلیف</b>
+            <span style="font-size:.88rem; color:var(--muted); line-height:2; margin-right:8px;">{{ r.homework_text }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── PASSIVE ─────────────────────────────────────────────────── -->
+<section class="rl-section" id="passive" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">بدون مطالعه</h2>
+      <span class="rl-sub">بدون منبع — و این تصمیم است، نه جای خالی</span>
+    </div>
+    {% if not tx.passive_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.passive_note }}</p>
+    {% endif %}
+    <div style="background:var(--surface); border:1px dashed var(--border-2); border-radius:14px; overflow:hidden;">
+      <table class="rl-passive-table">
+        <thead>
+          <tr>
+            <th>شایستگی</th>
+            <th>عمق</th>
+            <th>چگونه به دست می‌آید</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comp in passive_competencies %}
+          <tr>
+            <td style="font-weight:600;">{{ comp.fa }}</td>
+            <td>
+              {% set tint = 26 + comp.depth * 14 %}
+              <span class="rl-depth-chip" style="color:{% if comp.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ comp.depth }}</span>
+            </td>
+            <td style="color:var(--muted); font-size:.85rem;">{{ comp.passive_how }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── SEQUENCE ────────────────────────────────────────────────── -->
+<section class="rl-section" id="sequence" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">توالی</h2>
+      <span class="rl-sub">{{ lv.sprint }} — ترتیب اسپرینت‌ها</span>
+    </div>
+    {% if not tx.sequence_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.sequence_note }}</p>
+    {% endif %}
+
+    <div class="rl-seq-scroll">
+      <div class="rl-seq-wrap">
+        {% set total_w = lv.sprint_weeks %}
+        {% for bar in sequence_gantt %}
+        {% set start_pct = (((bar.start_week - 1) / total_w) * 100) | round(1) %}
+        {% set width_pct = ((bar.sprint_weeks / total_w) * 100) | round(1) %}
+        <div style="margin-bottom:10px;">
+          <div style="position:relative; height:36px; background:rgba(236,229,220,.035); border-radius:6px; margin-bottom:4px;">
+            <div class="rl-seq-bar" style="position:absolute; inset-inline-start:{{ start_pct }}%; width:{{ width_pct }}%;">{{ bar.fa }}</div>
+          </div>
+          <div class="rl-seq-mat">هفته {{ bar.start_week }}–{{ bar.end_week }} · بلوغ {{ bar.maturation_months }} ماه</div>
+        </div>
+        {% endfor %}
+        <!-- Week scale -->
+        <div style="display:grid; grid-template-columns:repeat({{ total_w }},1fr); margin-top:8px; border-top:1px solid var(--border); padding-top:6px;">
+          {% for w in range(1, total_w + 1) %}
+          <span style="font-size:.65rem; color:var(--faint); text-align:center;">{% if w == 1 or w % 5 == 0 %}{{ w }}{% endif %}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessible table fallback -->
+    <details style="margin-top:16px;">
+      <summary style="font-size:.82rem; color:var(--muted); cursor:pointer; list-style:none;">نمایش به صورت جدول</summary>
+      <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:.85rem;">
+        <thead><tr><th style="text-align:start; padding:8px; border-bottom:1px solid var(--border);">شایستگی</th><th style="padding:8px; border-bottom:1px solid var(--border);">هفته</th><th style="padding:8px; border-bottom:1px solid var(--border);">اسپرینت</th><th style="padding:8px; border-bottom:1px solid var(--border);">بلوغ</th></tr></thead>
+        <tbody>
+          {% for bar in sequence_gantt %}
+          <tr>
+            <td style="padding:8px; border-bottom:1px solid var(--border);">{{ bar.fa }}</td>
+            <td style="padding:8px; border-bottom:1px solid var(--border);" dir="ltr">{{ bar.start_week }}–{{ bar.end_week }}</td>
+            <td style="padding:8px; border-bottom:1px solid var(--border); color:var(--accent);">{{ bar.sprint_weeks }}w</td>
+            <td style="padding:8px; border-bottom:1px solid var(--border); color:#8fbf86;">{{ bar.maturation_months }}m</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+
+    <p style="margin-top:20px; font-size:.88rem; color:var(--muted); line-height:2;">بیشتر یک سطح بلوغ است، نه مطالعه — اسپرینت‌ها تمام می‌شوند اما یادگیری در دل کار ادامه دارد.</p>
+  </div>
+</section>
+
+<!-- ── BRIDGE ──────────────────────────────────────────────────── -->
+<section class="rl-section" id="bridge" style="scroll-margin-top:120px;">
+  <div class="rl-inner">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 class="rl-h2">پل</h2>
+      <span class="rl-sub">برای درخواستِ ارتقا چه نیاز دارید</span>
+    </div>
+    {% if not tx.bridge_note.startswith('TODO') %}
+    <p class="rl-note">{{ tx.bridge_note }}</p>
+    {% endif %}
+
+    {% for r in bridge_resources %}
+    <div style="border-top:1px solid var(--border); padding:16px 0;">
+      <div class="rl-res">
+        <div>
+          {% if r.is_linked %}
+          <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+             dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+          {% else %}
+          <span dir="ltr" style="font-size:1rem; font-weight:600; unicode-bidi:embed;">{{ r.title }}</span>
+          <span class="rl-no-link">هنوز لینکی ندارد</span>
+          {% endif %}
+          <div style="font-size:.78rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+        </div>
+        <div class="rl-res-meta">
+          <span class="rl-req-badge {% if r.is_required %}rl-req-badge--req{% else %}rl-req-badge--opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
+          {% if r.reading_time %}<span class="rl-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% if bridge_resources %}<div style="border-top:1px solid var(--border);"></div>{% endif %}
+
+    <!-- Bridge checklist -->
+    {% if bridge_checklist %}
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px 26px; margin-top:24px;">
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:14px; color:var(--accent);">آماده‌ی سطح ۲ هستید وقتی:</h3>
+      {% for item in bridge_checklist %}
+      <div class="rl-bridge-item">
+        <span style="color:var(--accent); flex-shrink:0;">☑</span>
+        <span>{{ item }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- L2 stub link -->
+    <div style="margin-top:24px; background:rgba(236,229,220,.04); border:1px dashed var(--border-2); border-radius:12px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; opacity:.55;">
+      <span>
+        <b style="display:block; font-size:.9rem;">سطح ۲ — مدیر محصول</b>
+        <span style="font-size:.74rem; color:var(--faint);">به زودی در دسترس خواهد بود</span>
+      </span>
+      <span style="color:var(--faint);">به زودی</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer nav -->
+<div style="border-top:1px solid var(--border);">
+  <div style="max-width:1000px; margin:0 auto; padding:32px 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    <a href="{{ url_for('roadmap_hiring') }}" style="font-size:.9rem; color:var(--muted); text-decoration:none;">→ مسیر ۰ — مسیر استخدام</a>
+    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.9rem; color:var(--muted); text-decoration:none;">مسیر یادگیری ←</a>
+  </div>
+</div>
+
+{% endblock %}

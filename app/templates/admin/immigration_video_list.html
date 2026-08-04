@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_immigration_video_new') }}" class="btn btn-primary">
+  <span aria-hidden="true">+</span> ویدیوی جدید
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  {% if videos %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ترتیب</th>
+        <th>عنوان</th>
+        <th>توضیح (where)</th>
+        <th>لینک</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in videos %}
+      <tr>
+        <td style="color:var(--text-muted); font-size:.85rem;">{{ v.sort_order }}</td>
+        <td style="font-weight:600;">{{ v.title }}</td>
+        <td style="font-size:.85rem; color:var(--text-muted);">{{ v.where or '—' }}</td>
+        <td>
+          <a href="{{ v.url }}" target="_blank" rel="noopener noreferrer"
+             style="font-size:.78rem; color:var(--accent); text-decoration:none; word-break:break-all;">
+            {{ v.url[:60] }}{% if v.url|length > 60 %}…{% endif %}
+          </a>
+        </td>
+        <td class="actions">
+          <a href="{{ url_for('admin_immigration_video_edit', video_id=v.id) }}" class="btn btn-ghost btn-sm">ویرایش</a>
+          <form method="post" action="{{ url_for('admin_immigration_video_delete', video_id=v.id) }}"
+                onsubmit="return confirm('حذف شود؟');" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <p>هنوز ویدیویی اضافه نشده.</p>
+    <a href="{{ url_for('admin_immigration_video_new') }}" class="btn btn-primary">افزودن اولین ویدیو</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

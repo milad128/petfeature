@@ -3599,6 +3599,54 @@ main { padding: 0; }
   .profile-tg-card { flex-direction: column; align-items: flex-start; }
     .bsp-card { flex-wrap: wrap; }
 }
+/* ─────────────────────────────────────────────
+   ROADMAP landing — hero lamp (v16)
+───────────────────────────────────────────── */
+[data-lamp="off"] .rm-hero-glow { opacity: 0; }
+
+.rm-lamp-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-inline-end: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 250px;
+  position: relative;
+  font-family: inherit;
+}
+.rm-lamp-cone {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  height: 130px;
+  display: block;
+  pointer-events: none;
+  clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 28%, transparent), transparent);
+  transition: opacity .3s;
+}
+[data-lamp="off"] .rm-lamp-cone { opacity: 0; }
+.rm-lamp-shade {
+  width: 66px;
+  height: 32px;
+  display: block;
+  clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, #4a3a28, var(--accent));
+  transition: background .25s;
+}
+[data-lamp="off"] .rm-lamp-shade { background: linear-gradient(180deg, #33291d, #453626); }
+.rm-lamp-pole { width: 4px; height: 140px; background: #3d3125; display: block; }
+.rm-lamp-base { width: 44px; height: 9px; background: #3d3125; border-radius: 5px 5px 0 0; display: block; }
+
+@media (max-width: 960px) { .rm-lamp-btn { display: none; } }
+
 @media (max-width: 640px) {
   .site-nav .login-btn,
   .user-chip { display: none; } /* hidden in mobile nav — shown in hamburger menu */

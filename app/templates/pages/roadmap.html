@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── Roadmap landing page ─────────────────────────── */
+.rm-hero { position:relative; overflow:hidden; }
+.rm-hero-glow {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 55% 55% at 30% 70%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%);
+  pointer-events:none;
+}
+.rm-hero-grid {
+  position:relative; max-width:1120px; margin:0 auto;
+  padding:76px 1.5rem 0;
+  display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:end;
+}
+.rm-hero h1 { font-size:2.8rem; font-weight:800; letter-spacing:-.02em; line-height:1.35; }
+.rm-hero h1 span { color:var(--accent); }
+.rm-stats { display:flex; flex-wrap:wrap; gap:44px; margin-top:36px; }
+.rm-stat-val { font-size:1.85rem; font-weight:700; line-height:1.3; }
+.rm-stat-lbl { font-size:.8rem; color:var(--faint); }
+
+/* Staircase visual */
+.rm-stairs { display:flex; align-items:flex-end; gap:0; padding-top:46px; }
+.rm-step {
+  position:relative; display:block; width:76px; flex-shrink:0;
+  text-decoration:none; border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg, rgba(236,229,220,.05), rgba(236,229,220,.01));
+  border-inline-start:1px solid rgba(236,229,220,.07); transition:filter .18s;
+}
+.rm-step:hover { filter:brightness(1.18); text-decoration:none; }
+.rm-step-tread {
+  position:absolute; inset-inline:0; top:0; height:3px; border-radius:2px;
+  background:color-mix(in srgb, var(--accent) 70%, #4a3a29);
+}
+.rm-step-label {
+  position:absolute; inset-inline:0; bottom:100%; padding-bottom:10px;
+  display:flex; flex-direction:column; align-items:center; gap:1px; text-align:center;
+}
+.rm-step-short { font-size:.76rem; font-weight:700; white-space:nowrap; color:var(--text); }
+.rm-step-num { font-size:.62rem; color:var(--accent); }
+
+/* Floor bar */
+.rm-floor { max-width:1120px; margin:0 auto; padding:0 1.5rem; }
+.rm-floor-bar { height:12px; background:linear-gradient(180deg,#3a2d20,#241b12); border-radius:2px; box-shadow:0 10px 26px rgba(0,0,0,.55); }
+
+/* Sections */
+.rm-section { border-top:1px solid var(--border); }
+.rm-section-inner { max-width:1120px; margin:0 auto; padding:64px 1.5rem; }
+.rm-section-head { font-size:1.35rem; font-weight:700; margin-bottom:10px; }
+.rm-section-sub { font-size:.92rem; color:var(--muted); max-width:640px; margin-bottom:30px; }
+
+/* Fork cards */
+.rm-fork { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.rm-fork-card {
+  display:block; text-decoration:none; color:inherit;
+  background:var(--surface); border-radius:14px; padding:26px 28px;
+  transition:border-color .18s;
+}
+.rm-fork-card:hover { text-decoration:none; }
+.rm-fork-card--green { border:1px solid color-mix(in srgb, #8fbf86 30%, var(--border)); }
+.rm-fork-card--green:hover { border-color:color-mix(in srgb, #8fbf86 55%, transparent); }
+.rm-fork-card--amber { border:1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); }
+.rm-fork-card--amber:hover { border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+.rm-fork-badge { display:inline-block; font-size:.7rem; font-weight:700; border-radius:6px; padding:4px 10px; }
+.rm-fork-title { display:block; font-size:1.25rem; font-weight:800; margin-top:14px; }
+.rm-fork-body { font-size:.9rem; color:var(--muted); line-height:2.05; margin-top:8px; }
+.rm-fork-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.rm-fork-chip { font-size:.78rem; color:var(--muted); background:rgba(236,229,220,.05); border-radius:6px; padding:4px 10px; }
+.rm-fork-cta { display:inline-block; margin-top:18px; font-size:.88rem; font-weight:600; }
+
+/* Three numbers */
+.rm-3grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.rm-3card {
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px 24px;
+}
+.rm-3card-head { display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+.rm-3card-dot { width:11px; height:11px; display:block; }
+.rm-3card-body { font-size:.88rem; color:var(--muted); line-height:2; }
+.rm-3note { margin-top:22px; font-size:.86rem; color:var(--faint); line-height:2.1; max-width:760px; }
+
+/* Four categories */
+.rm-cat-list { list-style:none; display:grid; gap:0; }
+.rm-cat-item {
+  display:grid; grid-template-columns:auto 130px 1fr auto; gap:18px;
+  align-items:baseline; padding:18px 4px; border-bottom:1px solid var(--border);
+}
+.rm-cat-n { font-size:.75rem; color:var(--faint); }
+.rm-cat-fa { font-size:1.02rem; font-weight:700; }
+.rm-cat-desc { font-size:.9rem; color:var(--muted); line-height:1.9; }
+.rm-cat-when { font-size:.78rem; color:var(--faint); white-space:nowrap; }
+.rm-cat-chips { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
+.rm-cat-chip {
+  font-size:.8rem; color:var(--muted); background:var(--raise);
+  border:1px dashed var(--border-2); border-radius:8px; padding:7px 14px;
+}
+
+/* Depth matrix */
+.rm-matrix-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+.rm-matrix-wrap::-webkit-scrollbar { height:8px; }
+.rm-matrix-wrap::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
+.rm-matrix { border-collapse:collapse; width:100%; min-width:820px; table-layout:fixed; direction:rtl; }
+.rm-matrix col.rm-col-comp { width:220px; }
+.rm-matrix col.rm-col-lv { width:72px; }
+.rm-matrix thead th {
+  padding:16px 8px 12px; border-bottom:1px solid var(--border-2);
+  font-size:.74rem; font-weight:600; color:var(--faint);
+  text-align:center; vertical-align:bottom;
+}
+.rm-matrix thead th.rm-th-comp {
+  position:sticky; inset-inline-start:0; background:var(--surface);
+  padding:16px 18px 12px; z-index:2;
+  text-align:start;
+}
+.rm-matrix tbody tr.rm-domain td {
+  background:#211a15;
+  font-size:.72rem; font-weight:700; letter-spacing:.06em;
+  color:var(--accent); padding:10px 18px; white-space:nowrap;
+  border-bottom:1px solid var(--border-2);
+  text-align:start;
+}
+.rm-matrix tbody td.rm-depth-cell {
+  padding:0 4px; text-align:center; border-bottom:1px solid var(--border);
+  position:relative; height:56px; vertical-align:middle;
+  background:linear-gradient(to top,
+    transparent 0, transparent 5.5%,
+    rgba(236,229,220,.045) 5.5%, rgba(236,229,220,.045) calc(5.5% + 1px), transparent calc(5.5% + 1px), transparent 21%,
+    rgba(236,229,220,.045) 21%, rgba(236,229,220,.045) calc(21% + 1px), transparent calc(21% + 1px), transparent 36.5%,
+    rgba(236,229,220,.045) 36.5%, rgba(236,229,220,.045) calc(36.5% + 1px), transparent calc(36.5% + 1px), transparent 52%,
+    rgba(236,229,220,.045) 52%, rgba(236,229,220,.045) calc(52% + 1px), transparent calc(52% + 1px), transparent 67.5%,
+    rgba(236,229,220,.045) 67.5%, rgba(236,229,220,.045) calc(67.5% + 1px), transparent calc(67.5% + 1px));
+}
+.rm-matrix tbody tr.rm-domain td.rm-domain-cell {
+  position:sticky; inset-inline-start:0; z-index:2;
+}
+.rm-matrix tbody th.rm-comp-name {
+  position:sticky; inset-inline-start:0; background:var(--surface);
+  font-size:.86rem; font-weight:600; color:var(--text);
+  padding:8px 18px; z-index:2; border-bottom:1px solid var(--border);
+  line-height:1.6; box-shadow:1px 0 0 var(--border);
+  text-align:start;
+}
+.rm-depth-chip {
+  position:absolute; left:50%; transform:translate(-50%,-50%);
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:24px; border-radius:7px;
+  font-size:.78rem; font-weight:700;
+  box-shadow:0 0 0 3px var(--surface);
+}
+.rm-depth-none {
+  position:absolute; left:50%; transform:translate(-50%,-50%);
+  display:flex; align-items:center; justify-content:center;
+  width:22px; height:20px; border-radius:5px;
+  border:1px dashed var(--border-2); color:var(--faint); font-size:.72rem;
+}
+/* Spark SVG lines */
+.rm-spark {
+  position:absolute; inset:0; width:100%; height:100%;
+  overflow:visible; pointer-events:none;
+}
+.rm-th-lv-num { display:block; font-size:.68rem; color:var(--faint); direction:rtl; }
+.rm-th-lv-label { display:block; font-size:.82rem; font-weight:700; line-height:1.5; }
+.rm-th-lv-link { display:block; text-decoration:none; color:inherit; }
+.rm-th-lv-link:hover { text-decoration:none; color:inherit; }
+
+/* Depth legend chips */
+.rm-depth-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px; }
+.rm-depth-leg-chip {
+  display:flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+}
+
+/* Matrix legend */
+.rm-matrix-legend { display:flex; flex-wrap:wrap; gap:18px; margin-top:16px; align-items:center; }
+.rm-leg-item { display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--muted); }
+.rm-leg-line { width:26px; height:2px; display:block; }
+.rm-leg-dashed { width:26px; height:0; border-top:2px dashed var(--faint); display:block; }
+
+/* Level summary cards */
+.rm-cards { display:flex; flex-direction:column; gap:12px; }
+.rm-lv-card {
+  display:block; background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:22px 24px; text-decoration:none; color:inherit;
+  transition:border-color .18s, background .18s;
+}
+.rm-lv-card:hover { border-color:var(--border-2); background:var(--raise); text-decoration:none; }
+.rm-lv-card--track { background:rgba(143,191,134,.04); border-style:dashed; }
+.rm-lv-card--soon { opacity:.6; cursor:default; pointer-events:none; }
+.rm-lv-card-header { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.rm-lv-num { font-size:.72rem; color:var(--faint); font-weight:600; }
+.rm-lv-fa { font-size:1.15rem; font-weight:700; }
+.rm-lv-en { font-size:.78rem; color:var(--faint); }
+.rm-lv-spec { font-size:.88rem; color:var(--muted); line-height:2; margin-top:6px; max-width:680px; }
+.rm-lv-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.rm-lv-chip { font-size:.78rem; border-radius:6px; padding:4px 10px; }
+.rm-lv-chip--muted { color:var(--muted); background:rgba(236,229,220,.05); }
+.rm-lv-chip--amber { color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent); }
+.rm-lv-chip--green { color:#8fbf86; background:color-mix(in srgb, #8fbf86 10%, transparent); }
+.rm-lv-bar-wrap { margin-top:14px; }
+.rm-lv-bar-track {
+  height:10px; border-radius:5px; overflow:hidden; display:flex;
+  background:repeating-linear-gradient(-45deg, rgba(143,191,134,.16) 0 5px, transparent 5px 10px);
+  border:1px solid var(--border);
+}
+.rm-lv-bar-fill { display:block; }
+.rm-lv-bar-labels {
+  display:flex; justify-content:space-between; gap:12px;
+  margin-top:7px; font-size:.74rem; color:var(--faint);
+}
+.rm-soon-badge {
+  font-size:.7rem; color:var(--faint); background:rgba(236,229,220,.05);
+  border:1px dashed var(--border-2); border-radius:6px; padding:3px 10px;
+}
+
+@media (max-width:960px) {
+  .rm-hero-grid { grid-template-columns:1fr !important; gap:44px; }
+}
+@media (max-width:900px) {
+  .rm-fork { grid-template-columns:1fr; }
+  .rm-hero h1 { font-size:2.1rem; }
+  .rm-3grid { grid-template-columns:1fr; }
+  .rm-cat-item { grid-template-columns:auto 1fr; }
+  .rm-cat-when { display:none; }
+}
+@media (max-width:640px) {
+  .rm-stats { gap:22px; }
+  .rm-hero-grid { padding-top:48px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="rm-hero">
+  <div class="rm-hero-glow" aria-hidden="true"></div>
+  <div class="rm-hero-grid">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">مسیر یادگیری</span>
+      </div>
+      <h1>بدانید کجای مسیرید،<br><span>و بعدش چه بخوانید.</span></h1>
+      <p style="margin-top:24px; font-size:1.05rem; color:var(--muted); max-width:560px; line-height:2.1;">
+        از APM تا CPO — پانزده شایستگی و شش سطح، با یک ماتریس که می‌گوید در هر سطح باید در هر کدام چقدر عمیق باشید و برای عمیق شدن چه مدت زمان نیاز دارید و چه منابعی را باید مطالعه کنید.
+      </p>
+      <div class="rm-stats">
+        <div><div class="rm-stat-val">۹۲</div><div class="rm-stat-lbl">منبع اجباری، همه انتخاب‌شده</div></div>
+        <div><div class="rm-stat-val">~۴۳۶ ساعت</div><div class="rm-stat-lbl">مطالعه در کل مسیر</div></div>
+        <div><div class="rm-stat-val">۱۰ تا ۱۷ سال</div><div class="rm-stat-lbl">زمان واقعی رسیدن</div></div>
+      </div>
+    </div>
+
+    <!-- Lamp + Staircase visual -->
+    <div style="display:flex; align-items:flex-end; justify-content:flex-start; padding-bottom:8px;">
+      <button class="rm-lamp-btn" id="lamp-toggle-roadmap"
+              title="روشن/خاموش کردن چراغ" aria-label="روشن/خاموش کردن چراغ">
+        <span class="rm-lamp-cone" aria-hidden="true"></span>
+        <span class="rm-lamp-shade" aria-hidden="true"></span>
+        <span class="rm-lamp-pole" aria-hidden="true"></span>
+        <span class="rm-lamp-base" aria-hidden="true"></span>
+      </button>
+      <div class="rm-stairs">
+        {% set step_data = [
+          ('APM',      '۱', 40),
+          ('PM',       '۲', 72),
+          ('Sr PM',    '۳', 104),
+          ('Lead',     '۴', 136),
+          ('Director', '۵', 168),
+          ('CPO',      '۶', 200),
+        ] %}
+        {% for short, num, h in step_data %}
+        <div class="rm-step" style="height:{{ h }}px;" aria-label="سطح {{ num }} — {{ short }}">
+          <div class="rm-step-tread"></div>
+          <div class="rm-step-label">
+            <span class="rm-step-short">{{ short }}</span>
+            <span class="rm-step-num">سطح {{ num }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="rm-floor">
+    <div class="rm-floor-bar"></div>
+  </div>
+</section>
+
+<!-- THE FORK -->
+<section class="rm-section" style="margin-top:64px;">
+  <div class="rm-section-inner">
+    <h2 class="rm-section-head">اول یک سؤال، بعد بقیه‌ی صفحه</h2>
+    <p class="rm-section-sub">به استخدام به عنوان مدیر محصول نیاز دارید یا به مسیر رشد؟</p>
+    <div class="rm-fork">
+      <a href="{{ url_for('roadmap_hiring') }}" class="rm-fork-card rm-fork-card--green">
+        <span class="rm-fork-badge" style="color:#8fbf86; background:color-mix(in srgb, #8fbf86 12%, transparent);">مسیر آمادگی</span>
+        <b class="rm-fork-title">آمادگی برای مصاحبه و استخدام</b>
+        <p class="rm-fork-body">برای آماده شدن برای مصاحبه نیاز به یک رزومه قوی و قابل دفاع دارید، سپس برای مصاحبه‌های عمومی و تخصصی مدیریت محصول باید تمرین کنید. در این بخش تمام منابع و آموزش‌های مورد نیاز برای رزومه و مصاحبه قرار دارد.</p>
+        <div class="rm-fork-chips">
+          <span class="rm-fork-chip">۹ منبع · ~۱۸٫۵ ساعت</span>
+          <span class="rm-fork-chip">۱۲ هفته اسپرینت</span>
+        </div>
+        <span class="rm-fork-cta" style="color:#8fbf86;">مسیر استخدام را ببینم ←</span>
+      </a>
+
+      <a href="#matrix" class="rm-fork-card rm-fork-card--amber">
+        <span class="rm-fork-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);">سطح ۱ تا ۶ · نردبان</span>
+        <b class="rm-fork-title">مسیر یادگیری و رشد</b>
+        <p class="rm-fork-body">ابتدا سطح خود را در ماتریس مهارت‌های سطح‌های مختلف پیدا کنید، سپس بر اساس مسیر شغلی، مسیر مطالعه و یادگیری به شما پیشنهاد می‌شود.</p>
+        <div class="rm-fork-chips">
+          <span class="rm-fork-chip">۹۲ منبع · ~۴۳۶ ساعت</span>
+          <span class="rm-fork-chip">۲۷۶ هفته اسپرینت</span>
+        </div>
+        <span class="rm-fork-cta" style="color:var(--accent);">سطح خودم را پیدا کنم ←</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- THREE NUMBERS -->
+<section class="rm-section">
+  <div class="rm-section-inner">
+    <h2 class="rm-section-head">سه عدد که هرگز جمع نمی‌شوند</h2>
+    <p class="rm-section-sub" style="max-width:640px; margin-bottom:32px;">هر شایستگی سه عدد دارد. دو تای اول بودجه‌اند و جمع می‌شوند؛ سومی تقویم است و هم‌پوشانی دارد. جمع‌بستن بلوغ‌ها عددی ترسناک و بی‌معنی می‌سازد.</p>
+    <div class="rm-3grid">
+      <div class="rm-3card" style="border-inline-start:3px solid var(--muted);">
+        <div class="rm-3card-head">
+          <span class="rm-3card-dot" style="background:var(--muted); border-radius:2px;"></span>
+          <b style="font-size:1rem; font-weight:700;">مطالعه</b>
+          <span style="font-size:.78rem; color:var(--faint);">ساعت</span>
+        </div>
+        <p class="rm-3card-body">ساعت‌های لازم برای خواندن منابع. «تست مامان» سه ساعت است. اما پیشنهاد نمی‌کنم در ۳ ساعت خوانده شود.</p>
+      </div>
+      <div class="rm-3card" style="border-inline-start:3px solid var(--accent);">
+        <div class="rm-3card-head">
+          <span class="rm-3card-dot" style="background:var(--accent); border-radius:50%;"></span>
+          <b style="font-size:1rem; font-weight:700;">اسپرینت</b>
+          <span style="font-size:.78rem; color:var(--faint);">هفته</span>
+        </div>
+        <p class="rm-3card-body">هفته‌هایی که این شایستگی <strong>تنها پروژه‌ی فعال شماست</strong>. در این زمان باید روی <strong>یک</strong> شایستگی فقط تمرکز کنید.</p>
+      </div>
+      <div class="rm-3card" style="border-inline-start:3px solid #8fbf86;">
+        <div class="rm-3card-head">
+          <span class="rm-3card-dot" style="border:2px solid #8fbf86; border-radius:50%;"></span>
+          <b style="font-size:1rem; font-weight:700;">بلوغ</b>
+          <span style="font-size:.78rem; color:var(--faint);">ماه</span>
+        </div>
+        <p class="rm-3card-body">ماه‌هایی تا وقتی واقعاً به آن عمق از درک و یادگیری برسید. با کار روزمره می‌گذرد.</p>
+      </div>
+    </div>
+    <p class="rm-3note">مثال: «کشف محصول» در APM یک اسپرینت ۸ هفته‌ای و یک بلوغ ۶ ماهه است. دو ماه روی یادگیری مهارت کشف محصول تمرکز می‌کنید و چهار ماه بعد، به بلوغ استفاده از آن مهارت خواهید رسید. توجه کنید بلوغی که برای سطحی است که در مسیر آن هستید.</p>
+  </div>
+</section>
+
+<!-- FOUR CATEGORIES -->
+<section class="rm-section">
+  <div class="rm-section-inner">
+    <h2 class="rm-section-head">چهار دسته برای هر شایستگی در هر سطح وجود دارد</h2>
+    <p class="rm-section-sub">هر سطح شایستگی‌هایش را در این چهار دسته می‌چیند. «هسته» و «حمایتی» بر اساس پاسخ‌گویی جدا می‌شوند، نه سختی.</p>
+    <ol class="rm-cat-list">
+      {% for cat in four_categories %}
+      <li class="rm-cat-item">
+        <span class="rm-cat-n">{{ cat.n }}</span>
+        <b class="rm-cat-fa">{{ cat.fa }}</b>
+        <span class="rm-cat-desc">{{ cat.desc }}</span>
+        <span class="rm-cat-when">{{ cat.when }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="rm-cat-chips">
+      <span class="rm-cat-chip">رایگان به دست می‌آید — عمق ۱، بدون منبع</span>
+      <span class="rm-cat-chip">تثبیت — عمق بدون تغییر، بدون مطالعه‌ی جدید</span>
+      <span class="rm-cat-chip" style="color:#d98878; border-color:rgba(217,136,120,.4);">عقب بکشید — عمق عمداً کاهش می‌یابد</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEPTH MATRIX -->
+<section class="rm-section" id="matrix" style="background:linear-gradient(180deg, rgba(166,195,160,.03), transparent 240px);">
+  <div class="rm-section-inner">
+    <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:10px;">ماتریس عمق شایستگی</h2>
+    <p style="font-size:.95rem; color:var(--muted); max-width:680px; margin-bottom:8px;">۱۵ شایستگی × ۶ سطح. هر سطر یک خطِ مسیر است: ارتفاع نشانه‌ی عمق لازم را می‌گوید و رقم داخلش همان عدد است. یک <strong>سطر</strong> را دنبال کنید تا ببینید یک مهارت در طول شغل چطور بالا و پایین می‌رود؛ یک <strong>ستون</strong> را بخوانید تا پروفایل کاملِ یک سطح را ببینید.</p>
+    <p style="font-size:.82rem; color:var(--faint); margin-bottom:26px;">شکافِ شما در هر شایستگی = عمق لازمِ سطح هدف − عمق فعلی شما.</p>
+
+    <!-- Depth legend -->
+    <div class="rm-depth-legend">
+      {% for d in depth_scale %}
+      <div class="rm-depth-leg-chip">
+        {% if d.n == '—' %}
+        <span style="width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; color:var(--faint); border:1px dashed var(--border-2);">—</span>
+        {% else %}
+        <span style="width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:700; color:#171210; background:color-mix(in srgb, var(--accent) {{ 28 + (loop.index0 * 17) }}%, #4a3a29);">{{ d.n }}</span>
+        {% endif %}
+        <b style="font-size:.82rem; font-weight:600;">{{ d.fa }}</b>
+        <span style="font-size:.76rem; color:var(--faint);">{{ d.desc }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="rm-matrix-wrap">
+      {% set matrix_levels = levels | rejectattr('is_track') | list %}
+      <table class="rm-matrix">
+        <colgroup>
+          <col class="rm-col-comp">
+          {% for lv in matrix_levels %}
+          <col class="rm-col-lv">
+          {% endfor %}
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col" class="rm-th-comp">شایستگی</th>
+            {% for lv in matrix_levels %}
+            <th scope="col" class="rm-th-lv">
+              <a href="{{ url_for('roadmap_level', level_slug=lv.slug) }}" class="rm-th-lv-link">
+                <span class="rm-th-lv-num">{{ lv.num }}</span>
+                <span class="rm-th-lv-label" dir="ltr">{{ lv.matrix_label }}</span>
+              </a>
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in matrix_rows %}
+          {% if row.is_header %}
+          <tr class="rm-domain">
+            <td colspan="{{ matrix_levels | length + 1 }}" class="rm-domain-cell">
+              {{ row.domain }}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <th scope="row" class="rm-comp-name">{{ row.fa }}</th>
+            {% for cell in row.cells %}
+            <td class="rm-depth-cell">
+              {% if cell.seg_type %}
+              <svg class="rm-spark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                {% if cell.seg_type == 'rise' %}
+                <line x1="50" y1="{{ cell.y_pct }}" x2="-50" y2="{{ cell.next_y_pct }}" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                {% elif cell.seg_type == 'fall' %}
+                <line x1="50" y1="{{ cell.y_pct }}" x2="-50" y2="{{ cell.next_y_pct }}" stroke="#d98878" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                {% elif cell.seg_type == 'flat' %}
+                <line x1="50" y1="{{ cell.y_pct }}" x2="-50" y2="{{ cell.next_y_pct }}" stroke="rgba(236,229,220,.28)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                {% elif cell.seg_type == 'dashed' %}
+                <line x1="50" y1="{{ cell.y_pct }}" x2="-50" y2="{{ cell.next_y_pct }}" stroke="var(--faint)" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+                {% endif %}
+              </svg>
+              {% endif %}
+              {% if cell.depth == 0 %}
+              <span class="rm-depth-none" style="top:{{ cell.y_pct }}%;">—</span>
+              {% else %}
+              {% set tint = 26 + cell.depth * 14 %}
+              <span class="rm-depth-chip" style="top:{{ cell.y_pct }}%; color:{% if cell.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ cell.depth | fa_digits }}</span>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rm-matrix-legend">
+      <div class="rm-leg-item"><span class="rm-leg-line" style="background:var(--accent);"></span>صعود</div>
+      <div class="rm-leg-item"><span class="rm-leg-line" style="background:#d98878;"></span>افت عمدی</div>
+      <div class="rm-leg-item"><span class="rm-leg-line" style="background:rgba(236,229,220,.28);"></span>ثابت</div>
+      <div class="rm-leg-item"><span class="rm-leg-dashed"></span>هنوز لازم نیست</div>
+    </div>
+  </div>
+</section>
+
+<!-- LEVEL SUMMARY CARDS -->
+<section class="rm-section">
+  <div class="rm-section-inner">
+    <h2 class="rm-section-head">یک مسیر جدا، بعد شش سطح</h2>
+    <p class="rm-section-sub" style="max-width:680px;">در هر نوار، بخش پررنگ هفته‌های اسپرینت است و بخش کم‌رنگ، بلوغ. آن بخش کم‌رنگ بی‌کاری نیست — کاری است که با فشار بیشتر جلو نمی‌افتد.</p>
+    <div class="rm-cards">
+      {% for lv in level_cards %}
+      {% if lv.is_hiring %}
+      <a href="{{ url_for('roadmap_hiring') }}" class="rm-lv-card rm-lv-card--track" style="border-color:color-mix(in srgb, #8fbf86 34%, var(--border)); margin-bottom:4px;">
+      {% elif lv.is_full_page %}
+      <a href="{{ url_for('roadmap_level', level_slug=lv.slug) }}" class="rm-lv-card">
+      {% else %}
+      <div class="rm-lv-card rm-lv-card--soon">
+      {% endif %}
+
+        <div class="rm-lv-card-header">
+          <span class="rm-lv-num">{{ lv.num }}</span>
+          <b class="rm-lv-fa">{{ lv.fa }}</b>
+          <span dir="ltr" class="rm-lv-en" style="unicode-bidi:embed;">{{ lv.en }}</span>
+          {% if lv.flag %}
+          <span style="font-size:.7rem; font-weight:700; color:{% if lv.is_track %}#8fbf86{% else %}var(--accent){% endif %}; background:color-mix(in srgb, {% if lv.is_track %}#8fbf86{% else %}var(--accent){% endif %} 14%, transparent); border-radius:5px; padding:3px 9px; margin-inline-start:auto;">{{ lv.flag }}</span>
+          {% elif not lv.is_full_page and not lv.is_hiring %}
+          <span class="rm-soon-badge" style="margin-inline-start:auto;">به زودی</span>
+          {% endif %}
+        </div>
+        <p class="rm-lv-spec">{{ lv.spec }}</p>
+        <div class="rm-lv-chips">
+          <span class="rm-lv-chip rm-lv-chip--muted">مطالعه {{ lv.reading }}</span>
+          <span class="rm-lv-chip rm-lv-chip--amber">اسپرینت {{ lv.sprint }}</span>
+          <span class="rm-lv-chip rm-lv-chip--green">تصدی {{ lv.tenure }}</span>
+          <span class="rm-lv-chip rm-lv-chip--muted">{{ lv.required }} منبع اجباری</span>
+        </div>
+        <div class="rm-lv-bar-wrap">
+          <div class="rm-lv-bar-track">
+            <span class="rm-lv-bar-fill" style="width:{{ lv.bar_pct }}%; background:{% if lv.is_track %}#8fbf86{% else %}var(--accent){% endif %};"></span>
+          </div>
+          <div class="rm-lv-bar-labels">
+            <span>{% if lv.is_track %}{{ lv.sprint }} اسپرینت در دل کمپینی {{ lv.tenure }}ه{% elif lv.tenure_months %}{{ lv.sprint }} اسپرینت در دل {{ lv.tenure }} تصدی{% else %}تصدی باز — سقفی ندارد{% endif %}</span>
+            <span>{% if lv.is_track %}بدون دنباله‌ی بلوغ{% elif lv.tenure_months %}{{ 100 - lv.bar_pct }}٪ بلوغِ خالص{% else %}—{% endif %}</span>
+          </div>
+        </div>
+
+      {% if lv.is_hiring or lv.is_full_page %}
+      </a>
+      {% else %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,430 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_roadmap_resources') }}" class="btn btn-ghost">انصراف</a>
+{% if resource %}
+<button type="submit" form="roadmap-form" class="btn btn-primary">ذخیره</button>
+{% else %}
+<button type="submit" form="roadmap-form" name="save_and_new" value="1" class="btn btn-ghost">ذخیره و جدید</button>
+<button type="submit" form="roadmap-form" class="btn btn-primary">ذخیره</button>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Book searchable select ── */
+  .book-search-wrap { position:relative; }
+  .book-search-input { width:100%; }
+  .book-dropdown {
+    position:absolute; top:100%; inset-inline-start:0; inset-inline-end:0; z-index:50;
+    background:var(--surface-2, #1e1813); border:1px solid var(--border);
+    border-radius:var(--radius); max-height:220px; overflow-y:auto;
+    box-shadow:0 8px 24px rgba(0,0,0,.4); display:none;
+  }
+  .book-dropdown.open { display:block; }
+  .book-dropdown-item {
+    padding:9px 14px; cursor:pointer; font-size:.88rem;
+    border-bottom:1px solid var(--border);
+  }
+  .book-dropdown-item:last-child { border-bottom:none; }
+  .book-dropdown-item:hover,
+  .book-dropdown-item.focused { background:rgba(166,195,160,.1); }
+  .book-selected-chip {
+    display:flex; align-items:center; gap:8px; padding:7px 12px;
+    background:rgba(166,195,160,.08); border:1px solid rgba(166,195,160,.25);
+    border-radius:var(--radius); font-size:.85rem; margin-top:6px;
+  }
+  .book-selected-chip button {
+    background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:.9rem; padding:0;
+  }
+  /* ── Mutual exclusivity warning ── */
+  .link-mutex-warning {
+    display:none; color:#d98878; font-size:.78rem; margin-top:4px;
+  }
+  .link-mutex-warning.visible { display:block; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<p class="form-success" role="status">ذخیره شد.</p>
+{% endif %}
+{% if form_error %}
+<p class="form-error" role="alert">{{ form_error }}</p>
+{% endif %}
+
+{# Shortcuts #}
+{% set rv = resource %}
+{% set p = prev if prev is defined else {} %}
+
+{# Pre-compute the competency/area choices and saved value for the initial level ─ #}
+{% set _init_level = (rv.level_slug if rv else p.get('level_slug', '')) %}
+{# For L0, the saved slug lives in area_slug; for others in competency_slug. #}
+{% set _init_comp_val = ((rv.competency_slug or rv.area_slug or '') if rv
+                         else (p.get('competency_slug') or p.get('area_slug') or '')) %}
+{% set _init_choices = competency_choices_json.get(_init_level, []) %}
+
+<form id="roadmap-form"
+      method="post"
+      action="{% if rv %}{{ url_for('admin_roadmap_update', resource_id=rv.id) }}{% else %}{{ url_for('admin_roadmap_create') }}{% endif %}">
+
+  <div class="card">
+    <div class="card-section">
+      <div class="card-section-title">گروه‌بندی</div>
+
+      {# ── Level ── #}
+      <div class="form-group">
+        <label class="form-label" for="level_slug">سطح</label>
+        <select class="form-control" id="level_slug" name="level_slug" required>
+          <option value="">انتخاب کنید...</option>
+          {% for slug, label in level_choices %}
+          <option value="{{ slug }}"
+            {% if rv and rv.level_slug == slug %}selected
+            {% elif p.get('level_slug') == slug %}selected
+            {% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# ── Competency / Area — initial options rendered server-side; JS updates on level change ── #}
+      <div class="form-row">
+        <div class="form-group" id="comp-group">
+          <label class="form-label" for="competency_slug">شایستگی / حوزه</label>
+          <select class="form-control" id="competency_slug" name="competency_slug">
+            <option value="">— هیچ‌کدام —</option>
+            {% for slug, label in _init_choices %}
+            <option value="{{ slug }}" {% if slug == _init_comp_val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        {# Category (hidden for L0) #}
+        <div class="form-group" id="category-group">
+          <label class="form-label" for="category">دسته</label>
+          <select class="form-control" id="category" name="category">
+            <option value="">— هیچ‌کدام —</option>
+            {% for slug, label in category_choices %}
+            <option value="{{ slug }}"
+              {% if rv and rv.category == slug %}selected
+              {% elif p.get('category') == slug %}selected
+              {% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <span class="form-hint" id="category-hint" style="display:none;">در مسیر استخدام دسته‌بندی نداریم.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">محتوا</div>
+
+      <div class="form-group">
+        <label class="form-label" for="title">عنوان <span style="color:var(--text-muted); font-size:.75rem;">(انگلیسی)</span></label>
+        <input class="form-control" dir="ltr" type="text" id="title" name="title"
+               value="{{ rv.title if rv else p.get('title', '') }}" required
+               placeholder="e.g. The Mom Test">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="subtitle">زیرعنوان <span style="color:var(--text-muted); font-size:.75rem;">(اختیاری — نمایش در پرانتز کنار نام منبع، مثلاً «فصل اول»)</span></label>
+        <input class="form-control" type="text" id="subtitle" name="subtitle"
+               value="{{ (rv.subtitle or '') if rv else p.get('subtitle', '') }}"
+               placeholder="مثلاً: رایگان، فصل ۱ تا ۵، ویدیوی یوتیوب">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="resource_type">نوع</label>
+          <select class="form-control" id="resource_type" name="resource_type" required>
+            {% for slug, label in resource_types %}
+            <option value="{{ slug }}"
+              {% if rv and rv.resource_type == slug %}selected
+              {% elif p.get('resource_type') == slug %}selected
+              {% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reading_time">زمان مطالعه</label>
+          <input class="form-control" dir="ltr" type="text" id="reading_time" name="reading_time"
+                 value="{{ (rv.reading_time or '') if rv else p.get('reading_time', '') }}"
+                 placeholder="مثلاً 2 یا 3h">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="sort_order">ترتیب نمایش</label>
+          <input class="form-control" type="number" id="sort_order" name="sort_order" min="0"
+                 value="{{ rv.sort_order if rv else p.get('sort_order', 0) }}">
+        </div>
+      </div>
+
+      {# Difficulty stars #}
+      <div class="form-group">
+        <label class="form-label">سختی</label>
+        <div style="display:flex; gap:16px; margin-top:4px;">
+          {% for star in [1, 2, 3] %}
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:.88rem;">
+            <input type="radio" name="difficulty" value="{{ star }}"
+              {% if rv and rv.difficulty == star %}checked
+              {% elif p.get('difficulty')|string == star|string %}checked
+              {% elif not rv and star == 2 %}checked
+              {% endif %}>
+            {{ '★' * star }}{{ '☆' * (3 - star) }}
+          </label>
+          {% endfor %}
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:.88rem;">
+            <input type="radio" name="difficulty" value=""
+              {% if rv and not rv.difficulty %}checked{% endif %}>
+            بدون رتبه
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        {# Persian flag #}
+        <div class="form-group">
+          <label class="form-label">نسخه‌ی فارسی</label>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:.88rem; margin-top:4px;">
+            <input type="checkbox" name="has_persian"
+              {% if rv and rv.has_persian %}checked{% elif p.get('has_persian') %}checked{% endif %}>
+            دارد
+          </label>
+        </div>
+
+        {# Required / optional #}
+        <div class="form-group">
+          <label class="form-label">اجباری</label>
+          <div style="display:flex; gap:16px; margin-top:4px;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:.88rem;">
+              <input type="radio" name="is_required" value="true"
+                {% if not rv or rv.is_required %}checked{% endif %}>
+              اجباری
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:.88rem;">
+              <input type="radio" name="is_required" value="false"
+                {% if rv and not rv.is_required %}checked{% endif %}>
+              اختیاری
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-section-title">لینک منبع <small style="font-weight:400; color:var(--text-muted);">— یکی انتخاب کنید، نه هر دو</small></div>
+
+      <p class="link-mutex-warning" id="link-mutex-warning">
+        ⚠️ یا لینک خارجی یا کتاب از کتابخانه — نه هر دو.
+      </p>
+
+      {# External URL #}
+      <div class="form-group">
+        <label class="form-label" for="external_url">لینک خارجی</label>
+        <input class="form-control" dir="ltr" type="url" id="external_url" name="external_url"
+               value="{{ (rv.external_url or '') if rv else p.get('external_url', '') }}"
+               placeholder="https://...">
+      </div>
+
+      {# Book picker (searchable) #}
+      <div class="form-group">
+        <label class="form-label">کتاب از کتابخانه</label>
+        <input type="hidden" id="book_id" name="book_id"
+               value="{{ (rv.book_id or '') if rv else p.get('book_id', '') }}">
+
+        <div class="book-search-wrap">
+          <input class="form-control book-search-input" type="text" id="book-search-input"
+                 autocomplete="off"
+                 placeholder="جستجوی نام کتاب..."
+                 value="{% if rv and rv.book %}{{ rv.book.title }}{% endif %}">
+          <div class="book-dropdown" id="book-dropdown" role="listbox">
+            <div class="book-dropdown-item" data-id="" data-title="— بدون کتاب —">— بدون کتاب —</div>
+            {% for book in all_books %}
+            <div class="book-dropdown-item"
+                 data-id="{{ book.id }}"
+                 data-title="{{ book.title }}"
+                 role="option">{{ book.title }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if rv and rv.book %}
+        <div class="book-selected-chip" id="book-chip">
+          <span>📚 {{ rv.book.title }}</span>
+          <button type="button" id="book-clear-btn" aria-label="حذف کتاب">×</button>
+        </div>
+        {% else %}
+        <div class="book-selected-chip" id="book-chip" style="display:none;">
+          <span id="book-chip-title"></span>
+          <button type="button" id="book-clear-btn" aria-label="حذف کتاب">×</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  {% if rv %}
+  <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:12px;">
+    <form method="post" action="{{ url_for('admin_roadmap_delete', resource_id=rv.id) }}"
+          onsubmit="return confirm('حذف این منبع؟')" style="margin:0;">
+      <button type="submit" class="btn btn-ghost btn-sm btn-danger">حذف منبع</button>
+    </form>
+  </div>
+  {% endif %}
+</form>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  // ── Competency choices per level (from server) ─────────────────────
+  // Used only when the level SELECT changes — initial options are server-rendered.
+  var COMP_CHOICES = {{ competency_choices_json | tojson }};
+
+  function updateCompetencies(levelSlug, preselect) {
+    var select = document.getElementById('competency_slug');
+    var catGroup = document.getElementById('category-group');
+    var catHint = document.getElementById('category-hint');
+    var choices = COMP_CHOICES[levelSlug] || [];
+    select.innerHTML = '<option value="">— هیچ‌کدام —</option>';
+    choices.forEach(function (pair) {
+      var opt = document.createElement('option');
+      opt.value = pair[0];
+      opt.textContent = pair[1];
+      if (preselect && pair[0] === preselect) opt.selected = true;
+      select.appendChild(opt);
+    });
+    if (levelSlug === 'hiring') {
+      catGroup.style.opacity = '.4';
+      catGroup.querySelector('select').disabled = true;
+      catHint.style.display = 'block';
+    } else {
+      catGroup.style.opacity = '';
+      catGroup.querySelector('select').disabled = false;
+      catHint.style.display = 'none';
+    }
+  }
+
+  // Set initial category-group state without touching the competency options
+  // (they are already server-rendered with the correct pre-selection).
+  (function initCategoryState() {
+    var levelSlug = document.getElementById('level_slug').value;
+    var catGroup = document.getElementById('category-group');
+    var catHint = document.getElementById('category-hint');
+    if (levelSlug === 'hiring') {
+      catGroup.style.opacity = '.4';
+      catGroup.querySelector('select').disabled = true;
+      catHint.style.display = 'block';
+    }
+  })();
+
+  document.getElementById('level_slug').addEventListener('change', function () {
+    updateCompetencies(this.value, '');
+  });
+
+  // ── Book searchable select ─────────────────────────────────────────
+  var searchInput = document.getElementById('book-search-input');
+  var dropdown = document.getElementById('book-dropdown');
+  var hiddenId = document.getElementById('book_id');
+  var chip = document.getElementById('book-chip');
+  var chipTitle = document.getElementById('book-chip-title');
+  var clearBtn = document.getElementById('book-clear-btn');
+  var allItems = Array.from(dropdown.querySelectorAll('.book-dropdown-item'));
+  var focusedIdx = -1;
+
+  function showDropdown() { dropdown.classList.add('open'); }
+  function hideDropdown() { dropdown.classList.remove('open'); focusedIdx = -1; }
+
+  function filterItems(q) {
+    q = q.toLowerCase();
+    allItems.forEach(function (item) {
+      var title = item.dataset.title || '';
+      item.style.display = (!q || title.toLowerCase().includes(q)) ? '' : 'none';
+    });
+  }
+
+  function selectBook(id, title) {
+    hiddenId.value = id;
+    searchInput.value = id ? title : '';
+    if (chipTitle) chipTitle.textContent = id ? '📚 ' + title : '';
+    if (chip) chip.style.display = id ? '' : 'none';
+    hideDropdown();
+    checkMutex();
+  }
+
+  searchInput.addEventListener('focus', function () {
+    filterItems(this.value);
+    showDropdown();
+  });
+
+  searchInput.addEventListener('input', function () {
+    filterItems(this.value);
+    showDropdown();
+    if (!this.value) {
+      hiddenId.value = '';
+      if (chip) chip.style.display = 'none';
+    }
+    checkMutex();
+  });
+
+  searchInput.addEventListener('keydown', function (e) {
+    var visible = allItems.filter(function (i) { return i.style.display !== 'none'; });
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      focusedIdx = Math.min(focusedIdx + 1, visible.length - 1);
+      visible.forEach(function (i, idx) {
+        i.classList.toggle('focused', idx === focusedIdx);
+      });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      focusedIdx = Math.max(focusedIdx - 1, 0);
+      visible.forEach(function (i, idx) {
+        i.classList.toggle('focused', idx === focusedIdx);
+      });
+    } else if (e.key === 'Enter' && focusedIdx >= 0) {
+      e.preventDefault();
+      var item = visible[focusedIdx];
+      if (item) selectBook(item.dataset.id, item.dataset.title);
+    } else if (e.key === 'Escape') {
+      hideDropdown();
+    }
+  });
+
+  allItems.forEach(function (item) {
+    item.addEventListener('mousedown', function (e) {
+      e.preventDefault(); // don't blur searchInput
+      selectBook(this.dataset.id, this.dataset.title);
+    });
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      selectBook('', '');
+      searchInput.value = '';
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+      hideDropdown();
+    }
+  });
+
+  // ── Mutual exclusivity check ───────────────────────────────────────
+  var extInput = document.getElementById('external_url');
+  var warning = document.getElementById('link-mutex-warning');
+
+  function checkMutex() {
+    var hasExt = extInput.value.trim() !== '';
+    var hasBook = hiddenId.value !== '';
+    warning.classList.toggle('visible', hasExt && hasBook);
+  }
+
+  extInput.addEventListener('input', checkMutex);
+  checkMutex();
+})();
+</script>
+{% endblock %}

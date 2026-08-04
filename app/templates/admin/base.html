@@ -74,6 +74,22 @@
         </div>
 
         <div class="admin-nav-group">
+          <div class="admin-nav-group-label">🗺️ مسیر یادگیری</div>
+          <a href="{{ url_for('admin_roadmap_resources') }}" class="admin-nav-sub {% if active_nav == 'roadmap' %}active{% endif %}">
+            منابع
+          </a>
+          <a href="{{ url_for('admin_roadmap_missing_links') }}" class="admin-nav-sub {% if active_nav == 'roadmap_missing' %}active{% endif %}">
+            بدون لینک
+            {% if request.state.missing_links_count %}
+            <span class="nav-badge">{{ request.state.missing_links_count }}</span>
+            {% endif %}
+          </a>
+          <a href="{{ url_for('admin_immigration_videos') }}" class="admin-nav-sub {% if active_nav == 'immigration_videos' %}active{% endif %}">
+            ویدیوهای مهاجرت
+          </a>
+        </div>
+
+        <div class="admin-nav-group">
           <div class="admin-nav-group-label">👤 کاربران</div>
           <a href="{{ url_for('admin_users') }}" class="admin-nav-sub {% if active_nav == 'users' %}active{% endif %}">
             کاربران
@@ -118,5 +134,6 @@
     </div>
   </div>
   <script src="{{ asset_url(request, 'js/admin.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

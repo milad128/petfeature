@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+.stub-wrap { max-width:660px; margin:0 auto; padding:100px 1.5rem 120px; text-align:center; }
+.stub-icon { font-size:3rem; margin-bottom:24px; display:block; opacity:.5; }
+.stub-h1 { font-size:2rem; font-weight:800; letter-spacing:-.02em; line-height:1.35; margin-bottom:12px; }
+.stub-body { font-size:1rem; color:var(--muted); line-height:2.1; margin-bottom:32px; }
+.stub-badge {
+  display:inline-block; font-size:.78rem; font-weight:700; letter-spacing:.06em;
+  color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius:6px; padding:4px 12px; margin-bottom:20px;
+}
+.stub-actions { display:flex; gap:14px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.stub-btn {
+  display:inline-block; padding:12px 26px; border-radius:10px;
+  background:var(--accent); color:#171210; font-weight:700; font-size:.95rem;
+  text-decoration:none; transition:opacity .15s;
+}
+.stub-btn:hover { opacity:.85; text-decoration:none; }
+.stub-link { font-size:.9rem; color:var(--muted); text-decoration:none; border-bottom:1px solid var(--border-2); }
+.stub-link:hover { color:var(--text); border-bottom-color:var(--border-2); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stub-wrap">
+  {% if not_found %}
+  <span class="stub-icon">🔍</span>
+  <h1 class="stub-h1">صفحه‌ای یافت نشد</h1>
+  <p class="stub-body">آدرسی که وارد کردید در مسیر یادگیری وجود ندارد.</p>
+  <div class="stub-actions">
+    <a href="{{ url_for('roadmap_landing') }}" class="stub-btn">مسیر یادگیری</a>
+    <a href="{{ url_for('home') }}" class="stub-link">صفحه اصلی</a>
+  </div>
+
+  {% else %}
+  {# Stub: valid slug but page not yet built #}
+  <span class="stub-icon">🗺️</span>
+  <span class="stub-badge">به زودی</span>
+  <h1 class="stub-h1">{{ level.fa }}</h1>
+  <p dir="ltr" style="font-size:.82rem; color:var(--faint); text-align:center; margin-bottom:8px; unicode-bidi:embed;">{{ level.en }}</p>
+  <p class="stub-body">
+    صفحه‌ی کامل این سطح در دست آماده‌سازی است.<br>
+    در کانال تلگرام ما باشید تا به محض آماده شدن اطلاع دهیم.
+  </p>
+  <div class="stub-actions">
+    <a href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer" class="stub-btn">کانال تلگرام @petfeature</a>
+    <a href="{{ url_for('roadmap_landing') }}" class="stub-link">بازگشت به مسیر</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

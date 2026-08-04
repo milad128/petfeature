@@ -42,5 +42,9 @@
     // Shelf lamp button (home page)
     var homeBtn = document.getElementById("lamp-toggle-home");
     if (homeBtn) homeBtn.addEventListener("click", toggle);
+
+    // Hero lamp button (roadmap landing page)
+    var roadmapBtn = document.getElementById("lamp-toggle-roadmap");
+    if (roadmapBtn) roadmapBtn.addEventListener("click", toggle);
   });
 })();

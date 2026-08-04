@@ -33,6 +33,8 @@
            class="{% if request.url.path == '/about/' %}active{% endif %}">درباره من</a>
         <a href="{{ url_for('contact') }}"
            class="{% if request.url.path == '/contact/' %}active{% endif %}">تماس</a>
+        <a href="{{ url_for('roadmap_landing') }}"
+           class="{% if request.url.path.startswith('/path') %}active{% endif %}">مسیر یادگیری</a>
 
         {# ── Auth nav ── #}
         {% if request.state.current_user %}

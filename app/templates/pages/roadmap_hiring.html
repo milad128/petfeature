@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── Hiring page v2 ─────────────────────────────── */
+.h2-pad { padding-left:32px; padding-right:32px; }
+.h2-inner { max-width:1120px; margin:0 auto; padding:48px 32px; }
+.h2-section { border-top:1px solid var(--border); }
+
+/* Breadcrumb */
+.h2-breadcrumb { border-bottom:1px solid var(--border); background:rgba(143,191,134,.045); }
+.h2-breadcrumb-inner { max-width:1120px; margin:0 auto; padding:13px 32px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+/* Hero */
+.h2-hero { display:grid; grid-template-columns:1fr 330px; gap:56px; align-items:start; }
+.h2-hero h1 { font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25; }
+.h2-aside { border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface); }
+.h2-facts { display:grid; gap:1px; background:var(--border); margin-top:20px; border-radius:10px; overflow:hidden; }
+.h2-fact { background:var(--raise); padding:12px 14px; display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+
+/* Map */
+.h2-scroll { overflow-x:auto; padding-bottom:6px; }
+.h2-scroll::-webkit-scrollbar { height:8px; }
+.h2-scroll::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
+.h2-map-phases { display:flex; gap:6px; margin-bottom:8px; }
+.h2-map-areas  { display:flex; gap:6px; }
+.h2-map-weeks  { display:flex; gap:6px; margin-top:8px; }
+.h2-seg {
+  display:block; text-decoration:none; color:inherit;
+  border-radius:12px; padding:14px 16px 16px; transition:border-color .18s;
+}
+.h2-seg:hover { color:inherit; text-decoration:none; }
+.h2-seg--p1 { background:var(--surface); border:1px solid var(--border); }
+.h2-seg--p2 { background:rgba(143,191,134,.07); border:1px solid color-mix(in srgb, var(--accent) 26%, transparent); }
+.h2-seg:hover { border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+.h2-seg-n { width:22px; height:22px; border-radius:7px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; }
+.h2-phase-rule { height:3px; border-radius:2px; }
+.h2-week-label { border-top:1px solid var(--border); padding-top:6px; }
+
+/* Audience rows */
+.h2-aud { display:grid; grid-template-columns:210px 1fr 190px; gap:24px; align-items:start; padding:20px 2px; border-bottom:1px solid var(--border); }
+
+/* Stations */
+.h2-station { display:grid; grid-template-columns:280px 1fr; gap:40px; padding:34px 0; border-bottom:1px solid var(--border); scroll-margin-top:20px; }
+.h2-station-rail { position:sticky; top:24px; align-self:start; }
+.h2-rail-n { width:30px; height:30px; border-radius:9px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; }
+.h2-chip-read   { font-size:.78rem; color:var(--muted); background:rgba(236,229,220,.05); border-inline-start:3px solid var(--muted); border-radius:0 6px 6px 0; padding:3px 10px; white-space:nowrap; }
+.h2-chip-sprint { font-size:.78rem; color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent); border-inline-start:3px solid var(--accent); border-radius:0 6px 6px 0; padding:3px 10px; white-space:nowrap; }
+
+/* Resources */
+.h2-res { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; padding:14px 2px; border-bottom:1px solid var(--border); }
+.h2-res-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.h2-req-req { font-size:.72rem; font-weight:700; color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent); border-radius:6px; padding:3px 9px; white-space:nowrap; }
+.h2-req-opt { font-size:.72rem; font-weight:600; color:var(--faint); border:1px solid var(--border); border-radius:6px; padding:3px 9px; white-space:nowrap; }
+.h2-meta-tag { font-size:.74rem; color:var(--muted); background:rgba(236,229,220,.05); border-radius:6px; padding:3px 9px; white-space:nowrap; }
+.h2-no-link { font-size:.68rem; color:var(--faint); border:1px dashed var(--border-2); border-radius:5px; padding:2px 8px; margin-inline-start:8px; white-space:nowrap; }
+
+/* Immigration */
+.h2-branch { display:grid; grid-template-columns:280px 1fr; gap:40px; align-items:start; }
+.h2-branch-rail { border-inline-start:1px dashed var(--border-2); padding-inline-start:32px; }
+.h2-video-row { display:flex; align-items:center; gap:18px; text-decoration:none; color:inherit; padding:16px 4px; border-top:1px solid var(--border); transition:color .15s; }
+.h2-video-row:hover { color:inherit; text-decoration:none; }
+.h2-play-btn { width:38px; height:38px; border-radius:50%; background:color-mix(in srgb, var(--accent) 88%, transparent); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.h2-play-arrow { width:0; height:0; border-block:7px solid transparent; border-inline-end:11px solid #171210; margin-inline-end:2px; display:block; }
+
+/* Terminus */
+.h2-levels { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+.h2-level-card { display:block; text-decoration:none; color:inherit; background:var(--surface); border:1px solid rgba(217,160,95,.2); border-radius:12px; padding:16px 16px 18px; transition:border-color .18s; }
+.h2-level-card:hover { border-color:rgba(217,160,95,.6); color:inherit; text-decoration:none; }
+
+/* Phase header */
+.h2-phase-hd { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding:26px 0 14px; border-bottom:2px solid rgba(143,191,134,.3); }
+
+/* Responsive */
+@media (max-width:1000px) {
+  .h2-hero { grid-template-columns:1fr; gap:36px; }
+  .h2-station { grid-template-columns:1fr; gap:18px; }
+  .h2-station-rail { position:static; }
+  .h2-aud { grid-template-columns:1fr; gap:8px; }
+  .h2-branch { grid-template-columns:1fr; }
+  .h2-branch-rail { border-inline-start:none; padding-inline-start:0; }
+}
+@media (max-width:760px) {
+  .h2-pad { padding-left:18px; padding-right:18px; }
+  .h2-hero h1 { font-size:2.2rem; }
+  .h2-facts { grid-template-columns:1fr; }
+  .h2-levels { grid-template-columns:1fr 1fr; }
+  .h2-res { grid-template-columns:1fr; gap:8px; }
+  .h2-res-meta { justify-content:flex-start; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="h2-breadcrumb">
+  <div class="h2-breadcrumb-inner">
+    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">مسیر ۰ — مسیر استخدام</b>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="h2-pad" style="max-width:1120px; margin:0 auto; padding:64px 32px 0;">
+  <div class="h2-hero">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">مسیر ۰</span>
+      </div>
+      <h1>مسیر استخدام</h1>
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); line-height:2.05; font-weight:500; max-width:640px;">
+        این یک مسیر موقت است که سه تا شش ماه طول می‌کشد و <b style="color:var(--accent); font-weight:700;">روزی که آفر کار را قبول کنید تمام می‌شود</b> — و همان روز، مسیر یادگیری شروع می‌شود.
+      </p>
+      <p style="margin-top:18px; font-size:.95rem; color:var(--muted); line-height:2.1; max-width:640px;">
+        هر مسیر دیگری در این سایت به یک سؤال جواب می‌دهد: «چطور در این کار خوب شوم؟» این یکی به سؤال دیگری جواب می‌دهد: «چطور این کار را بگیرم؟» در هر سطحی که باشید برای استخدام به این مسیر نیاز پیدا خواهید کرد.
+      </p>
+    </div>
+
+    <aside class="h2-aside">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+        <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شرط پایان</span>
+      </div>
+      <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک آفر کاری را قبول کرده‌اید.</b>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">برای رسیدن به کیفیت لازم برای مصاحبه به زمان‌های زیر نیاز خواهید داشت.</p>
+      <div class="h2-facts">
+        {% for f in facts %}
+        <div class="h2-fact">
+          <span style="font-size:.76rem; color:var(--faint);">{{ f.label }}</span>
+          <b style="font-size:.98rem; font-weight:700; color:{% if f.accent %}var(--accent){% else %}var(--text){% endif %};">{{ f.value }}</b>
+        </div>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- MAP: دوازده هفته، پنج ایستگاه -->
+<section class="h2-section" style="margin-top:64px;">
+  <div class="h2-inner">
+    <div style="display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 style="font-size:1.7rem; font-weight:800;">دوازده هفته، پنج ایستگاه</h2>
+    </div>
+    <p style="font-size:.95rem; color:var(--muted); max-width:700px; line-height:2.1; margin-bottom:28px;">منتظر آمادگی کامل نمانید — اولین مصاحبه‌های واقعی تنها بازخورد صادقانه‌ای هستند که گیرتان می‌آید، و چند تای اول بد خواهند بود، هرقدر هم آماده شوید.</p>
+
+    <div class="h2-scroll">
+      <div style="min-width:640px;">
+        <!-- Phase headers -->
+        <div class="h2-map-phases">
+          {% for p in map_phases %}
+          <div style="flex:{{ p.weeks }} 1 0; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; padding-bottom:8px;">
+              <b style="font-size:.9rem; font-weight:700;">فاز {{ p.n }} — {{ p.fa }}</b>
+              <span style="font-size:.75rem; color:var(--faint);">{{ p.sprint }}</span>
+            </div>
+            <div class="h2-phase-rule" style="background:{% if p.is_phase2 %}var(--accent){% else %}color-mix(in srgb, var(--accent) 34%, transparent){% endif %};"></div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Area segments -->
+        <div class="h2-map-areas">
+          {% for a in map_areas %}
+          <a href="#{{ a.anchor_id }}" class="h2-seg {% if a.is_phase2 %}h2-seg--p2{% else %}h2-seg--p1{% endif %}"
+             style="flex:{{ a.weeks }} 1 0; min-width:0;">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span class="h2-seg-n">{{ a.n }}</span>
+              <span style="font-size:.72rem; color:var(--faint);">{{ a.sprint }}</span>
+            </span>
+            <span style="display:block; font-size:.85rem; font-weight:600; line-height:1.7; margin-top:8px;">{{ a.short }}</span>
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Week labels -->
+        <div class="h2-map-weeks">
+          {% for a in map_areas %}
+          <div class="h2-week-label" style="flex:{{ a.weeks }} 1 0; min-width:0;">
+            <span style="font-size:.68rem; color:var(--faint);">{{ a.week_range }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE rows -->
+<section class="h2-section">
+  <div class="h2-inner">
+    <h2 style="font-size:1.35rem; font-weight:700; margin-bottom:8px;">چه مقدار از مسیر را لازم دارید</h2>
+    <p style="font-size:.92rem; color:var(--muted); max-width:660px; margin-bottom:24px;">هرچه سابقه‌ی محصولی‌تان بیشتر باشد، بخش کمتری از فاز یک به کارتان می‌آید — اما فاز دو برای همه یکسان است.</p>
+    <div style="border-top:1px solid var(--border);">
+      {% for a in audience %}
+      <div class="h2-aud">
+        <b style="font-size:1rem; font-weight:700; line-height:1.7;">{{ a.title }}</b>
+        <p style="font-size:.88rem; color:var(--muted); line-height:2;">{{ a.body }}</p>
+        <span style="display:inline-block; font-size:.72rem; font-weight:600; color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); border-radius:6px; padding:4px 10px; white-space:nowrap;">{{ a.tag }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- STATIONS -->
+<section class="h2-section">
+  <div class="h2-pad" style="max-width:1120px; margin:0 auto; padding:48px 32px 8px;">
+    {% for group in phase_area_groups %}
+    {% set ph = group.phase %}
+    <div style="margin-bottom:8px;">
+      <div class="h2-phase-hd">
+        <span style="font-size:.72rem; font-weight:700; color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent); border-radius:6px; padding:3px 10px;">فاز {{ ph.n }}</span>
+        <b style="font-size:1.45rem; font-weight:800;">{{ ph.fa }}</b>
+        <span style="font-size:.8rem; color:var(--muted); margin-inline-start:auto;">{{ ph.sprint }}</span>
+      </div>
+      {% if ph.note %}
+      <p style="font-size:.92rem; color:var(--muted); line-height:2.05; max-width:720px; margin-top:20px;">{{ ph.note }}</p>
+      {% endif %}
+
+      {% for item in group.areas %}
+      {% set area = item.area %}
+      {% set resources = item.resources %}
+      <div id="station-{{ area.n }}" class="h2-station">
+        <!-- Left rail (sticky) -->
+        <div class="h2-station-rail">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <span class="h2-rail-n">{{ area.n }}</span>
+          </div>
+          <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75;">{{ area.name }}</b>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
+            <span class="h2-chip-read">مطالعه {{ area.reading }}</span>
+            <span class="h2-chip-sprint">زمان {{ area.sprint_weeks }} هفته</span>
+          </div>
+        </div>
+
+        <!-- Right content -->
+        <div>
+          <p style="font-size:.98rem; color:var(--text); line-height:2.15;">{{ area.body }}</p>
+
+          <div style="margin-top:22px; border-top:1px solid var(--border);">
+            {% for r in resources %}
+            <div class="h2-res">
+              <div>
+                {% if r.is_linked %}
+                <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                   dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid rgba(143,191,134,.45); display:inline-block; color:inherit;">{{ r.title }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</a>
+                {% else %}
+                <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</span>
+                <span class="h2-no-link">هنوز لینکی ندارد</span>
+                {% endif %}
+                <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+              </div>
+              <div class="h2-res-meta">
+                <span class="{% if r.is_required %}h2-req-req{% else %}h2-req-opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
+                {% if r.reading_time %}<span class="h2-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
+                {% if r.difficulty %}
+                <span class="h2-meta-tag">{% if r.difficulty == 1 %}ساده{% elif r.difficulty == 2 %}متوسط{% else %}سخت{% endif %}</span>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- IMMIGRATION -->
+{% if immigration_videos %}
+<section class="h2-section">
+  <div class="h2-inner">
+    <div class="h2-branch">
+      <div>
+        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">تجربه مهاجرت مدیر محصول</h2>
+        <p style="font-size:.8rem; color:var(--faint); line-height:2; margin-top:10px;">تجربه‌های موفق مهاجرت با مدیریت محصول</p>
+      </div>
+      <div class="h2-branch-rail">
+        <p style="font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1; margin-bottom:24px;">گفت‌وگو با مدیران محصولی که پیش از این مهاجرت کرده‌اند. اگر هدفتان نقشی بیرون از ایران است، همان دو فاز بالا برایتان کافی است اما همه را باید به زبان انگلیسی تمرین کنید.</p>
+        <div style="display:flex; flex-direction:column;">
+          {% for v in immigration_videos %}
+          <a href="{{ v.url }}" class="h2-video-row">
+            <span class="h2-play-btn">
+              <span class="h2-play-arrow"></span>
+            </span>
+            <span style="flex:1;">
+              <b style="display:block; font-size:.98rem; font-weight:700; line-height:1.7;">{{ v.title }}</b>
+              <span style="display:block; font-size:.78rem; color:var(--faint); margin-top:2px;">{{ v.where }}</span>
+            </span>
+            <span style="color:var(--faint); font-size:.9rem;">←</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- TERMINUS -->
+<section class="h2-section" style="background:linear-gradient(180deg, rgba(143,191,134,.05), transparent 260px);">
+  <div class="h2-inner" style="padding-bottom:76px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+      <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+      <span style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.06em;">پایان مسیر ۰</span>
+    </div>
+    <h2 style="font-size:2rem; font-weight:800; line-height:1.5; max-width:760px;">از فردای امضا، سطحی که در آن استخدام شده‌اید مسیر شما است.</h2>
+
+    <div style="border-top:1px solid var(--border); margin-top:34px; padding-top:26px;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px;">
+        <b style="font-size:1.05rem; font-weight:700;">از کدام سطح شروع می‌کنید؟</b>
+        <span style="font-size:.82rem; color:var(--faint);">این مسیر برای همه‌ی سطوح مشترک است — با هر عنوانی استخدام شوید، از همان‌جا ادامه می‌دهید.</span>
+      </div>
+      <div class="h2-levels">
+        {% for lv in levels_grid %}
+        <a href="{{ url_for('roadmap_level', level_slug=lv.slug) }}" class="h2-level-card">
+          <span style="display:block; font-size:.7rem; color:var(--faint);">{{ lv.num }}</span>
+          <b style="display:block; font-size:.92rem; font-weight:700; color:#d9a05f; margin-top:4px; line-height:1.7;">{{ lv.fa }}</b>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; gap:14px; margin-top:36px; flex-wrap:wrap;">
+      <a href="{{ url_for('roadmap_landing') }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ بازگشت به مسیر یادگیری</a>
+      <a href="{{ url_for('roadmap_level', level_slug='apm') }}" style="font-size:.9rem; color:#d9a05f; text-decoration:none;">دیدن ماتریس عمق شایستگی ←</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

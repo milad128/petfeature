@@ -40,18 +40,33 @@ from app.services.media import delete_media_file, get_media_files, human_size, u
 from app.services import newsletters as newsletter_service
 from app.services import newsletter_ai
 from app.services import users as user_service
+from app.services import roadmap_service
+from app.services.roadmap_data import (
+    LEVELS,
+    LEVEL_BY_SLUG,
+    COMPETENCIES,
+    COMPETENCY_BY_SLUG,
+    RESOURCE_TYPES,
+    CATEGORY_CHOICES,
+    LEVEL_COMPETENCY_SLUGS,
+    L0_AREAS,
+    L0_AREA_SLUGS,
+    L0_AREA_BY_SLUG,
+)
 
 router = APIRouter()
 
 
 async def _inject_comment_badges(request: Request, db: AsyncSession = Depends(get_db)) -> None:
-    """Router-level dependency: attach pending comment counts to request.state for the sidebar badges."""
+    """Router-level dependency: attach pending comment counts + missing link count to request.state."""
     if not is_admin_authenticated(request):
         request.state.pending_post_comments = 0
         request.state.pending_book_comments = 0
+        request.state.missing_links_count = 0
         return
     request.state.pending_post_comments = await post_service.count_pending_comments(db)
     request.state.pending_book_comments = await book_service.count_pending_book_comments(db)
+    request.state.missing_links_count = await roadmap_service.count_missing_links(db)
 
 
 def _admin_context(request: Request, **extra):
@@ -2209,3 +2224,430 @@ async def admin_user_reactivate(
         return redirect
     await user_service.reactivate_user(db, user_id)
     return RedirectResponse("/admin/users/", status_code=303)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROADMAP RESOURCES — Admin CMS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _level_choices() -> list[tuple[str, str]]:
+    return [(lv.slug, f"{lv.num} — {lv.fa}") for lv in LEVELS]
+
+
+def _competency_choices_for_level(level_slug: str) -> list[tuple[str, str]]:
+    if level_slug == "hiring":
+        return L0_AREA_SLUGS
+    slugs = LEVEL_COMPETENCY_SLUGS.get(level_slug, [])
+    return [(s, COMPETENCY_BY_SLUG[s].fa) for s in slugs if s in COMPETENCY_BY_SLUG]
+
+
+@router.get("/roadmap/", name="admin_roadmap_resources")
+async def admin_roadmap_list(
+    request: Request,
+    level: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    resources = await roadmap_service.get_roadmap_resources(db, level_slug=level or None)
+    return templates.TemplateResponse(
+        request,
+        "admin/roadmap_list.html",
+        {
+            "page_title": "مسیر یادگیری — منابع",
+            "active_nav": "roadmap",
+            "resources": resources,
+            "filter_level": level or "",
+            "level_choices": _level_choices(),
+            "level_by_slug": {lv.slug: lv for lv in LEVELS},
+        },
+    )
+
+
+@router.get("/roadmap/missing-links/", name="admin_roadmap_missing_links")
+async def admin_roadmap_missing_links(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    resources = await roadmap_service.get_missing_links(db)
+    # Group by level
+    by_level: dict[str, list] = {}
+    for r in resources:
+        by_level.setdefault(r.level_slug, []).append(r)
+    return templates.TemplateResponse(
+        request,
+        "admin/roadmap_missing_links.html",
+        {
+            "page_title": "منابع بدون لینک",
+            "active_nav": "roadmap_missing",
+            "by_level": by_level,
+            "level_by_slug": {lv.slug: lv for lv in LEVELS},
+            "total": len(resources),
+        },
+    )
+
+
+@router.get("/roadmap/new/", name="admin_roadmap_new")
+async def admin_roadmap_new_get(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    all_books = await book_service.list_books_for_select(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/roadmap_form.html",
+        {
+            "page_title": "منبع جدید",
+            "active_nav": "roadmap",
+            "resource": None,
+            "level_choices": _level_choices(),
+            "competency_choices_json": {
+                lv.slug: _competency_choices_for_level(lv.slug)
+                for lv in LEVELS
+            },
+            "resource_types": RESOURCE_TYPES,
+            "category_choices": CATEGORY_CHOICES,
+            "all_books": all_books,
+            "form_error": None,
+            "saved": False,
+        },
+    )
+
+
+@router.post("/roadmap/new/", name="admin_roadmap_create")
+async def admin_roadmap_new_post(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    level_slug: str = Form(...),
+    competency_slug: str = Form(""),
+    area_slug: str = Form(""),
+    category: str = Form(""),
+    title: str = Form(...),
+    subtitle: str = Form(""),
+    resource_type: str = Form(...),
+    reading_time: str = Form(""),
+    difficulty: str = Form(""),
+    has_persian: str = Form(""),
+    is_required: str = Form("true"),
+    external_url: str = Form(""),
+    book_id: str = Form(""),
+    sort_order: str = Form("0"),
+    save_and_new: str = Form(""),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    # Validate mutual exclusivity of links
+    ext_url = external_url.strip() or None
+    bk_id = int(book_id) if book_id.strip().isdigit() else None
+    if ext_url and bk_id:
+        all_books = await book_service.list_books_for_select(db)
+        return templates.TemplateResponse(
+            request,
+            "admin/roadmap_form.html",
+            {
+                "page_title": "منبع جدید",
+                "active_nav": "roadmap",
+                "resource": None,
+                "level_choices": _level_choices(),
+                "competency_choices_json": {
+                    lv.slug: _competency_choices_for_level(lv.slug)
+                    for lv in LEVELS
+                },
+                "resource_types": RESOURCE_TYPES,
+                "category_choices": CATEGORY_CHOICES,
+                "all_books": all_books,
+                "form_error": "یا لینک خارجی یا کتاب از کتابخانه — نه هر دو.",
+                "saved": False,
+                "prev": {
+                    "level_slug": level_slug,
+                    "competency_slug": competency_slug,
+                    "area_slug": area_slug,
+                    "category": category,
+                    "title": title,
+                    "subtitle": subtitle,
+                    "resource_type": resource_type,
+                    "reading_time": reading_time,
+                    "difficulty": difficulty,
+                    "is_required": is_required,
+                    "external_url": external_url,
+                    "book_id": book_id,
+                    "sort_order": sort_order,
+                },
+            },
+            status_code=422,
+        )
+
+    # For L0 (hiring) the "competency/area" select contains area slugs.
+    # Route them to area_slug; competency_slug stays None.
+    if level_slug == "hiring":
+        resolved_competency = None
+        resolved_area = competency_slug.strip() or None
+    else:
+        resolved_competency = competency_slug.strip() or None
+        resolved_area = None
+
+    data = {
+        "level_slug": level_slug,
+        "competency_slug": resolved_competency,
+        "area_slug": resolved_area,
+        "category": category.strip() or None,
+        "title": title.strip(),
+        "subtitle": subtitle.strip() or None,
+        "resource_type": resource_type,
+        "reading_time": reading_time.strip() or None,
+        "difficulty": int(difficulty) if difficulty.strip().isdigit() else None,
+        "has_persian": has_persian == "on",
+        "is_required": is_required == "true",
+        "external_url": ext_url,
+        "book_id": bk_id,
+        "sort_order": int(sort_order) if sort_order.strip().isdigit() else 0,
+    }
+    await roadmap_service.create_resource(db, data)
+
+    if save_and_new:
+        return RedirectResponse("/admin/roadmap/new/", status_code=303)
+    return RedirectResponse("/admin/roadmap/", status_code=303)
+
+
+@router.get("/roadmap/{resource_id}/edit/", name="admin_roadmap_edit")
+async def admin_roadmap_edit_get(
+    request: Request,
+    resource_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    resource = await roadmap_service.get_resource(db, resource_id)
+    all_books = await book_service.list_books_for_select(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/roadmap_form.html",
+        {
+            "page_title": f"ویرایش منبع #{resource_id}",
+            "active_nav": "roadmap",
+            "resource": resource,
+            "level_choices": _level_choices(),
+            "competency_choices_json": {
+                lv.slug: _competency_choices_for_level(lv.slug)
+                for lv in LEVELS
+            },
+            "resource_types": RESOURCE_TYPES,
+            "category_choices": CATEGORY_CHOICES,
+            "all_books": all_books,
+            "form_error": None,
+            "saved": request.query_params.get("saved") == "1",
+        },
+    )
+
+
+@router.post("/roadmap/{resource_id}/edit/", name="admin_roadmap_update")
+async def admin_roadmap_edit_post(
+    request: Request,
+    resource_id: int,
+    db: AsyncSession = Depends(get_db),
+    level_slug: str = Form(...),
+    competency_slug: str = Form(""),
+    area_slug: str = Form(""),
+    category: str = Form(""),
+    title: str = Form(...),
+    subtitle: str = Form(""),
+    resource_type: str = Form(...),
+    reading_time: str = Form(""),
+    difficulty: str = Form(""),
+    has_persian: str = Form(""),
+    is_required: str = Form("true"),
+    external_url: str = Form(""),
+    book_id: str = Form(""),
+    sort_order: str = Form("0"),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+
+    ext_url = external_url.strip() or None
+    bk_id = int(book_id) if book_id.strip().isdigit() else None
+
+    if ext_url and bk_id:
+        resource = await roadmap_service.get_resource(db, resource_id)
+        all_books = await book_service.list_books_for_select(db)
+        return templates.TemplateResponse(
+            request,
+            "admin/roadmap_form.html",
+            {
+                "page_title": f"ویرایش منبع #{resource_id}",
+                "active_nav": "roadmap",
+                "resource": resource,
+                "level_choices": _level_choices(),
+                "competency_choices_json": {
+                    lv.slug: _competency_choices_for_level(lv.slug)
+                    for lv in LEVELS
+                },
+                "resource_types": RESOURCE_TYPES,
+                "category_choices": CATEGORY_CHOICES,
+                "all_books": all_books,
+                "form_error": "یا لینک خارجی یا کتاب از کتابخانه — نه هر دو.",
+                "saved": False,
+            },
+            status_code=422,
+        )
+
+    # For L0 (hiring) the "competency/area" select contains area slugs.
+    if level_slug == "hiring":
+        resolved_competency = None
+        resolved_area = competency_slug.strip() or None
+    else:
+        resolved_competency = competency_slug.strip() or None
+        resolved_area = None
+
+    data = {
+        "level_slug": level_slug,
+        "competency_slug": resolved_competency,
+        "area_slug": resolved_area,
+        "category": category.strip() or None,
+        "title": title.strip(),
+        "subtitle": subtitle.strip() or None,
+        "resource_type": resource_type,
+        "reading_time": reading_time.strip() or None,
+        "difficulty": int(difficulty) if difficulty.strip().isdigit() else None,
+        "has_persian": has_persian == "on",
+        "is_required": is_required == "true",
+        "external_url": ext_url,
+        "book_id": bk_id,
+        "sort_order": int(sort_order) if sort_order.strip().isdigit() else 0,
+    }
+    await roadmap_service.update_resource(db, resource_id, data)
+    return RedirectResponse(f"/admin/roadmap/{resource_id}/edit/?saved=1", status_code=303)
+
+
+@router.post("/roadmap/{resource_id}/delete/", name="admin_roadmap_delete")
+async def admin_roadmap_delete(
+    request: Request,
+    resource_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    await roadmap_service.delete_resource(db, resource_id)
+    return RedirectResponse("/admin/roadmap/", status_code=303)
+
+
+# ── Immigration Videos ────────────────────────────────────────────────────────
+
+@router.get("/immigration-videos/", name="admin_immigration_videos")
+async def admin_immigration_list(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    videos = await roadmap_service.get_immigration_videos(db)
+    return templates.TemplateResponse(
+        request,
+        "admin/immigration_video_list.html",
+        {
+            "videos": videos,
+            "active_nav": "immigration_videos",
+            "page_title": "ویدیوهای مهاجرت",
+        },
+    )
+
+
+@router.get("/immigration-videos/new/", name="admin_immigration_video_new")
+async def admin_immigration_new_get(
+    request: Request,
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    return templates.TemplateResponse(
+        request,
+        "admin/immigration_video_form.html",
+        {
+            "video": None,
+            "saved": False,
+            "active_nav": "immigration_videos",
+            "page_title": "ویدیوی جدید",
+        },
+    )
+
+
+@router.post("/immigration-videos/new/", name="admin_immigration_video_create")
+async def admin_immigration_new_post(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    where: str = Form(""),
+    url: str = Form(""),
+    sort_order: int = Form(0),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    data = {
+        "title": title.strip(),
+        "where": where.strip() or None,
+        "url": url.strip(),
+        "sort_order": sort_order,
+    }
+    await roadmap_service.create_immigration_video(db, data)
+    return RedirectResponse("/admin/immigration-videos/", status_code=303)
+
+
+@router.get("/immigration-videos/{video_id}/edit/", name="admin_immigration_video_edit")
+async def admin_immigration_edit_get(
+    request: Request,
+    video_id: int,
+    saved: bool = False,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    video = await roadmap_service.get_immigration_video(db, video_id)
+    return templates.TemplateResponse(
+        request,
+        "admin/immigration_video_form.html",
+        {
+            "video": video,
+            "saved": saved,
+            "active_nav": "immigration_videos",
+            "page_title": f"ویرایش ویدیو — {video.title}",
+        },
+    )
+
+
+@router.post("/immigration-videos/{video_id}/edit/", name="admin_immigration_video_update")
+async def admin_immigration_edit_post(
+    request: Request,
+    video_id: int,
+    db: AsyncSession = Depends(get_db),
+    title: str = Form(""),
+    where: str = Form(""),
+    url: str = Form(""),
+    sort_order: int = Form(0),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    data = {
+        "title": title.strip(),
+        "where": where.strip() or None,
+        "url": url.strip(),
+        "sort_order": sort_order,
+    }
+    await roadmap_service.update_immigration_video(db, video_id, data)
+    return RedirectResponse(
+        f"/admin/immigration-videos/{video_id}/edit/?saved=1", status_code=303
+    )
+
+
+@router.post("/immigration-videos/{video_id}/delete/", name="admin_immigration_video_delete")
+async def admin_immigration_delete(
+    request: Request,
+    video_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    await roadmap_service.delete_immigration_video(db, video_id)
+    return RedirectResponse("/admin/immigration-videos/", status_code=303)

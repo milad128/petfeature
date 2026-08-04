@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_immigration_videos') }}" class="btn btn-ghost">← بازگشت به لیست</a>
+{% endblock %}
+
+{% block content %}
+
+{% if saved %}
+<div class="alert alert-success" style="margin-bottom:16px;">تغییرات ذخیره شد.</div>
+{% endif %}
+
+<div class="card" style="max-width:640px;">
+  <form method="post">
+
+    <div class="form-group">
+      <label class="form-label" for="title">عنوان ویدیو <span style="color:var(--danger);">*</span></label>
+      <input class="form-control" type="text" id="title" name="title" required
+             value="{{ video.title if video else '' }}"
+             placeholder="مثلاً: مصاحبه‌ی استخدامی در استارتاپ‌های اروپایی">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="where">توضیح <span style="color:var(--text-muted); font-size:.78rem;">(اختیاری — نمایش زیر عنوان)</span></label>
+      <input class="form-control" type="text" id="where" name="where"
+             value="{{ video.where or '' if video else '' }}"
+             placeholder="مثلاً: گفت‌وگو با یک مدیر محصول مهاجرت‌کرده">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="url">لینک ویدیو <span style="color:var(--danger);">*</span></label>
+      <input class="form-control" type="url" id="url" name="url" required dir="ltr"
+             value="{{ video.url if video else '' }}"
+             placeholder="https://youtube.com/watch?v=...">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="sort_order">ترتیب نمایش</label>
+      <input class="form-control" type="number" id="sort_order" name="sort_order" style="width:120px;"
+             value="{{ video.sort_order if video else 0 }}">
+      <span class="form-hint">عدد کمتر = نمایش زودتر</span>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:8px;">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <a href="{{ url_for('admin_immigration_videos') }}" class="btn btn-ghost">انصراف</a>
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}

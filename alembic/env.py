@@ -20,6 +20,7 @@ from app.models.media_file import MediaFile  # noqa: F401
 from app.models.newsletter import NewsletterCampaign  # noqa: F401
 from app.models.reading_list import ReadingListItem  # noqa: F401
 from app.models.user import User  # noqa: F401
+from app.models.roadmap import RoadmapResource, ImmigrationVideo  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)

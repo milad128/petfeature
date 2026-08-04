@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi.templating import Jinja2Templates
 from jinja2 import pass_context
 
-from app.core.jalali import format_jalali, to_fa_digits
+from app.core.jalali import format_jalali, format_reading_hours, format_reading_time, to_fa_digits
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 STATIC_DIR = Path(__file__).parent.parent / "static"
@@ -13,6 +13,8 @@ STATIC_DIR = Path(__file__).parent.parent / "static"
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 templates.env.filters["jalali"] = format_jalali
 templates.env.filters["fa_digits"] = to_fa_digits
+templates.env.filters["reading_time_fa"] = format_reading_time
+templates.env.filters["reading_hours_fa"] = format_reading_hours
 
 
 def asset_url(request, path: str) -> str:
