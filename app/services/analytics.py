@@ -230,6 +230,82 @@ async def top_referrers(session: AsyncSession, period: str, limit: int = 10) -> 
     ]
 
 
+# ── Roadmap analytics ─────────────────────────────────────────────────────
+
+async def top_roadmap_levels(
+    session: AsyncSession,
+    period: str = "all",
+    limit: int = 10,
+) -> list[dict]:
+    """Return top roadmap level pages by view count for the given period."""
+    filters = _base_query(period) + [PageView.page_type == "roadmap_level"]
+
+    stmt = (
+        select(
+            PageView.path,
+            func.count(PageView.id).label("views"),
+            func.count(distinct(PageView.visitor_token)).label("unique_views"),
+        )
+        .where(*filters)
+        .group_by(PageView.path)
+        .order_by(func.count(PageView.id).desc())
+        .limit(limit)
+    )
+    rows = (await session.execute(stmt)).all()
+    return [
+        {
+            "slug": r[0].removeprefix("/path/").rstrip("/"),
+            "views": r[1],
+            "unique_views": r[2],
+        }
+        for r in rows
+    ]
+
+
+async def roadmap_summary(
+    session: AsyncSession,
+    period: str = "all",
+) -> dict:
+    """Return aggregated view stats for all roadmap page types."""
+    base_filters = _base_query(period)
+    roadmap_types = ("roadmap", "roadmap_hiring", "roadmap_level")
+
+    total = await session.execute(
+        select(func.count(PageView.id)).where(
+            *base_filters, PageView.page_type.in_(roadmap_types)
+        )
+    )
+    total_views = total.scalar() or 0
+
+    unique = await session.execute(
+        select(func.count(distinct(PageView.visitor_token))).where(
+            *base_filters, PageView.page_type.in_(roadmap_types)
+        )
+    )
+    unique_views = unique.scalar() or 0
+
+    hiring = await session.execute(
+        select(func.count(PageView.id)).where(
+            *base_filters, PageView.page_type == "roadmap_hiring"
+        )
+    )
+    hiring_views = hiring.scalar() or 0
+
+    landing = await session.execute(
+        select(func.count(PageView.id)).where(
+            *base_filters, PageView.page_type == "roadmap"
+        )
+    )
+    landing_views = landing.scalar() or 0
+
+    return {
+        "total_views": total_views,
+        "unique_views": unique_views,
+        "hiring_views": hiring_views,
+        "landing_views": landing_views,
+    }
+
+
 # ── Per-entity view counts for admin list pages ───────────────────────────
 
 async def view_counts_by_type(session: AsyncSession, page_type: str) -> dict:

@@ -23,9 +23,10 @@ BOT_UA_SUBSTRINGS = [
 ]
 
 # ── Path classification ───────────────────────────────────────────────────
-_BOOK_RE   = re.compile(r"^/library/([^/]+)/$")
-_POST_RE   = re.compile(r"^/blog/([^/]+)/$")
-_TOOL_RE   = re.compile(r"^/tools/([^/]+)/$")
+_BOOK_RE          = re.compile(r"^/library/([^/]+)/$")
+_POST_RE          = re.compile(r"^/blog/([^/]+)/$")
+_TOOL_RE          = re.compile(r"^/tools/([^/]+)/$")
+_ROADMAP_LEVEL_RE = re.compile(r"^/path/([^/]+)/$")
 
 _STATIC_PREFIXES = ("/static/", "/admin/", "/api/")
 
@@ -72,6 +73,13 @@ def _classify_path(path: str):
     m = _TOOL_RE.match(path)
     if m:
         return "tool", m.group(1)
+    if path == "/path/":
+        return "roadmap", None
+    if path == "/path/hiring/":
+        return "roadmap_hiring", None
+    m = _ROADMAP_LEVEL_RE.match(path)
+    if m:
+        return "roadmap_level", m.group(1)
     return "other", None
 
 

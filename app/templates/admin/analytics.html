@@ -109,6 +109,48 @@
 
 </div>
 
+{# ── Roadmap analytics ──────────────────────────────────── #}
+{% set _roadmap_labels = {
+  "hiring":    "مسیر استخدامی",
+  "apm":       "مبتدی (APM)",
+  "pm":        "مدیر محصول",
+  "senior-pm": "مدیر محصول ارشد",
+  "lead":      "لید محصول",
+  "director":  "دایرکتور محصول",
+  "cpo":       "CPO"
+} %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">🗺️ مسیر یادگیری</div>
+  <div style="padding:12px 20px 8px;color:var(--muted);font-size:.9rem;">
+    کل بازدید بخش: <strong>{{ roadmap_summary.total_views | fa_digits }}</strong>
+    &nbsp;|&nbsp;
+    بازدیدکننده‌ی یکتا: <strong>{{ roadmap_summary.unique_views | fa_digits }}</strong>
+  </div>
+  <div style="padding:0 20px 16px;color:var(--muted);font-size:.85rem;">
+    صفحه‌ی اصلی مسیر: {{ roadmap_summary.landing_views | fa_digits }} بازدید
+    &nbsp;&nbsp;/&nbsp;&nbsp;
+    صفحه استخدام: {{ roadmap_summary.hiring_views | fa_digits }} بازدید
+  </div>
+  {% if roadmap_levels %}
+  <table class="admin-table">
+    <thead>
+      <tr><th>سطح</th><th>بازدید</th><th>بازدید یکتا</th></tr>
+    </thead>
+    <tbody>
+      {% for lvl in roadmap_levels %}
+      <tr>
+        <td>{{ _roadmap_labels.get(lvl.slug, lvl.slug) }}</td>
+        <td>{{ lvl.views | fa_digits }}</td>
+        <td>{{ lvl.unique_views | fa_digits }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty" style="padding:12px 20px 24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+  {% endif %}
+</div>
+
 {# ── Daily traffic + Referrers ─────────────────────────── #}
 <div class="an-bottom-row">
 

@@ -1900,12 +1900,14 @@ async def admin_analytics(
     if period not in VALID_PERIODS:
         period = "7d"
 
-    summary = await analytics_service.get_summary(db, period)
-    books   = await analytics_service.top_books(db, period)
-    posts   = await analytics_service.top_posts(db, period)
-    tools   = await analytics_service.top_tools(db, period)
-    daily   = await analytics_service.daily_traffic(db, period)
-    refs    = await analytics_service.top_referrers(db, period)
+    summary      = await analytics_service.get_summary(db, period)
+    books        = await analytics_service.top_books(db, period)
+    posts        = await analytics_service.top_posts(db, period)
+    tools        = await analytics_service.top_tools(db, period)
+    daily        = await analytics_service.daily_traffic(db, period)
+    refs         = await analytics_service.top_referrers(db, period)
+    roadmap_lvls = await analytics_service.top_roadmap_levels(db, period)
+    rm_summary   = await analytics_service.roadmap_summary(db, period)
 
     return templates.TemplateResponse(
         request,
@@ -1921,6 +1923,8 @@ async def admin_analytics(
             top_tools=tools,
             daily_traffic=daily,
             top_referrers=refs,
+            roadmap_levels=roadmap_lvls,
+            roadmap_summary=rm_summary,
         ),
     )
 
