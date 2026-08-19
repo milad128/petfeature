@@ -415,4 +415,5 @@ async def roadmap_level(
         )
     lv = ctx["level"]
     ctx["page_title"] = f"{lv.num} — {lv.fa} | مسیر یادگیری"
-    return templates.TemplateResponse(request, "pages/roadmap_level.html", ctx)
+    template = "pages/roadmap_apm.html" if level_slug == "apm" else "pages/roadmap_level.html"
+    return templates.TemplateResponse(request, template, ctx)

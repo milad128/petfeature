@@ -69,7 +69,10 @@ def _build_user_message(new_content: dict) -> str:
     return "\n".join(parts)
 
 
-async def _call_gapgpt(user_message: str) -> Optional[str]:
+async def _call_gapgpt(
+    user_message: str,
+    system_prompt: Optional[str] = None,
+) -> Optional[str]:
     """Call GapGPT OpenAI-compatible API. Returns generated text or None on failure."""
     headers = {
         "Authorization": f"Bearer {settings.gapgpt_api_key}",
@@ -78,7 +81,7 @@ async def _call_gapgpt(user_message: str) -> Optional[str]:
     payload = {
         "model": settings.gapgpt_model,
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt if system_prompt is not None else SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
         ],
         "max_tokens": 1024,
@@ -139,15 +142,39 @@ async def collect_new_content(session: AsyncSession) -> Optional[dict]:
     return {"posts": new_posts, "books": new_books, "tools": new_tools}
 
 
-async def generate_draft(session: AsyncSession) -> Optional[str]:
+async def build_prompts(session: AsyncSession) -> tuple[str, str]:
+    """
+    Collect new content and build the system prompt + user message strings.
+    Does NOT call the AI. Returns (system_prompt, user_message).
+    If no new content exists, user_message will still be a valid (short) string.
+    """
+    new_content = await collect_new_content(session)
+    if new_content is None:
+        user_message = "محتوای جدیدی از آخرین خبرنامه منتشر نشده است.\n\nیک پیش‌نویس خبرنامه برای کانال تلگرام بنویس."
+    else:
+        user_message = _build_user_message(new_content)
+    return SYSTEM_PROMPT, user_message
+
+
+async def generate_draft(
+    session: AsyncSession,
+    system_prompt: Optional[str] = None,
+    user_message: Optional[str] = None,
+) -> Optional[str]:
     """
     Collect new content and call GapGPT to generate a Persian newsletter draft.
-    Returns the draft text, empty string if no new content, or None on API failure.
+    If system_prompt / user_message are provided they override the defaults.
+    Returns the draft text, empty string if no new content (when using defaults),
+    or None on API failure.
     Caller should check settings.gapgpt_api_key before calling.
     """
+    if system_prompt is not None and user_message is not None:
+        # Caller has already built / edited the prompts — call AI directly
+        return await _call_gapgpt(user_message, system_prompt=system_prompt)
+
     new_content = await collect_new_content(session)
     if new_content is None:
         return ""  # sentinel: no new content
 
-    user_message = _build_user_message(new_content)
-    return await _call_gapgpt(user_message)
+    msg = user_message if user_message is not None else _build_user_message(new_content)
+    return await _call_gapgpt(msg, system_prompt=system_prompt)

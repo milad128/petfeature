@@ -1,6 +1,6 @@
 ---
 name: project-v14-user-dashboard
-description: v14 User Dashboard — newsletter subscribe/unsubscribe (reuses Subscriber model) + My Comments with status + admin replies; user_id FK on comments; ~2 days; backlog
+description: v14 User Dashboard — Telegram channel link + My Comments with status + admin replies; user_id FK on comments; ~1.5 days; backlog
 metadata:
   type: project
 ---
@@ -13,10 +13,10 @@ v14 expands the v12 profile page into a real dashboard with two sections.
 
 **Two sections:**
 
-1. **Newsletter (خبرنامه)**
-   - Email: check if user's Google email is in Subscriber table (v11); show subscribe/unsubscribe; no email field — uses Google account email automatically
+1. **Telegram (تلگرام)**
+   - Join button for @petfeature. No email subscription — removed from the product July 2026 [[project-email-newsletter-removed]]
    - Telegram: always-visible join button → t.me/petfeature
-   - Reuses existing `Subscriber` model — no new model
+   - No model, no state — a static outbound link
 
 2. **My Comments (نظرات من)**
    - All PostComments + BookComments where `user_id = current_user.id`
@@ -29,8 +29,6 @@ v14 expands the v12 profile page into a real dashboard with two sections.
 - New comments from logged-in users get `user_id` set; anonymous comments unchanged (user_id=NULL)
 
 **Routes added:**
-- `POST /profile/newsletter/subscribe/`
-- `POST /profile/newsletter/unsubscribe/`
 - Minor change to existing book/post comment routes to set `user_id` when user is logged in
 
 **Effort:** ~2 days

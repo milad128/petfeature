@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── APM Level page (v2 design) ──────────────────────────────── */
+:root {
+  --sprout: #8fbf86;
+}
+
+/* Scrollbar styling */
+.ra-scroll::-webkit-scrollbar { height: 8px; }
+.ra-scroll::-webkit-scrollbar-thumb { background: rgba(236,229,220,.16); border-radius: 8px; }
+
+/* Layout primitives */
+.ra-pad { padding-left: 32px; padding-right: 32px; }
+.ra-inner { max-width: 1120px; margin: 0 auto; }
+.ra-section { border-top: 1px solid var(--border); scroll-margin-top: 70px; }
+
+/* Hero 2-col grid */
+.ra-hero-grid { display: grid; grid-template-columns: 1fr 330px; gap: 56px; align-items: start; }
+
+/* Stats facts grid */
+.ra-facts { display: grid; gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; }
+.ra-fact { background: var(--raise); padding: 12px 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ra-fact-lbl { font-size: .76rem; color: var(--faint); }
+.ra-fact-val { font-size: .98rem; font-weight: 700; }
+
+/* Section headers */
+.ra-section-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 2px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+.ra-section-head--plain { border-bottom-color: var(--border-2); }
+.ra-section-badge { font-size: .72rem; font-weight: 700; border-radius: 6px; padding: 3px 10px; }
+.ra-section-title { font-size: 1.45rem; font-weight: 800; }
+.ra-section-meta { font-size: .8rem; color: var(--muted); margin-inline-start: auto; }
+
+/* Note paragraphs */
+.ra-note { font-size: .92rem; color: var(--muted); max-width: 720px; line-height: 2.05; margin-top: 20px; }
+
+/* 2-col split (left label / right body) */
+.ra-split { display: grid; grid-template-columns: 280px 1fr; gap: 40px; align-items: start; }
+.ra-split-body { border-inline-start: 1px dashed var(--border-2); padding-inline-start: 32px; }
+
+/* Station rows */
+.ra-station { display: grid; grid-template-columns: 280px 1fr; gap: 40px; padding: 34px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+.ra-rail { position: sticky; top: 24px; align-self: start; }
+.ra-rail-n { width: 30px; height: 30px; border-radius: 9px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; flex-shrink: 0; }
+
+/* Chip row */
+.ra-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ra-chip-read   { font-size: .78rem; color: var(--muted); background: rgba(236,229,220,.05); border-inline-start: 3px solid var(--muted); border-radius: 0 6px 6px 0; padding: 3px 10px; white-space: nowrap; }
+.ra-chip-sprint { font-size: .78rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); border-inline-start: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 3px 10px; white-space: nowrap; }
+.ra-chip-mat    { font-size: .78rem; color: var(--sprout); background: color-mix(in srgb, var(--sprout) 10%, transparent); border-inline-start: 3px solid var(--sprout); border-radius: 0 6px 6px 0; padding: 3px 10px; white-space: nowrap; }
+
+/* Resource rows */
+.ra-res { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+.ra-res-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.ra-no-link { font-size: .68rem; color: var(--faint); border: 1px dashed var(--border-2); border-radius: 5px; padding: 2px 8px; white-space: nowrap; }
+.ra-tag-req { font-size: .72rem; font-weight: 700; color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
+.ra-tag-opt { font-size: .72rem; font-weight: 600; color: var(--faint); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
+.ra-tag-meta { font-size: .74rem; color: var(--muted); background: rgba(236,229,220,.05); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
+
+/* Quote callout */
+.ra-quote { margin-top: 22px; border-inline-start: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); padding: 2px 18px; font-size: .92rem; color: var(--text); font-weight: 300; line-height: 2.1; }
+
+/* Practice / homework block */
+.ra-hw { margin-top: 16px; background: rgba(236,229,220,.035); border-radius: 12px; padding: 14px 16px; }
+.ra-hw-lbl { font-size: .7rem; font-weight: 700; color: var(--sprout); letter-spacing: .04em; }
+
+/* Asks table */
+.ra-asks-scroll { overflow-x: auto; }
+.ra-asks-scroll::-webkit-scrollbar { height: 8px; }
+.ra-asks-scroll::-webkit-scrollbar-thumb { background: rgba(236,229,220,.16); border-radius: 8px; }
+.ra-asks-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+.ra-asks-table th { text-align: start; font-size: .72rem; font-weight: 600; color: var(--faint); padding: 12px 14px; border-bottom: 1px solid var(--border-2); white-space: nowrap; }
+.ra-asks-table th.center { text-align: center; }
+.ra-asks-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: .85rem; color: var(--muted); }
+.ra-asks-table td.center { text-align: center; white-space: nowrap; }
+.ra-asks-table tr:last-child td { border-bottom: none; }
+.ra-depth-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 24px; border-radius: 6px; font-size: .8rem; font-weight: 700; }
+.ra-depth-none { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 24px; border-radius: 6px; border: 1px dashed var(--border-2); color: var(--faint); font-size: .8rem; }
+
+/* Passive grid rows */
+.ra-passive-row { display: grid; grid-template-columns: 220px 40px 1fr; gap: 16px; align-items: baseline; padding: 13px 2px; border-bottom: 1px solid var(--border); }
+
+/* Ladder grid */
+.ra-ladder { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+/* Sticky phase nav */
+.ra-phase-nav {
+  position: sticky; top: var(--header-h); z-index: 20;
+  background: rgba(23,18,16,.92); backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.ra-phase-nav-inner {
+  max-width: 1120px; margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; gap: 6px; overflow-x: auto; height: 52px;
+}
+.ra-phase-link {
+  flex-shrink: 0; font-size: .82rem; color: var(--muted); text-decoration: none;
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+  transition: color .15s, border-color .15s; white-space: nowrap;
+}
+.ra-phase-link:hover { color: var(--text); border-color: var(--border-2); text-decoration: none; }
+
+/* Level strip */
+.ra-strip-wrap { border-bottom: 1px solid var(--border); background: var(--surface); overflow: hidden; }
+.ra-strip { max-width: 1120px; margin: 0 auto; padding: 0 32px; display: flex; gap: 4px; overflow-x: auto; }
+.ra-strip::-webkit-scrollbar { height: 6px; }
+.ra-strip::-webkit-scrollbar-thumb { background: rgba(236,229,220,.16); border-radius: 6px; }
+.ra-strip-btn { flex-shrink: 0; background: none; border: none; cursor: pointer; font-family: inherit; font-size: .82rem; padding: 12px 16px; color: var(--muted); border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; text-decoration: none; display: inline-block; }
+.ra-strip-btn:hover { color: var(--text); text-decoration: none; }
+.ra-strip-btn[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.ra-strip-btn[aria-disabled="true"] { opacity: .45; cursor: default; pointer-events: none; }
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .ra-hero-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+  .ra-station   { grid-template-columns: 1fr !important; gap: 18px !important; }
+  .ra-split     { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .ra-split-body { border-inline-start: none !important; padding-inline-start: 0 !important; }
+  .ra-rail { position: static !important; }
+  .ra-ladder { grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 760px) {
+  .ra-pad { padding-left: 18px !important; padding-right: 18px !important; }
+  .ra-res { grid-template-columns: 1fr !important; }
+  .ra-res-meta { justify-content: flex-start !important; }
+  .ra-passive-row { grid-template-columns: 1fr !important; gap: 6px !important; }
+  .ra-ladder { grid-template-columns: repeat(2, 1fr) !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% set lv = level %}
+{% set tx = texts %}
+
+{# ── Level strip ─────────────────────────────────────────────── #}
+<div class="ra-strip-wrap">
+  <div class="ra-strip" role="navigation" aria-label="سطوح مسیر">
+    <a href="{{ url_for('roadmap_hiring') }}" class="ra-strip-btn">مسیر ۰</a>
+    {% for l in levels %}
+    {% if l.slug != 'hiring' %}
+    {% if l.slug == lv.slug %}
+    <span class="ra-strip-btn" aria-current="true">{{ l.en.split(' ')[0] }}</span>
+    {% elif l.slug == 'apm' %}
+    <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}" class="ra-strip-btn">{{ l.en.split(' ')[0] }}</a>
+    {% else %}
+    <span class="ra-strip-btn" aria-disabled="true" title="به زودی">{{ l.en.split(' ')[0] }} <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{# ── Breadcrumb ───────────────────────────────────────────────── #}
+<div style="border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--accent) 4%, transparent);">
+  <div class="ra-inner ra-pad" style="padding-top:13px; padding-bottom:13px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">{{ lv.num }} — {{ lv.fa }}</b>
+    <span style="font-size:.72rem; color:var(--faint); border:1px solid var(--border-2); border-radius:6px; padding:3px 10px; margin-inline-start:6px;">پله‌ی اول نردبان</span>
+  </div>
+</div>
+
+{# ── HERO ─────────────────────────────────────────────────────── #}
+<section class="ra-pad" style="max-width:1120px; margin:0 auto; padding-top:64px;">
+  <div class="ra-hero-grid">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">{{ lv.num }}</span>
+      </div>
+      <h1 style="font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25;">{{ lv.fa }}</h1>
+      <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:6px;">{{ lv.en }}</p>
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); font-weight:500; max-width:640px; line-height:2.05;">{{ lv.thesis }}</p>
+      <p style="margin-top:18px; font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1;">{{ lv.spec }}</p>
+    </div>
+
+    {# ── Exit-condition aside ─── #}
+    <aside style="border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+        <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شرط پایان</span>
+      </div>
+      <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک فیچر را از ابتدا تا انتها تحویل داده‌اید.</b>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">نه تعداد کتاب خوانده‌شده، نه ماه‌های گذشته.</p>
+      <div class="ra-facts" style="margin-top:20px;">
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">منابع اجباری</span>
+          <b class="ra-fact-val">{{ lv.required }}</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">مطالعه</span>
+          <b class="ra-fact-val">{{ lv.reading }}</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">اسپرینت</span>
+          <b class="ra-fact-val" style="color:var(--accent);">{{ lv.sprint_weeks }} هفته</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">تصدی</span>
+          <b class="ra-fact-val" style="color:var(--sprout);">{{ lv.tenure }}</b>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{# ── MAP — ۱۸ months, ۶ stations ───────────────────────────────── #}
+<section style="margin-top:64px; border-top:1px solid var(--border);">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div style="display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:8px;">
+      <h2 style="font-size:1.7rem; font-weight:800;">هجده ماه، شش ایستگاه</h2>
+      <span style="font-size:.8rem; color:var(--faint);">{{ lv.sprint_weeks }} هفته اسپرینت · مابقی بلوغ</span>
+    </div>
+    <p class="ra-note" style="margin-top:12px; margin-bottom:28px;">برای گذشتن از این سطح عجله نکنید. موارد بیسیک را در این سطح یاد خواهید گرفت. تمرکز اصلی در این سطح این است که بتوانید با کاربران و ذی‌نفعان تعامل کنید و توسعه‌ی محصول را به‌خوبی و تنهایی رهبری کنید.</p>
+
+    <div class="ra-scroll" style="overflow-x:auto; padding-bottom:6px;">
+      <div style="min-width:700px;">
+        {# Band labels #}
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          {% for b in map_bands %}
+          <div style="flex:{{ b.weeks }} 1 0; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; padding-bottom:8px;">
+              <b style="font-size:.9rem; font-weight:700;">{{ b.fa }}</b>
+              <span style="font-size:.75rem; color:var(--faint);">{{ b.note }}</span>
+            </div>
+            <div style="height:3px; border-radius:2px; background:var(--accent);"></div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {# Station segments #}
+        <div style="display:flex; gap:6px;">
+          {% for s in map_stations %}
+          <a href="{{ s.href }}" style="flex:{{ s.weeks }} 1 0; min-width:0; display:block; text-decoration:none; color:inherit; background:color-mix(in srgb, var(--accent) 7%, transparent); border:1px solid color-mix(in srgb, var(--accent) 26%, transparent); border-radius:12px; padding:14px 16px 16px; transition:border-color .18s;"
+             onmouseover="this.style.borderColor='color-mix(in srgb, var(--accent) 55%, transparent)'"
+             onmouseout="this.style.borderColor='color-mix(in srgb, var(--accent) 26%, transparent)'">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span style="width:22px; height:22px; border-radius:7px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0;">{{ s.n }}</span>
+              <span style="font-size:.72rem; color:var(--faint);">{{ s.sprint }}</span>
+            </span>
+            <span style="display:block; font-size:.85rem; font-weight:600; line-height:1.7; margin-top:8px;">{{ s.name }}</span>
+          </a>
+          {% endfor %}
+        </div>
+
+        {# Week ranges #}
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          {% for s in map_stations %}
+          <div style="flex:{{ s.weeks }} 1 0; min-width:0; border-top:1px solid var(--border); padding-top:6px;">
+            <span style="font-size:.68rem; color:var(--faint);">{{ s.week_range }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        {# Tail: maturation gap + bridge #}
+        <div style="display:flex; gap:6px; margin-top:16px;">
+          {% for t in map_tail %}
+          {% if t.kind == 'gap' %}
+          <div style="flex:{{ t.flex }} 1 0; min-width:0; border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); background:repeating-linear-gradient(-45deg, color-mix(in srgb, var(--sprout) 12%, transparent) 0 6px, transparent 6px 12px); border-radius:12px; padding:14px 16px; color:var(--sprout);">
+          {% else %}
+          <div style="flex:{{ t.flex }} 1 0; min-width:0; border:1px solid var(--border); background:rgba(236,229,220,.04); border-radius:12px; padding:14px 16px; color:var(--muted);">
+          {% endif %}
+            <b style="display:block; font-size:.82rem; font-weight:700; line-height:1.6;">{{ t.label }}</b>
+            <span style="font-size:.74rem; line-height:1.8; opacity:.8;">{{ t.note }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── WHAT THIS LEVEL ASKS ─────────────────────────────────────── #}
+<section class="ra-section">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <h2 style="font-size:1.35rem; font-weight:700; margin-bottom:8px;">این سطح چه می‌خواهد</h2>
+    {% if tx.asks_note and not tx.asks_note.startswith('TODO') %}
+    <p style="font-size:.92rem; color:var(--muted); max-width:660px; margin-bottom:24px;">{{ tx.asks_note }}</p>
+    {% endif %}
+    <div class="ra-asks-scroll" style="border-top:1px solid var(--border);">
+      <table class="ra-asks-table">
+        <thead>
+          <tr>
+            <th scope="col">شایستگی</th>
+            <th scope="col" class="center">عمق</th>
+            <th scope="col">دسته</th>
+            <th scope="col" class="center">اسپرینت</th>
+            <th scope="col" class="center">بلوغ</th>
+            <th scope="col" class="center">مطالعه</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in asks_table %}
+          {% set tint = 26 + row.depth * 14 %}
+          <tr>
+            <th scope="row" style="text-align:start; padding:12px 14px; border-bottom:1px solid var(--border); font-size:.88rem; font-weight:600; color:var(--text); line-height:1.7;">{{ row.fa }}</th>
+            <td class="center">
+              <span class="ra-depth-chip" style="color:{% if row.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ row.depth }}</span>
+            </td>
+            <td>
+              <span style="font-size:.74rem; font-weight:600; color:{% if row.category == 'core' %}var(--accent){% else %}var(--muted){% endif %}; background:{% if row.category == 'core' %}color-mix(in srgb, var(--accent) 12%, transparent){% else %}rgba(236,229,220,.06){% endif %}; border-radius:6px; padding:3px 10px; white-space:nowrap;">{{ row.category_fa }}</span>
+            </td>
+            <td class="center">{% if row.sprint_weeks %}{{ row.sprint_weeks }}w{% else %}—{% endif %}</td>
+            <td class="center">{% if row.maturation_months %}{{ row.maturation_months }}m{% else %}—{% endif %}</td>
+            <td class="center">{% if row.reading_hours_display %}{{ row.reading_hours_display }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+          {# Combined passive row #}
+          <tr>
+            <th scope="row" style="text-align:start; padding:12px 14px; border-bottom:1px solid var(--border); font-size:.88rem; font-weight:600; color:var(--text); line-height:1.7;">داده · کسب‌وکار · آزمایش · استراتژی · چشم‌انداز · بازار</th>
+            <td class="center"><span class="ra-depth-chip" style="color:var(--text); background:color-mix(in srgb, var(--accent) 40%, #3a2d22);">۱</span></td>
+            <td><span style="font-size:.74rem; font-weight:600; color:var(--faint); border:1px solid var(--border); border-radius:6px; padding:3px 10px; white-space:nowrap;">رایگان به دست می‌آید</span></td>
+            <td class="center">—</td><td class="center">—</td><td class="center">—</td>
+          </tr>
+          {# Not-applicable row #}
+          <tr>
+            <th scope="row" style="text-align:start; padding:12px 14px; font-size:.88rem; font-weight:600; color:var(--faint); line-height:1.7;">رهبری افراد · کوچینگ · طراحی سازمان</th>
+            <td class="center"><span class="ra-depth-none">—</span></td>
+            <td><span style="font-size:.74rem; font-weight:600; color:var(--faint); border:1px solid var(--border); border-radius:6px; padding:3px 10px; white-space:nowrap;">لازم نیست</span></td>
+            <td class="center">—</td><td class="center">—</td><td class="center">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{# ── Sticky phase nav ─────────────────────────────────────────── #}
+<div class="ra-phase-nav">
+  <div class="ra-phase-nav-inner">
+    <a href="#entry"      class="ra-phase-link">ورود</a>
+    <a href="#core"       class="ra-phase-link">هسته</a>
+    <a href="#supporting" class="ra-phase-link">حمایتی</a>
+    <a href="#passive"    class="ra-phase-link">رایگان</a>
+    <a href="#bridge"     class="ra-phase-link">پل</a>
+    <a href="#ready"      class="ra-phase-link">پایان سطح</a>
+  </div>
+</div>
+
+{# ── ENTRY ────────────────────────────────────────────────────── #}
+<section class="ra-section" id="entry">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-split">
+      <div>
+        <span style="display:inline-block; font-size:.7rem; font-weight:700; color:var(--sprout); border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); border-radius:6px; padding:4px 11px; margin-bottom:14px;">پیش از عنوان</span>
+        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">آشنایی با مدیریت محصول</h2>
+      </div>
+      <div class="ra-split-body">
+        {% if tx.entry_note and not tx.entry_note.startswith('TODO') %}
+        <p style="font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1; margin-bottom:0;">{{ tx.entry_note }}</p>
+        {% endif %}
+        <div style="margin-top:24px; border-top:1px solid var(--border);">
+          {% for r in entry_resources %}
+          <div style="display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; padding:14px 2px; border-bottom:1px solid var(--border);" class="ra-res">
+            <div>
+              {% if r.is_linked %}
+              <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                 dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+              {% else %}
+              <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              {% endif %}
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="{{ 'ra-tag-req' if r.is_required else 'ra-tag-opt' }}">{{ 'اجباری' if r.is_required else 'اختیاری' }}</span>
+              {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+              {% if r.difficulty %}<span class="ra-tag-meta">{{ r.difficulty_stars }}</span>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── CORE ─────────────────────────────────────────────────────── #}
+<section class="ra-section" id="core">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:8px;">
+    <div class="ra-section-head">
+      <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">هسته</span>
+      <b class="ra-section-title">کاری که روزانه شخصاً پاسخ‌گویش هستید</b>
+      <span class="ra-section-meta">۲۶ هفته اسپرینت · ۲۶٫۵ ساعت مطالعه</span>
+    </div>
+    {% if tx.core_note and not tx.core_note.startswith('TODO') %}
+    <p class="ra-note">{{ tx.core_note }}</p>
+    {% endif %}
+
+    {% for comp in core_competencies %}
+    <div id="{{ comp.station_id }}" class="ra-station" style="{% if loop.last %}border-bottom:none;{% endif %}">
+      {# Left rail #}
+      <div class="ra-rail">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <span class="ra-rail-n">{{ comp.station_n }}</span>
+        </div>
+        <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75;">{{ comp.fa }}</b>
+        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق {{ comp.depth }}</span>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه {{ comp.reading_hours_display }}</span>
+          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks }}w</span>
+          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months }}m</span>
+        </div>
+      </div>
+
+      {# Right body #}
+      <div>
+        {% if comp.rationale and not comp.rationale.startswith('TODO') %}
+        <p style="font-size:.98rem; color:var(--text); line-height:2.15;">{{ comp.rationale }}</p>
+        {% endif %}
+
+        <div style="margin-top:22px; border-top:1px solid var(--border);">
+          {% for r in comp.resources %}
+          <div style="border-bottom:1px solid var(--border); padding:14px 2px;">
+            <div class="ra-res">
+              <div>
+                {% if r.is_linked %}
+                <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                   dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+                {% else %}
+                <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+                <span class="ra-no-link">هنوز لینکی ندارد</span>
+                {% endif %}
+                <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
+              </div>
+              <div class="ra-res-meta">
+                <span class="{{ 'ra-tag-req' if r.is_required else 'ra-tag-opt' }}">{{ 'اجباری' if r.is_required else 'اختیاری' }}</span>
+                {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+                {% if r.difficulty %}<span class="ra-tag-meta">{{ r.difficulty_stars }}</span>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if comp.quote and not comp.quote.startswith('TODO') %}
+        <div class="ra-quote">{{ comp.quote }}</div>
+        {% endif %}
+        {% if comp.practice and not comp.practice.startswith('TODO') %}
+        <div class="ra-hw" style="margin-top:16px; border-inline-start:3px solid var(--sprout);">
+          <b class="ra-hw-lbl">تمرین</b>
+          <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ comp.practice }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── SUPPORTING ───────────────────────────────────────────────── #}
+<section class="ra-section" id="supporting">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-section-head ra-section-head--plain">
+      <span class="ra-section-badge" style="color:var(--muted); background:rgba(236,229,220,.06);">حمایتی</span>
+      <b class="ra-section-title">سهم دارید، اما مالکش کسِ دیگری است</b>
+      <span class="ra-section-meta">۵ هفته اسپرینت · ۷٫۵ ساعت مطالعه</span>
+    </div>
+    {% if tx.supporting_note and not tx.supporting_note.startswith('TODO') %}
+    <p class="ra-note" style="margin-bottom:8px;">{{ tx.supporting_note }}</p>
+    {% endif %}
+
+    {% for comp in supporting_competencies %}
+    <div id="{{ comp.station_id }}" class="ra-station" style="{% if loop.last %}border-bottom:none;{% endif %}">
+      <div>
+        <b style="display:block; font-size:1.05rem; font-weight:700; line-height:1.75;">{{ comp.fa }}</b>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه {{ comp.reading_hours_display }}</span>
+          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks }}w</span>
+          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months }}m</span>
+        </div>
+      </div>
+      <div>
+        {% if comp.owner_note and not comp.owner_note.startswith('TODO') %}
+        <p style="font-size:.95rem; color:var(--muted); line-height:2.1;">{{ comp.owner_note }}</p>
+        {% endif %}
+        <div style="margin-top:18px; border-top:1px solid var(--border); padding-top:14px;">
+          {% for r in comp.resources %}
+          <div class="ra-res" style="margin-bottom:10px;">
+            <div>
+              {% if r.is_linked %}
+              <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+                 dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+              {% else %}
+              <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              {% endif %}
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="{{ 'ra-tag-req' if r.is_required else 'ra-tag-opt' }}">{{ 'اجباری' if r.is_required else 'اختیاری' }}</span>
+              {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+              {% if r.difficulty %}<span class="ra-tag-meta">{{ r.difficulty_stars }}</span>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if comp.homework %}
+        <div class="ra-hw" style="border-inline-start:3px solid color-mix(in srgb, var(--accent) 55%, transparent);">
+          <b style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.04em;">تکلیف</b>
+          <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ comp.homework }}</p>
+        </div>
+        {% endif %}
+        {% if comp.optional %}
+        <p style="margin-top:14px; font-size:.8rem; color:var(--faint);">{{ comp.optional }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── PASSIVE ──────────────────────────────────────────────────── #}
+<section class="ra-section" id="passive">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-split">
+      <div>
+        <span style="display:inline-block; font-size:.7rem; font-weight:700; color:var(--faint); border:1px dashed var(--border-2); border-radius:6px; padding:4px 11px; margin-bottom:14px;">بدون منبع</span>
+        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">رایگان به دست می‌آید</h2>
+        <p style="font-size:.8rem; color:var(--faint); line-height:2; margin-top:10px;">این تصمیم است، نه جای خالی</p>
+      </div>
+      <div class="ra-split-body">
+        {% if tx.passive_note and not tx.passive_note.startswith('TODO') %}
+        <p style="font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1;">{{ tx.passive_note }}</p>
+        {% endif %}
+        <div style="margin-top:22px; border-top:1px solid var(--border);">
+          {% for comp in passive_competencies %}
+          {% set tint = 26 + comp.depth * 14 if comp.depth else 0 %}
+          <div class="ra-passive-row">
+            <b style="font-size:.9rem; font-weight:600;">{{ comp.fa }}</b>
+            {% if comp.depth %}
+            <span class="ra-depth-chip" style="color:{% if comp.depth >= 3 %}#191310{% else %}var(--text){% endif %}; background:color-mix(in srgb, var(--accent) {{ tint }}%, #3a2d22);">{{ comp.depth }}</span>
+            {% else %}
+            <span class="ra-depth-none">—</span>
+            {% endif %}
+            <span style="font-size:.85rem; color:var(--muted); line-height:1.95;">{{ comp.passive_how }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── BRIDGE ───────────────────────────────────────────────────── #}
+<section class="ra-section" id="bridge">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-section-head">
+      <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">پل</span>
+      <b class="ra-section-title">ماه ۱۵ تا ۱۸ — فقط خواندن</b>
+      <span class="ra-section-meta">آماده‌سازی برای مدیر محصول</span>
+    </div>
+    {% if tx.bridge_note and not tx.bridge_note.startswith('TODO') %}
+    <p class="ra-note">{{ tx.bridge_note }}</p>
+    {% endif %}
+
+    <div style="margin-top:24px; border-top:1px solid var(--border);">
+      {% for r in bridge_resources %}
+      <div class="ra-res" style="padding:15px 2px; border-bottom:1px solid var(--border);">
+        <div>
+          {% if r.is_linked %}
+          <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
+             dir="ltr" style="font-size:.98rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+          {% else %}
+          <span dir="ltr" style="font-size:.98rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+          <span class="ra-no-link">هنوز لینکی ندارد</span>
+          {% endif %}
+          {# subtitle used as "covers" info for bridge resources #}
+          {% if r.subtitle %}
+          <div style="font-size:.8rem; color:var(--muted); margin-top:4px;">{{ r.subtitle }}</div>
+          {% else %}
+          <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+          {% endif %}
+        </div>
+        <div class="ra-res-meta">
+          {% if r.reading_time %}<span class="ra-tag-meta">{{ r.resource_type_fa }}</span>{% endif %}
+          {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      {% if not bridge_resources %}
+      <p style="font-size:.88rem; color:var(--faint); padding:20px 2px;">منابع پل به زودی اضافه می‌شوند.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{# ── READY CHECK + LADDER ─────────────────────────────────────── #}
+<section class="ra-section" id="ready" style="background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 260px);">
+  <div class="ra-inner ra-pad" style="padding-top:56px; padding-bottom:76px;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+      <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+      <span style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.06em;">پایان سطح ۱</span>
+    </div>
+    <h2 style="font-size:2rem; font-weight:800; line-height:1.5; max-width:760px;">آماده‌ی مدیر محصول هستید وقتی:</h2>
+
+    <div style="display:grid; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:14px; overflow:hidden; max-width:820px; margin-top:26px;">
+      {% for item in bridge_checklist %}
+      <div style="background:var(--surface); padding:15px 20px; display:flex; align-items:baseline; gap:14px;">
+        <span style="color:var(--accent); font-size:.9rem; line-height:1.9; flex-shrink:0;">✓</span>
+        <span style="font-size:.92rem; line-height:2;">{{ item }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    {# Ladder #}
+    <div style="border-top:1px solid var(--border); margin-top:34px; padding-top:26px;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px;">
+        <b style="font-size:1.05rem; font-weight:700;">بقیه‌ی نردبان</b>
+        <span style="font-size:.82rem; color:var(--faint);">هر سطح صفحه‌ی خودش را دارد.</span>
+      </div>
+      <div class="ra-ladder">
+        {% for l in levels %}
+        {% if l.slug != 'hiring' %}
+        {% set is_cur = l.slug == lv.slug %}
+        {% if l.slug == 'apm' %}
+        <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}"
+           style="display:block; text-decoration:none; color:inherit; background:{{ 'color-mix(in srgb, var(--accent) 8%, transparent)' if is_cur else 'var(--surface)' }}; border:1px solid {{ 'color-mix(in srgb, var(--accent) 55%, transparent)' if is_cur else 'color-mix(in srgb, var(--accent) 20%, transparent)' }}; border-radius:12px; padding:16px 16px 18px;">
+        {% else %}
+        <span style="display:block; background:var(--surface); border:1px dashed var(--border-2); border-radius:12px; padding:16px 16px 18px; opacity:.5;">
+        {% endif %}
+          <span style="display:block; font-size:.7rem; color:var(--faint);">{{ l.num }}</span>
+          <b style="display:block; font-size:.92rem; font-weight:700; color:{{ 'var(--accent)' if is_cur else 'var(--muted)' }}; margin-top:4px; line-height:1.7;">{{ l.fa }}</b>
+          {% if l.slug != 'apm' %}<span style="font-size:.65rem; color:var(--faint);">به زودی</span>{% endif %}
+        {% if l.slug == 'apm' %}</a>{% else %}</span>{% endif %}
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Footer nav links #}
+    <div style="display:flex; justify-content:space-between; gap:14px; margin-top:36px; flex-wrap:wrap;">
+      <a href="{{ url_for('roadmap_landing') }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ بازگشت به ماتریس</a>
+      <span style="font-size:.9rem; color:var(--faint);">سطح ۲ — مدیر محصول (به زودی)</span>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

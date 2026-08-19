@@ -27,4 +27,4 @@ v12 revised July 2026. **Google Login only** — original email/password approac
 
 **Effort:** ~2 days
 
-**Unlocks:** Reading List (v14+), personalised features. [[project-v13-newsletter-bot]]
+**Unlocks:** User Dashboard (v14), Bookshelf (v15), personalised features. [[project-v14-user-dashboard]]

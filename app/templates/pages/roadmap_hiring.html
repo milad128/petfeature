@@ -28,13 +28,11 @@
 .h2-seg {
   display:block; text-decoration:none; color:inherit;
   border-radius:12px; padding:14px 16px 16px; transition:border-color .18s;
+  background:var(--surface); border:1px solid var(--border);
 }
-.h2-seg:hover { color:inherit; text-decoration:none; }
-.h2-seg--p1 { background:var(--surface); border:1px solid var(--border); }
-.h2-seg--p2 { background:rgba(143,191,134,.07); border:1px solid color-mix(in srgb, var(--accent) 26%, transparent); }
-.h2-seg:hover { border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+.h2-seg:hover { color:inherit; text-decoration:none; border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
 .h2-seg-n { width:22px; height:22px; border-radius:7px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; }
-.h2-phase-rule { height:3px; border-radius:2px; }
+.h2-phase-rule { height:3px; border-radius:2px; background:color-mix(in srgb, #8fbf86 45%, transparent); }
 .h2-week-label { border-top:1px solid var(--border); padding-top:6px; }
 
 /* Audience rows */
@@ -161,7 +159,7 @@
               <b style="font-size:.9rem; font-weight:700;">فاز {{ p.n }} — {{ p.fa }}</b>
               <span style="font-size:.75rem; color:var(--faint);">{{ p.sprint }}</span>
             </div>
-            <div class="h2-phase-rule" style="background:{% if p.is_phase2 %}var(--accent){% else %}color-mix(in srgb, var(--accent) 34%, transparent){% endif %};"></div>
+            <div class="h2-phase-rule"></div>
           </div>
           {% endfor %}
         </div>
@@ -169,7 +167,7 @@
         <!-- Area segments -->
         <div class="h2-map-areas">
           {% for a in map_areas %}
-          <a href="#{{ a.anchor_id }}" class="h2-seg {% if a.is_phase2 %}h2-seg--p2{% else %}h2-seg--p1{% endif %}"
+          <a href="#{{ a.anchor_id }}" class="h2-seg"
              style="flex:{{ a.weeks }} 1 0; min-width:0;">
             <span style="display:flex; align-items:center; gap:8px;">
               <span class="h2-seg-n">{{ a.n }}</span>

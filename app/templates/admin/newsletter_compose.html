@@ -98,7 +98,7 @@
   {# ── Entry point: AI or manual ── #}
   <div class="nl-entry-btns">
     {% if ai_enabled %}
-    <form method="post" action="{{ url_for('admin_newsletter_ai_draft') }}" style="flex:1;min-width:200px;">
+    <form method="post" action="{{ url_for('admin_newsletter_ai_preview') }}" style="flex:1;min-width:200px;">
       <button type="submit" class="nl-entry-btn" style="width:100%;">
         <span class="btn-icon">🤖</span>
         <span class="btn-label">

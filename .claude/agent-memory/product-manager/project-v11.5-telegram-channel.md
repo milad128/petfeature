@@ -1,11 +1,11 @@
 ---
 name: project-v11.5-telegram-channel
-description: v11.5 Telegram Channel shipped July 2026 (commit 4a4cb8c) — replaced footer email form with @petfeature join strip; subscriber admin page kept live
+description: v11.5 Telegram Channel shipped July 2026 (commit 4a4cb8c) — @petfeature join strip in footer; email newsletter later removed entirely
 metadata:
   type: project
 ---
 
-v11.5 **SHIPPED** (commit 4a4cb8c, July 2026). Replaced the public footer email form with a Telegram channel join strip pointing to `https://t.me/petfeature`. v11 Subscriber admin page and DB table remain live.
+v11.5 **SHIPPED** (commit 4a4cb8c, July 2026). Replaced the public footer email form with a Telegram channel join strip pointing to `https://t.me/petfeature`. The email newsletter was subsequently removed from the product entirely (July 2026) — see [[project-email-newsletter-removed]].
 
 **Status:** Shipped
 
@@ -20,8 +20,8 @@ v11.5 **SHIPPED** (commit 4a4cb8c, July 2026). Replaced the public footer email 
 - Body: یادداشت تازه، کتاب جدید، ابزار کاربردی — هر بار که چیز جدیدی منتشر می‌شه، اول در کانال.
 - Button: عضویت در کانال
 
-**Prerequisite:** Revert all v11 email subscriber code before committing v11.5.
+**Follow-up:** all email subscriber code and the `subscribers` table still need removing.
 
-**How to apply:** When implementing v11.5, remind engineer to revert subscriber model/service/schema/migration/admin page/routes before touching base.html. [[project-v11-newsletter]]
+**How to apply:** Telegram is the only subscription channel. Never add an email subscription form. [[project-email-newsletter-removed]]
 
-**Unlocks:** v13 Newsletter Bot (Telegram auto-post). [[project-v13-newsletter-bot]]
+**Unlocks:** v13 Telegram digest. [[project-v13-newsletter-bot]]

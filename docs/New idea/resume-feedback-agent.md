@@ -1,8 +1,9 @@
 # Idea — Resume Feedback Agent (بازخورد رزومه)
 
+> **⚠️ Superseded by [resume-evaluation.md](./resume-evaluation.md)** (July 2026) — a researched, scored-out-of-100 version modelled on how [Resume Worded](https://resumeworded.com/) actually works, with a PM-specific rubric built on the competency depth matrix. Read that instead. This page is kept only as the original one-page sketch.
+>
 > **Status:** Raw idea — not scoped, not versioned. Captured July 2026.
 > **Depends on:** v12 User Auth (logged-in users only).
-> **Related:** [Personalized Learning Path](./pm-learning-roadmap.md#idea--resume-based-seniority-assessment--personalized-learning-path) — the sibling idea that reuses the same resume upload to generate a learning path.
 
 ---
 

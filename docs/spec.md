@@ -68,6 +68,7 @@ flowchart LR
 | **v4** | [Product Spec v4](./spec-v4-book-engagement.md) | Book Engagement | Star ratings and moderated comments on library books | **Shipped** |
 | **v5** | [Product Spec v5](./spec-v5-about-contact.md) | About Redesign + Contact | Redesigned About page (hero, experience, bootcamps) + new Contact page with admin inbox | **Shipped** |
 | **v6** | [Product Spec v6](./spec-v6-analytics.md) | Visitor Analytics | PageView event log, bot filtering, admin dashboard with period filters + top content + referrers | **Shipped** |
+| **v6.1** | [Product Spec v6.1](./spec-v6.1-roadmap-analytics.md) | Roadmap Analytics Extension | Classify `/path/*` routes in middleware; roadmap section in admin analytics dashboard | **Planned** |
 | **v7** | [Product Spec v7](./spec-v7-comment-replies.md) | Post Comment Replies | Admin can reply to approved blog post comments; replies shown publicly beneath the original comment | **Shipped** |
 | **v8** | [Product Spec v8](./spec-v8-content-enhancements.md) | Content Enhancements | Book media link "website" type; post related books; tool downloadable links (file + external URL) | **Shipped** |
 | **v9** | [Product Spec v9](./spec-v9-media-library.md) | Media Library + Book Link Types + Admin Filters | Admin media file manager; book link types article/book; admin books filter; cover preview fit; بلاگ→یادداشت rename | **Shipped** |
@@ -100,6 +101,7 @@ flowchart LR
 | [spec-v4-book-engagement.md](./spec-v4-book-engagement.md) | PRD for Book Engagement epic (shipped) |
 | [spec-v5-about-contact.md](./spec-v5-about-contact.md) | PRD for About Redesign + Contact Page (shipped) |
 | [spec-v6-analytics.md](./spec-v6-analytics.md) | PRD for Visitor Analytics (shipped) |
+| [spec-v6.1-roadmap-analytics.md](./spec-v6.1-roadmap-analytics.md) | PRD for Roadmap Analytics Extension — classify `/path/*` routes + roadmap dashboard section (planned) |
 | [spec-v7-comment-replies.md](./spec-v7-comment-replies.md) | PRD for Post Comment Replies (shipped) |
 | [spec-v8-content-enhancements.md](./spec-v8-content-enhancements.md) | PRD for Content Enhancements — book website links, post related books, tool downloadable links (shipped) |
 | [spec-v9-media-library.md](./spec-v9-media-library.md) | PRD for Media Library + Book Link Types + Admin Filters (shipped) |

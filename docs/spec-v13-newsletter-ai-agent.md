@@ -265,3 +265,72 @@ async def generate_draft(new_content: dict) -> str | None:
 | AI draft route + new content diff query | 2 hours |
 | Admin nav + config + env vars | 1 hour |
 | **Total** | **~2 days** |
+
+---
+
+## v13.1 Patch — Prompt Review Before AI Draft
+
+**Status:** Planned
+**Effort:** ~2–3 hours (UI change only; no model or service changes)
+
+### Problem
+
+The current flow sends the constructed prompt to Claude Haiku immediately on clicking "ایجاد پیش‌نویس". Milad cannot see or adjust the prompt before it is sent — if the system prompt or content list needs tweaking, there is no opportunity to intervene.
+
+### Change: Insert a Prompt Review Step
+
+**New flow:**
+
+```
+[ایجاد پیش‌نویس با هوش مصنوعی]
+        │
+        ▼
+POST /admin/newsletters/draft/ai/preview/
+        │  (query new content; build prompt; do NOT call Claude yet)
+        │
+        ▼
+┌─────────────────────────────────────────────────────┐
+│  پیش‌نمایش پرامپت                                  │
+│                                                     │
+│  System prompt:                                     │
+│  [textarea — pre-filled with SYSTEM_PROMPT]         │
+│                                                     │
+│  User message:                                      │
+│  [textarea — pre-filled with built user message]    │
+│                                                     │
+│  [ویرایش و ارسال به هوش مصنوعی]  [انصراف]         │
+└─────────────────────────────────────────────────────┘
+        │
+        ▼ POST /admin/newsletters/draft/ai/generate/
+          (send edited system prompt + user message to Claude Haiku)
+        │
+        ▼
+Compose panel — pre-filled with Claude output (existing flow)
+```
+
+### Acceptance Criteria
+
+- [ ] Clicking "ایجاد پیش‌نویس با هوش مصنوعی" goes to a **prompt review page** instead of calling Claude directly
+- [ ] Prompt review page shows two editable textareas: system prompt (pre-filled from `SYSTEM_PROMPT` constant) and user message (pre-filled from the dynamically built content list)
+- [ ] "انصراف" button returns to `/admin/newsletters/new/` without saving anything
+- [ ] "ویرایش و ارسال به هوش مصنوعی" submits the edited prompts via POST to the generate route
+- [ ] Generate route uses the **submitted** (possibly edited) prompt values — not the constants — when calling Claude Haiku
+- [ ] If no new content exists, the prompt review page still appears with the user message body showing the empty state, so Milad can manually override it if desired
+- [ ] Existing `SYSTEM_PROMPT` constant in `newsletter_ai.py` remains the source of the default pre-fill but is not used directly in the generate call when edited values are submitted
+
+### Technical Notes
+
+**New route:** `GET /admin/newsletters/draft/ai/preview/`
+- Queries new content, builds user message string, renders prompt review template
+- Does not call Claude — pure data prep
+
+**Modified route:** `POST /admin/newsletters/draft/ai/generate/`
+- Accepts `system_prompt` and `user_message` form fields from the prompt review form
+- Passes them directly to `anthropic.Anthropic().messages.create()` instead of the constants
+- Rest of the flow unchanged (save draft → redirect to compose)
+
+**New template:** `app/templates/admin/newsletter_prompt_review.html`
+- Two `<textarea>` fields in RTL layout; both editable
+- System prompt textarea: monospace font, ~8 rows
+- User message textarea: monospace font, ~12 rows (content list can be long)
+- Submit button sends both values as a POST form

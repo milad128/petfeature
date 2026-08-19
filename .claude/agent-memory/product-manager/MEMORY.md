@@ -4,9 +4,13 @@
 - [v8 Content Enhancements Shipped](project-v8-planned.md) — book media "website" type + post related books + tool downloadable links; shipped July 2026
 - [v9 Shipped](project-v9-planned.md) — Media Library + Book Link Types + Admin Books Filter + Cover Preview Fit + بلاگ→یادداشت; shipped July 2026
 - [v10 Post Related Books](project-v10-planned.md) — admin post form widget + public post detail display; PRD written July 2026, planned
-- [v11 Newsletter](project-v11-newsletter.md) — email subscriber form + admin list + Subscriber model; SHIPPED July 2026 (commit 8ffcb9e); admin page still live
 - [v11.5 Telegram Channel](project-v11.5-telegram-channel.md) — replaced footer email form with @petfeature join strip; SHIPPED July 2026 (commit 4a4cb8c)
 - [v12 User Registration + Auth](project-v12-user-auth.md) — email/password auth, sessions, profile, password reset; backlog; PRD written July 2026
-- [v13 Newsletter AI Draft Agent](project-v13-newsletter-bot.md) — campaign log + AI draft via Claude Haiku from new content diff; admin compose + send; no auto-posting; SHIPPED July 2026
+- [v13 Telegram Digest AI Agent](project-v13-newsletter-bot.md) — campaign log + AI draft via Claude Haiku from new content diff; admin compose + send to Telegram; no auto-posting; SHIPPED July 2026
 - [v13.5 Telegram Popup](project-v13.5-telegram-popup.md) — 30s delay modal → join @petfeature; localStorage dismiss; pure JS+CSS; no DB; ~2.5h; backlog
-- [v14 User Dashboard](project-v14-user-dashboard.md) — newsletter subscribe/unsubscribe (reuses Subscriber) + My Comments with status + admin replies; user_id FK on comments; ~2 days; backlog
+- [v14 User Dashboard](project-v14-user-dashboard.md) — Telegram channel link + My Comments with status + admin replies; user_id FK on comments; ~1.5 days; backlog
+- [v15 Bookshelf](project-v15-bookshelf.md) — قفسه کتاب; 3 statuses; private; social proof count; admin save column; ~2 days; blocked on v12
+- [Email Newsletter Removed](project-email-newsletter-removed.md) — email subscription cut from the product July 2026; Telegram is the only channel
+- [v16 Roadmap Shipped](project-v16-roadmap.md) — مسیر یادگیری; L0+L1 live, L2-L6 stubs; RoadmapResource + ImmigrationVideo admin CMS; SHIPPED July 2026
+- [v17 Learning Enrollment](project-v17-learning-enrollment.md) — enroll in roadmap levels, 5-status resource tracking, badges on profile; ~2.5 days; blocked on v12+v14; spec written Aug 2026
+- [v6.1 Roadmap Analytics](project-v6.1-roadmap-analytics.md) — classify /path/* routes in middleware + roadmap leaderboard in admin dashboard; ~3–4h; spec complete Aug 2026

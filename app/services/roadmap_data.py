@@ -43,21 +43,20 @@ LEVELS: list[Level] = [
         spec="تصمیم می‌گیرید که مدیریت محصول شغل درستی است یا نه، رزومه و نمونه‌کاری می‌سازید که به زبان محصول خوانده شود، سه فرمت مصاحبه را تمرین می‌کنید. رزومه درست می‌کنید و اپلای می‌کنید.",
         thesis="",
         required="۹",
-        reading="~۱۸٫۵ ساعت",
-        sprint="۱۲ هفته (~۳ ماه)",
+        reading="~۳ ساعت",
+        sprint="۱۲ هفته",
         tenure="۳ تا ۶ ماه",
         sprint_weeks=12,
         tenure_months=0,
         is_track=True,
-        flag="کمپین است، نه سطح — روزی که امضا کنید تمام می‌شود",
     ),
     Level(
         slug="apm",
         num="سطح ۱",
         fa="مبتدی (APM)",
         en="Associate PM",
-        spec="مبانی را یاد می‌گیرد، زیر نظر دیگران در اجرا سهم دارد و مهارت‌های پایه‌ی تحلیلی، فنی و ارتباطی را می‌سازد.",
-        thesis="TODO: APM thesis sentence",  # TODO
+        spec="مبانی را یاد می‌گیرید، زیر نظر یک PM یا لید در اجرا سهم دارید و مهارت‌های پایه‌ی تحلیلی، فنی و ارتباطی را می‌سازید.",
+        thesis="تمرکز این سطح برای توسعه محصول است و همچنین داکیومنت کردن و ارتباط مؤثر گرفتن با ذی‌نفعان.",
         required="۱۵",
         reading="~۵۳ ساعت",
         sprint="۳۱ هفته (~۷ ماه)",
@@ -147,9 +146,9 @@ LEVELS: list[Level] = [
 LEVEL_BY_SLUG: dict[str, Level] = {lv.slug: lv for lv in LEVELS}
 
 # Levels with full public pages in v16
-FULL_PAGE_SLUGS: set[str] = set()
+FULL_PAGE_SLUGS: set[str] = {"apm"}
 # Levels that show stub in v16
-STUB_SLUGS = {"apm", "pm", "senior-pm", "lead", "director", "cpo"}
+STUB_SLUGS = {"pm", "senior-pm", "lead", "director", "cpo"}
 
 
 # ── Competency definitions ──────────────────────────────────────────────────
@@ -191,7 +190,7 @@ COMPETENCY_BY_SLUG: dict[str, Competency] = {c.slug: c for c in COMPETENCIES}
 # 0 = not required ("—"), 1–5 = depth level
 
 DEPTH_MATRIX: dict[str, list[int]] = {
-    "product-discovery":     [3, 4, 4, 4, 5, 5],
+    "product-discovery":     [2, 4, 4, 4, 5, 5],
     "delivery-execution":    [3, 4, 4, 3, 2, 2],
     "prioritization":        [2, 4, 4, 4, 5, 5],
     "experimentation":       [1, 3, 4, 4, 4, 4],
@@ -233,24 +232,24 @@ class CompetencyLevelData:
 
 # APM (level_slug='apm') competency data
 APM_COMPETENCY_DATA: dict[str, CompetencyLevelData] = {
-    "delivery-execution":    CompetencyLevelData("core",       8,  6,  12.0),
-    "product-discovery":     CompetencyLevelData("core",       8,  6,  12.0),
-    "communication":         CompetencyLevelData("core",       6,  4,   8.0),
-    "technical-literacy":    CompetencyLevelData("core",       5,  4,   8.0),
-    "stakeholder-influence": CompetencyLevelData("supporting", 2,  6,   5.0),
-    "prioritization":        CompetencyLevelData("supporting", 2,  4,   5.0),
-    "data-metrics":          CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — در دل کار با داده‌ها"),
-    "business-acumen":       CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — با مشاهده‌ی جلسات"),
-    "experimentation":       CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — با نگاه کردن به آزمایش‌های تیم"),
-    "product-strategy":      CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — با خواندن استراتژی شرکت"),
-    "product-vision":        CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — با گوش دادن به رهبری"),
-    "market-competitive":    CompetencyLevelData("passive",    0,  0,   0.0,
-                              passive_how="رایگان به دست می‌آید — با زندگی در محصول"),
+    "delivery-execution":    CompetencyLevelData("core",        6,  6,   6.0),
+    "product-discovery":     CompetencyLevelData("core",        8,  6,   5.0),
+    "communication":         CompetencyLevelData("core",        6,  6,   4.5),
+    "technical-literacy":    CompetencyLevelData("core",        6,  4,  11.0),
+    "stakeholder-influence": CompetencyLevelData("supporting",  3,  3,   7.0),
+    "prioritization":        CompetencyLevelData("supporting",  2,  2,   0.5),
+    "data-metrics":          CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="چه متریک‌هایی برای محصول ست می‌شود و چرا"),
+    "business-acumen":       CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="محصول به چه روشی درآمد دارد و مدل درآمدی شرکت چگونه است"),
+    "experimentation":       CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="به چه روشی تست‌ها ست می‌شود و نتیجه‌ی آن‌ها بررسی می‌شود"),
+    "product-strategy":      CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="استراتژی محصول چیست و چرا چنین استراتژی‌ای ست شده است"),
+    "product-vision":        CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="چشم‌انداز محصول چیست و چرا چنین چشم‌اندازی ست شده است"),
+    "market-competitive":    CompetencyLevelData("passive",     0,  0,   0.0,
+                              passive_how="چگونه بازار و رقبا رصد می‌شود و گزارش‌ها به چه صورتی است"),
     # people-leadership, coaching-talent, org-design → not applicable at L1
 }
 
@@ -422,61 +421,135 @@ L0_PHASE_BY_SLUG: dict[str, L0Phase] = {p.slug: p for p in L0_PHASES}
 # Keys match section IDs; values are displayed verbatim in templates.
 
 APM_TEXTS: dict[str, str] = {
-    "entry_note": "TODO: APM entry section intro note",          # TODO
-    "entry_callout": "TODO: APM entry callout text (مسیر ۰ reference)",  # TODO
-    "entry_quote": "TODO: APM entry quote",                      # TODO
-    "entry_homework": "TODO: APM entry homework text",           # TODO
-    "core_note": "TODO: APM core section intro note",            # TODO
-    "supporting_note": "TODO: APM supporting section intro note",  # TODO
-    "passive_note": "TODO: APM passive section intro note",      # TODO
-    "sequence_note": "TODO: APM sequence section intro paragraph",  # TODO
-    "bridge_note": "TODO: APM bridge section intro note",        # TODO
+    "entry_note": (
+        "در ابتدا بهتر است بدانید که مدیر محصول چه وظیفه‌ای بر عهده دارد و چه چیزهایی بر عهده‌ی او نیست. "
+        "همچنین موفقیت و شکست یک مدیر محصول به چه عواملی بستگی دارد. "
+        "پس بهتر است با این شغل بیشتر آشنا شوید."
+    ),
+    "entry_callout": "TODO: APM entry callout text (مسیر ۰ reference)",
+    "entry_quote": "TODO: APM entry quote",
+    "entry_homework": "TODO: APM entry homework text",
+    "core_note": (
+        "هسته این نقش بر اساس توسعه و اجرا بسته شده است. زیرا مهم‌ترین وظیفه‌ی APM همین است. "
+        "برای اجرای بهتر این وظیفه حتماً نیاز به مهارت ارتباطی قوی و مستندسازی عالی خواهید داشت. "
+        "همچنین ادبیات اولیه‌ی کشف محصول را نیز باید یاد بگیرید."
+    ),
+    "supporting_note": "یک منبع اجباری برای هرکدام. کافی است که معتبر مشارکت کنید، نه که رهبری کنید.",
+    "passive_note": (
+        "شش شایستگی در عمق ۱ می‌مانند و نیازی نیست در پوزیشن APM روی آن‌ها تمرکز کنید. "
+        "در این پوزیشن بهترین روش کنجکاوی است؛ در مورد مهارت‌های زیر کنجکاو باشید که "
+        "به چه روشی در حال انجام است و سعی کنید به عنوان شنونده در جلسات مرتبط حضور داشته باشید."
+    ),
+    "sequence_note": "TODO: APM sequence section intro paragraph",
+    "bridge_note": (
+        "مهارت‌ها و شایستگی‌های پل به مهارت‌هایی گفته می‌شود که برای سطح APM نیست، "
+        "اما اگر آن‌ها را یاد بگیرید پیشرفت و ارتقای سطح خود را تسهیل می‌کنید "
+        "و این سیگنال را به مدیر شما می‌دهد که آماده‌ی رفتن به سطح بعد هستید.\n"
+        "به این شرط که مهارت‌های قبلی را به خوبی یاد گرفته باشید و در کار استفاده کرده باشید."
+    ),
     "tenure_bar_note": "۱۲ تا ۲۴ ماه تصدی — ۷ ماه اسپرینت",
-    "tenure_bar_body": "TODO: APM tenure bar explanation",       # TODO
-    "asks_note": "TODO: APM competency table intro",             # TODO
+    "tenure_bar_body": "TODO: APM tenure bar explanation",
+    "asks_note": "چهار شایستگی هسته، دو حمایتی، شش تای رایگان. سه شایستگی رهبری اصلاً بخشی از این شغل نیستند.",
 }
 
-# Per-core-competency richtext (shown expanded in the core <details> card)
+# Per-core-competency richtext (shown in core section body)
 APM_CORE_RATIONALE: dict[str, dict[str, str]] = {
     "delivery-execution": {
-        "rationale": "TODO: why delivery-execution is core for APM",    # TODO
-        "quote": "TODO: quote for delivery-execution",                  # TODO
-        "practice": "TODO: practice exercise for delivery-execution",   # TODO
+        "rationale": "توسعه و اجرا اولین و مهم‌ترین وظیفه‌ی یک APM است.",
+        "quote": (
+            "«چرا Scrum قبل از Shape Up؟» اسکرام چیزی است که اکثر تیم‌ها اجرا می‌کنند؛ "
+            "Shape Up جایگزینی است که بعداً می‌بینید. اول پیش‌فرض را بشناسید."
+        ),
+        "practice": (
+            "جریان «ایده تا تحویل» تیم‌تان را به شکل یک دیاگرام بکشید. "
+            "جایی که گیر می‌کند را علامت بزنید."
+        ),
     },
     "product-discovery": {
-        "rationale": "TODO: why product-discovery is core for APM",     # TODO
-        "quote": "TODO: quote for product-discovery",                   # TODO
-        "practice": "TODO: practice exercise for product-discovery",    # TODO
+        "rationale": (
+            "کشف محصول تقریباً یکی از سخت‌ترین و البته مهم‌ترین مهارت‌های مدیر محصول است "
+            "که در پیشرفت کاری در آینده ملاک ارزیابی قرار خواهد گرفت. "
+            "برای شروع، یک APM نیاز دارد بتواند با کاربر تعامل کند و نیازهای کاربر را تشخیص دهد."
+        ),
+        "quote": (
+            "«چرا اول تست مامان؟» سریع‌ترین راه از صفر به هدرندادن مصاحبه‌هاست. "
+            "قبل از اولین تماس کاربری، در یک نشست بخوانیدش."
+        ),
+        "practice": (
+            "۵ مصاحبه فقط با سبک پرسش تست مامان انجام دهید — بدون فروش راه‌حل، بدون سؤال جهت‌دار. "
+            "سه الگویی که در هر پنج تا شنیدید را بنویسید."
+        ),
     },
     "communication": {
-        "rationale": "TODO: why communication is core for APM",         # TODO
-        "quote": "TODO: quote for communication",                       # TODO
-        "practice": "TODO: practice exercise for communication",        # TODO
+        "rationale": (
+            "برای کشف و توسعه‌ی محصول نیاز به تعامل زیاد و خوب با کاربران و سایر ذی‌نفعان دارید. "
+            "این تعامل گاهی به‌صورت مستقیم و گاهی نیز با داکیومنت‌هاست. "
+            "برای همین یکی از مهم‌ترین مهارت‌هایی که سایر مهارت‌ها را به هم متصل می‌کند "
+            "همین ارتباط و نوشتن است. این مهارت را جدی بگیرید."
+        ),
+        "quote": (
+            "«چرا Writing for Busy Readers و نه یک راهنمای نوشتن مخصوص PM؟» "
+            "نوشته‌ی PM به این دلیل شکست می‌خورد که کسی نمی‌خواندش. "
+            "این کتاب مسئله‌ی خواندن را حل می‌کند، نه مسئله‌ی نوشتن را."
+        ),
+        "practice": (
+            "برای قابلیتی که هر روز استفاده می‌کنید یک PRD کامل بنویسید: "
+            "مسئله، داستان کاربر، معیار پذیرش، حالت‌های لبه، و صراحتاً آنچه نمی‌سازید."
+        ),
     },
     "technical-literacy": {
-        "rationale": "TODO: why technical-literacy is core for APM",    # TODO
-        "quote": "TODO: quote for technical-literacy",                  # TODO
-        "practice": "TODO: practice exercise for technical-literacy",   # TODO
+        "rationale": (
+            "به دلیل ارتباط بسیار زیاد با هم‌تیمی‌های فنی، داشتن سطح حداقلی از سواد فنی "
+            "به شما کمک می‌کند تا بتوانید ارتباط بهتری با اعضای فنی شرکت و تیم بگیرید "
+            "و همچنین در محصولاتی که نیاز بیشتری به این دانش است، ضریب شکست خود را کاهش دهید."
+        ),
+        "quote": (
+            "«چرا یک دوره‌ی کامل برنامه‌نویسی نه؟» قرار نیست مهندس شوید. "
+            "هدف: بفهمید چه چیزی سخت است، چه چیزی ساده، و چه چیزی ممکن. همان‌جا بایستید."
+        ),
+        "practice": (
+            "از یک مهندس بخواهید یک قابلیت را فنی توضیح دهد. "
+            "همان را برای یک آدم غیرفنی توضیح دهید. "
+            "هر دو جهت که کار کرد، روی ۳ هستید."
+        ),
     },
 }
 
 # Per-supporting-competency (shown in supporting section cards)
 APM_SUPPORTING_DETAIL: dict[str, dict[str, str]] = {
     "stakeholder-influence": {
-        "owner_note": "TODO: who owns stakeholder-influence at APM level",   # TODO
+        "owner_note": (
+            "وظیفه‌ی اصلی مدیریت ذی‌نفعان و ارتباط با مدیران با PM است، "
+            "اما گاهی فرصتی پیش می‌آید که شما هم برای دیگران مطلبی یا "
+            "خروجی یک اسپرینت را ارائه کنید. باید برای این فرصت‌ها آماده باشید."
+        ),
+        "homework": (
+            "یک گفت‌وگوی سختی که به تعویق انداخته‌اید را بنویسید: "
+            "واقعیت‌ها چیست، داستان شما چیست، و چه چیزی واقعاً می‌خواهید. "
+            "بعد انجامش دهید."
+        ),
+        "optional": "عمیق‌تر (اختیاری): Never Split the Difference — Chris Voss · ۷ ساعت",
     },
     "prioritization": {
-        "owner_note": "TODO: who owns prioritization at APM level",          # TODO
+        "owner_note": (
+            "PM شما مالک بک‌لاگ است؛ شما به تصمیم‌گیری PM در مورد بک‌لاگ کمک می‌کنید. "
+            "پس بهتر است روش‌های اولویت‌بندی را بدانید."
+        ),
+        "homework": (
+            "کل بک‌لاگ فعلی تیم را با RICE امتیاز دهید. "
+            "نتیجه را نزد PM ببرید و از سه موردی که متفاوت از او رتبه داده‌اید دفاع کنید."
+        ),
+        "optional": "",
     },
 }
 
-# APM bridge checklist items (hardcoded, never in DB)
+# APM ready-check items — "آماده‌ی مدیر محصول هستید وقتی"
 APM_BRIDGE_CHECKLIST: list[str] = [
-    "TODO: bridge checklist item 1",  # TODO
-    "TODO: bridge checklist item 2",  # TODO
-    "TODO: bridge checklist item 3",  # TODO
-    "TODO: bridge checklist item 4",  # TODO
-    "TODO: bridge checklist item 5",  # TODO
+    "دست‌کم یک فیچر را از ابتدا تا انتها با کم‌ترین کمک توسعه داده‌اید.",
+    "می‌توانید توضیح دهید چرا یک تصمیم گرفته شد، نه فقط چه چیزی ساخته شد.",
+    "بیش از ۱۰ مصاحبه‌ی کاربری انجام داده‌اید و یافته‌ها را به insightی تبدیل کرده‌اید که به تصمیم‌گیری کمک می‌کند.",
+    "می‌توانید داشبورد تیم را بخوانید و درباره‌اش سؤال درستی بپرسید.",
+    "داکیومنتِ PRD می‌نویسید که تیم فنی با کمترین سؤال بتواند بسازدش.",
 ]
 
 # L0 immigration interview videos (placeholder — fill titles/URLs when ready)

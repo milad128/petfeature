@@ -72,6 +72,8 @@ def _depth_chip_color(depth: int) -> str:
 
 async def get_landing_context(db: AsyncSession) -> dict:
     """Build context dict for GET /path/."""
+    hiring_stats = await _get_hiring_display_stats(db)
+
     # One query: count resources per level
     stmt = (
         select(RoadmapResource.level_slug, func.count(RoadmapResource.id))
@@ -85,7 +87,7 @@ async def get_landing_context(db: AsyncSession) -> dict:
     level_cards = []
     for lv in LEVELS:
         pct = _bar_pct(lv.sprint_weeks, lv.tenure_months)
-        level_cards.append({
+        card = {
             "slug": lv.slug,
             "num": lv.num,
             "fa": lv.fa,
@@ -104,7 +106,10 @@ async def get_landing_context(db: AsyncSession) -> dict:
             "is_full_page": lv.slug in FULL_PAGE_SLUGS,
             "is_hiring": lv.slug == "hiring",
             "db_count": counts.get(lv.slug, 0),
-        })
+        }
+        if lv.slug == "hiring":
+            card.update(hiring_stats)
+        level_cards.append(card)
 
     # Build matrix rows
     matrix_rows = _build_matrix_rows()
@@ -118,6 +123,7 @@ async def get_landing_context(db: AsyncSession) -> dict:
         "depth_labels": DEPTH_LABELS,
         "four_categories": FOUR_CATEGORIES,
         "matrix_rows": matrix_rows,
+        "hiring_stats": hiring_stats,
     }
 
 
@@ -174,6 +180,38 @@ def _build_matrix_rows() -> list[dict]:
 
 def _sum_resource_reading_hours(resources: list[RoadmapResource]) -> float:
     return sum(parse_reading_time_to_hours(r.reading_time) for r in resources)
+
+
+async def _get_hiring_display_stats(db: AsyncSession) -> dict[str, str]:
+    """Stats for the hiring hero aside and the roadmap L0 card."""
+    stmt = (
+        select(RoadmapResource)
+        .where(RoadmapResource.level_slug == "hiring")
+        .order_by(RoadmapResource.sort_order.asc())
+    )
+    result = await db.execute(stmt)
+    all_resources: list[RoadmapResource] = list(result.scalars().all())
+
+    resources_by_area: dict[str, list[RoadmapResource]] = {}
+    for r in all_resources:
+        key = r.area_slug or "__no_area__"
+        resources_by_area.setdefault(key, []).append(r)
+
+    total_reading_hours = sum(
+        _sum_resource_reading_hours(resources_by_area.get(area.slug, []))
+        for area in L0_AREAS
+    )
+    reading = (
+        f"~{format_reading_hours(total_reading_hours)}"
+        if total_reading_hours > 0
+        else "—"
+    )
+    return {
+        "required": "۹",
+        "reading": reading,
+        "sprint": "۱۲ هفته",
+        "tenure": "۳ تا ۶ ماه",
+    }
 
 
 async def get_hiring_context(db: AsyncSession) -> dict:
@@ -264,20 +302,12 @@ async def get_hiring_context(db: AsyncSession) -> dict:
             })
 
     # Stats for the hero aside
-    total_reading_hours = sum(
-        _sum_resource_reading_hours(resources_by_area.get(area.slug, []))
-        for area in L0_AREAS
-    )
-    reading_fact = (
-        f"~{format_reading_hours(total_reading_hours)}"
-        if total_reading_hours > 0
-        else "—"
-    )
+    stats = await _get_hiring_display_stats(db)
     facts = [
-        {"label": "منابع اجباری", "value": "۹",           "accent": False},
-        {"label": "مطالعه",       "value": reading_fact,  "accent": False},
-        {"label": "زمان کار",     "value": "۱۲ هفته",      "accent": True},
-        {"label": "طول مسیر",     "value": "۳ تا ۶ ماه",   "accent": True},
+        {"label": "منابع اجباری", "value": stats["required"], "accent": False},
+        {"label": "مطالعه",       "value": stats["reading"],  "accent": False},
+        {"label": "زمان کار",     "value": stats["sprint"],   "accent": True},
+        {"label": "طول مسیر",     "value": stats["tenure"],   "accent": True},
     ]
 
     return {
@@ -326,6 +356,7 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     # Group core resources by competency
     core_competencies = []
     comp_data = APM_COMPETENCY_DATA if level_slug == "apm" else {}
+    station_idx = 1
     for slug, cd in comp_data.items():
         if cd.category != "core":
             continue
@@ -350,7 +381,10 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "rationale": rationale.get("rationale", ""),
             "quote": rationale.get("quote", ""),
             "practice": rationale.get("practice", ""),
+            "station_n": _fa(station_idx),
+            "station_id": f"station-{station_idx}",
         })
+        station_idx += 1
 
     # Supporting competencies
     supporting_competencies = []
@@ -375,7 +409,12 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "reading_hours_display": format_reading_hours(cd.reading_hours),
             "resources": resources,
             "owner_note": detail.get("owner_note", ""),
+            "homework": detail.get("homework", ""),
+            "optional": detail.get("optional", ""),
+            "station_n": _fa(station_idx),
+            "station_id": f"station-{station_idx}",
         })
+        station_idx += 1
 
     # Passive competencies
     passive_competencies = []
@@ -390,6 +429,17 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "depth": depth,
             "depth_label": DEPTH_LABELS.get(depth, ""),
             "passive_how": cd.passive_how,
+            "is_na": False,
+        })
+    # Combined leadership row (not applicable at L1)
+    if level_slug == "apm":
+        passive_competencies.append({
+            "slug": "leadership-combined",
+            "fa": "رهبری افراد · کوچینگ · طراحی سازمان",
+            "depth": 0,
+            "depth_label": "—",
+            "passive_how": "اصلاً بخشی از این شغل نیست.",
+            "is_na": True,
         })
 
     # Competency table (all non-passive for this level)
@@ -398,7 +448,7 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     # Gantt data for sequence section
     sequence_gantt = _build_sequence_gantt(level_slug, comp_data)
 
-    return {
+    ctx: dict = {
         "is_stub": False,
         "level": lv,
         "texts": APM_TEXTS if level_slug == "apm" else {},
@@ -413,6 +463,14 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
         "levels": LEVELS,
         "depth_labels": DEPTH_LABELS,
     }
+
+    if level_slug == "apm":
+        map_stations, map_bands, map_tail = _build_apm_map(comp_data)
+        ctx["map_stations"] = map_stations
+        ctx["map_bands"] = map_bands
+        ctx["map_tail"] = map_tail
+
+    return ctx
 
 
 def _build_asks_table(level_slug: str, comp_data: dict) -> list[dict]:
@@ -468,6 +526,68 @@ def _build_sequence_gantt(level_slug: str, comp_data: dict) -> list[dict]:
         })
         week_cursor = end + 1
     return bars
+
+
+def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict], list[dict]]:
+    """Build map section data (bands, stations, tail) for the APM page."""
+    stations: list[dict] = []
+    core_weeks = 0
+    supp_weeks = 0
+    idx = 1
+    cursor = 0
+
+    for slug, cd in comp_data.items():
+        if cd.category not in ("core", "supporting"):
+            continue
+        comp = COMPETENCY_BY_SLUG[slug]
+        from_w = cursor + 1
+        to_w = cursor + cd.sprint_weeks
+        cursor = to_w
+        if cd.category == "core":
+            core_weeks += cd.sprint_weeks
+        else:
+            supp_weeks += cd.sprint_weeks
+        stations.append({
+            "n": _fa(idx),
+            "station_n": idx,
+            "name": comp.fa,
+            "sprint": f"{_fa(cd.sprint_weeks)} هفته",
+            "week_range": f"هفته {_fa(from_w)}–{_fa(to_w)}",
+            "weeks": cd.sprint_weeks,
+            "href": f"#station-{idx}",
+            "category": cd.category,
+        })
+        idx += 1
+
+    bands = [
+        {
+            "fa": "هسته",
+            "note": f"{_fa(core_weeks)} هفته · چهار شایستگی",
+            "weeks": core_weeks,
+        },
+        {
+            "fa": "حمایتی",
+            "note": f"{_fa(supp_weeks)} هفته",
+            "weeks": supp_weeks,
+        },
+    ]
+
+    tail = [
+        {
+            "label": "ماه ۸ تا ۱۵ — بدون اسپرینت",
+            "note": "چیزی برای خواندن نمانده؛ همه‌چیز در حال رسیدن است.",
+            "kind": "gap",
+            "flex": 7,
+        },
+        {
+            "label": "ماه ۱۵ تا ۱۸ — پل",
+            "note": "فقط خواندن، آماده‌سازی برای مدیر محصول.",
+            "kind": "bridge",
+            "flex": 3,
+        },
+    ]
+
+    return stations, bands, tail
 
 
 # ── Admin queries ─────────────────────────────────────────────────────────────

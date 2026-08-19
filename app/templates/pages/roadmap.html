@@ -89,11 +89,6 @@
 .rm-cat-fa { font-size:1.02rem; font-weight:700; }
 .rm-cat-desc { font-size:.9rem; color:var(--muted); line-height:1.9; }
 .rm-cat-when { font-size:.78rem; color:var(--faint); white-space:nowrap; }
-.rm-cat-chips { display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
-.rm-cat-chip {
-  font-size:.8rem; color:var(--muted); background:var(--raise);
-  border:1px dashed var(--border-2); border-radius:8px; padding:7px 14px;
-}
 
 /* Depth matrix */
 .rm-matrix-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
@@ -300,8 +295,8 @@
         <b class="rm-fork-title">آمادگی برای مصاحبه و استخدام</b>
         <p class="rm-fork-body">برای آماده شدن برای مصاحبه نیاز به یک رزومه قوی و قابل دفاع دارید، سپس برای مصاحبه‌های عمومی و تخصصی مدیریت محصول باید تمرین کنید. در این بخش تمام منابع و آموزش‌های مورد نیاز برای رزومه و مصاحبه قرار دارد.</p>
         <div class="rm-fork-chips">
-          <span class="rm-fork-chip">۹ منبع · ~۱۸٫۵ ساعت</span>
-          <span class="rm-fork-chip">۱۲ هفته اسپرینت</span>
+          <span class="rm-fork-chip">{{ hiring_stats.required }} منبع · {{ hiring_stats.reading }}</span>
+          <span class="rm-fork-chip">{{ hiring_stats.sprint }} اسپرینت</span>
         </div>
         <span class="rm-fork-cta" style="color:#8fbf86;">مسیر استخدام را ببینم ←</span>
       </a>
@@ -370,11 +365,6 @@
       </li>
       {% endfor %}
     </ol>
-    <div class="rm-cat-chips">
-      <span class="rm-cat-chip">رایگان به دست می‌آید — عمق ۱، بدون منبع</span>
-      <span class="rm-cat-chip">تثبیت — عمق بدون تغییر، بدون مطالعه‌ی جدید</span>
-      <span class="rm-cat-chip" style="color:#d98878; border-color:rgba(217,136,120,.4);">عقب بکشید — عمق عمداً کاهش می‌یابد</span>
-    </div>
   </div>
 </section>
 

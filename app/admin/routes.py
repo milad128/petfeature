@@ -2084,22 +2084,59 @@ async def admin_newsletter_new(
 @router.post("/newsletters/draft/ai/", name="admin_newsletter_ai_draft")
 async def admin_newsletter_ai_draft(
     request: Request,
+):
+    """Legacy entry point — redirect to the prompt review step."""
+    if redirect := _guard_admin(request):
+        return redirect
+    return RedirectResponse("/admin/newsletters/draft/ai/preview/", status_code=303)
+
+
+@router.post("/newsletters/draft/ai/preview/", name="admin_newsletter_ai_preview")
+async def admin_newsletter_ai_preview(
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
+    """Build prompts from new content and show the review page — no Claude call yet."""
     if redirect := _guard_admin(request):
         return redirect
 
     if not settings.gapgpt_api_key:
         return RedirectResponse("/admin/newsletters/new/", status_code=303)
 
-    draft_text = await newsletter_ai.generate_draft(db)
+    system_prompt, user_message = await newsletter_ai.build_prompts(db)
 
-    if draft_text == "":
-        # No new content since last send
-        return RedirectResponse(
-            "/admin/newsletters/new/?flash=no_content",
-            status_code=303,
-        )
+    return templates.TemplateResponse(
+        request,
+        "admin/newsletter_prompt_review.html",
+        _admin_context(
+            request,
+            page_title="پیش‌نمایش پرامپت هوش مصنوعی",
+            active_nav="newsletters",
+            system_prompt=system_prompt,
+            user_message=user_message,
+        ),
+    )
+
+
+@router.post("/newsletters/draft/ai/generate/", name="admin_newsletter_ai_generate")
+async def admin_newsletter_ai_generate(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    system_prompt: str = Form(""),
+    user_message: str = Form(""),
+):
+    """Accept edited prompts, call GapGPT, save draft, redirect to compose."""
+    if redirect := _guard_admin(request):
+        return redirect
+
+    if not settings.gapgpt_api_key:
+        return RedirectResponse("/admin/newsletters/new/", status_code=303)
+
+    draft_text = await newsletter_ai.generate_draft(
+        db,
+        system_prompt=system_prompt.strip() or None,
+        user_message=user_message.strip() or None,
+    )
 
     if draft_text is None:
         # API failure

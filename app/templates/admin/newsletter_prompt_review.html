@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+
+{% block extra_head %}
+<style>
+/* ── Layout ── */
+.nl-review-card { max-width: 900px; }
+
+/* ── Section label ── */
+.nl-review-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--muted); margin-bottom: 8px;
+}
+
+/* ── Textareas ── */
+.nl-review-textarea {
+  width: 100%; box-sizing: border-box;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; font-size: .85rem;
+  font-family: monospace; color: var(--text); line-height: 1.8;
+  resize: vertical; direction: ltr; text-align: left;
+}
+.nl-review-textarea:focus { outline: none; border-color: var(--border-2); }
+
+/* ── Actions ── */
+.nl-review-actions {
+  display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end;
+  align-items: center;
+}
+.nl-review-cancel {
+  font-size: .9rem; color: var(--muted); text-decoration: none;
+  padding: 6px 12px;
+}
+.nl-review-cancel:hover { color: var(--text); }
+
+/* ── Info note ── */
+.nl-review-note {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 8px; padding: 12px 16px; margin-bottom: 24px;
+  font-size: .88rem; line-height: 1.7;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card nl-review-card">
+
+  <div class="nl-review-note">
+    پرامپت‌های زیر بر اساس محتوای جدید سایت ساخته شده‌اند. قبل از ارسال به هوش مصنوعی می‌توانید آن‌ها را ویرایش کنید.
+  </div>
+
+  <form method="post" action="{{ url_for('admin_newsletter_ai_generate') }}">
+
+    {# System prompt #}
+    <div style="margin-bottom: 20px;">
+      <div class="nl-review-label">پرامپت سیستم</div>
+      <textarea
+        class="nl-review-textarea"
+        name="system_prompt"
+        rows="8"
+      >{{ system_prompt }}</textarea>
+    </div>
+
+    {# User message #}
+    <div style="margin-bottom: 4px;">
+      <div class="nl-review-label">پیام کاربر</div>
+      <textarea
+        class="nl-review-textarea"
+        name="user_message"
+        rows="12"
+      >{{ user_message }}</textarea>
+    </div>
+
+    <div class="nl-review-actions">
+      <a href="{{ url_for('admin_newsletter_new') }}" class="nl-review-cancel">انصراف</a>
+      <button type="submit" class="btn btn-primary">ویرایش و ارسال به هوش مصنوعی</button>
+    </div>
+
+  </form>
+
+</div>
+{% endblock %}
