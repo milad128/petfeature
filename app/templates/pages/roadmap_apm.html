@@ -58,13 +58,6 @@
 .ra-tag-opt { font-size: .72rem; font-weight: 600; color: var(--faint); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
 .ra-tag-meta { font-size: .74rem; color: var(--muted); background: rgba(236,229,220,.05); border-radius: 6px; padding: 3px 9px; white-space: nowrap; }
 
-/* Quote callout */
-.ra-quote { margin-top: 22px; border-inline-start: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); padding: 2px 18px; font-size: .92rem; color: var(--text); font-weight: 300; line-height: 2.1; }
-
-/* Practice / homework block */
-.ra-hw { margin-top: 16px; background: rgba(236,229,220,.035); border-radius: 12px; padding: 14px 16px; }
-.ra-hw-lbl { font-size: .7rem; font-weight: 700; color: var(--sprout); letter-spacing: .04em; }
-
 /* Asks table */
 .ra-asks-scroll { overflow-x: auto; }
 .ra-asks-scroll::-webkit-scrollbar { height: 8px; }
@@ -133,6 +126,7 @@
 {% block content %}
 {% set lv = level %}
 {% set tx = texts %}
+{% set hero_stats = stats if stats is defined else {'required': lv.required, 'reading': lv.reading} %}
 
 {# ── Level strip ─────────────────────────────────────────────── #}
 <div class="ra-strip-wrap">
@@ -187,11 +181,11 @@
       <div class="ra-facts" style="margin-top:20px;">
         <div class="ra-fact">
           <span class="ra-fact-lbl">منابع اجباری</span>
-          <b class="ra-fact-val">{{ lv.required }}</b>
+          <b class="ra-fact-val">{{ hero_stats.required }}</b>
         </div>
         <div class="ra-fact">
           <span class="ra-fact-lbl">مطالعه</span>
-          <b class="ra-fact-val">{{ lv.reading }}</b>
+          <b class="ra-fact-val">{{ hero_stats.reading }}</b>
         </div>
         <div class="ra-fact">
           <span class="ra-fact-lbl">اسپرینت</span>
@@ -213,7 +207,7 @@
       <h2 style="font-size:1.7rem; font-weight:800;">هجده ماه، شش ایستگاه</h2>
       <span style="font-size:.8rem; color:var(--faint);">{{ lv.sprint_weeks }} هفته اسپرینت · مابقی بلوغ</span>
     </div>
-    <p class="ra-note" style="margin-top:12px; margin-bottom:28px;">برای گذشتن از این سطح عجله نکنید. موارد بیسیک را در این سطح یاد خواهید گرفت. تمرکز اصلی در این سطح این است که بتوانید با کاربران و ذی‌نفعان تعامل کنید و توسعه‌ی محصول را به‌خوبی و تنهایی رهبری کنید.</p>
+    <p class="ra-note" style="margin-top:12px; margin-bottom:28px;">برای گذشتن از این سطح عجله نکنید. موارد بیسیک را در این سطح یاد خواهید گرفت. تمرکز اصلی در این سطح این است که بتوانید با کاربران و ذی‌نفعان تعامل کنید و توسعه محصول را (نه کشف محصول) به‌خوبی و تنهایی رهبری کنید.</p>
 
     <div class="ra-scroll" style="overflow-x:auto; padding-bottom:6px;">
       <div style="min-width:700px;">
@@ -254,19 +248,6 @@
           {% endfor %}
         </div>
 
-        {# Tail: maturation gap + bridge #}
-        <div style="display:flex; gap:6px; margin-top:16px;">
-          {% for t in map_tail %}
-          {% if t.kind == 'gap' %}
-          <div style="flex:{{ t.flex }} 1 0; min-width:0; border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); background:repeating-linear-gradient(-45deg, color-mix(in srgb, var(--sprout) 12%, transparent) 0 6px, transparent 6px 12px); border-radius:12px; padding:14px 16px; color:var(--sprout);">
-          {% else %}
-          <div style="flex:{{ t.flex }} 1 0; min-width:0; border:1px solid var(--border); background:rgba(236,229,220,.04); border-radius:12px; padding:14px 16px; color:var(--muted);">
-          {% endif %}
-            <b style="display:block; font-size:.82rem; font-weight:700; line-height:1.6;">{{ t.label }}</b>
-            <span style="font-size:.74rem; line-height:1.8; opacity:.8;">{{ t.note }}</span>
-          </div>
-          {% endfor %}
-        </div>
       </div>
     </div>
   </div>
@@ -345,7 +326,7 @@
     <div class="ra-split">
       <div>
         <span style="display:inline-block; font-size:.7rem; font-weight:700; color:var(--sprout); border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); border-radius:6px; padding:4px 11px; margin-bottom:14px;">پیش از عنوان</span>
-        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">آشنایی با مدیریت محصول</h2>
+        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">آشنایی نقش و وظایف مدیر محصول</h2>
       </div>
       <div class="ra-split-body">
         {% if tx.entry_note and not tx.entry_note.startswith('TODO') %}
@@ -397,11 +378,11 @@
           <span class="ra-rail-n">{{ comp.station_n }}</span>
         </div>
         <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75;">{{ comp.fa }}</b>
-        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق {{ comp.depth }}</span>
+        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق {{ comp.depth | fa_digits }}</span>
         <div class="ra-chips" style="margin-top:14px;">
           <span class="ra-chip-read">مطالعه {{ comp.reading_hours_display }}</span>
-          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks }}w</span>
-          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months }}m</span>
+          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks | fa_digits }} هفته</span>
+          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months | fa_digits }} ماه</span>
         </div>
       </div>
 
@@ -435,15 +416,6 @@
           {% endfor %}
         </div>
 
-        {% if comp.quote and not comp.quote.startswith('TODO') %}
-        <div class="ra-quote">{{ comp.quote }}</div>
-        {% endif %}
-        {% if comp.practice and not comp.practice.startswith('TODO') %}
-        <div class="ra-hw" style="margin-top:16px; border-inline-start:3px solid var(--sprout);">
-          <b class="ra-hw-lbl">تمرین</b>
-          <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ comp.practice }}</p>
-        </div>
-        {% endif %}
       </div>
     </div>
     {% endfor %}
@@ -468,8 +440,8 @@
         <b style="display:block; font-size:1.05rem; font-weight:700; line-height:1.75;">{{ comp.fa }}</b>
         <div class="ra-chips" style="margin-top:14px;">
           <span class="ra-chip-read">مطالعه {{ comp.reading_hours_display }}</span>
-          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks }}w</span>
-          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months }}m</span>
+          <span class="ra-chip-sprint">اسپرینت {{ comp.sprint_weeks | fa_digits }} هفته</span>
+          <span class="ra-chip-mat">بلوغ {{ comp.maturation_months | fa_digits }} ماه</span>
         </div>
       </div>
       <div>
@@ -497,12 +469,6 @@
           </div>
           {% endfor %}
         </div>
-        {% if comp.homework %}
-        <div class="ra-hw" style="border-inline-start:3px solid color-mix(in srgb, var(--accent) 55%, transparent);">
-          <b style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.04em;">تکلیف</b>
-          <p style="font-size:.88rem; color:var(--muted); line-height:2; margin-top:4px;">{{ comp.homework }}</p>
-        </div>
-        {% endif %}
         {% if comp.optional %}
         <p style="margin-top:14px; font-size:.8rem; color:var(--faint);">{{ comp.optional }}</p>
         {% endif %}
@@ -594,7 +560,7 @@
       <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
       <span style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.06em;">پایان سطح ۱</span>
     </div>
-    <h2 style="font-size:2rem; font-weight:800; line-height:1.5; max-width:760px;">آماده‌ی مدیر محصول هستید وقتی:</h2>
+    <h2 style="font-size:2rem; font-weight:800; line-height:1.5; max-width:760px;">آماده‌ی مدیر محصول هستید وقتی دوره بلوغ را گذرانده‌اید و همچنین:</h2>
 
     <div style="display:grid; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:14px; overflow:hidden; max-width:820px; margin-top:26px;">
       {% for item in bridge_checklist %}

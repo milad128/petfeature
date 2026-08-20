@@ -182,6 +182,20 @@ def _sum_resource_reading_hours(resources: list[RoadmapResource]) -> float:
     return sum(parse_reading_time_to_hours(r.reading_time) for r in resources)
 
 
+def build_level_display_stats(resources: list[RoadmapResource]) -> dict[str, str]:
+    """Hero aside stats: required resource count + total reading hours."""
+    required_count = sum(1 for r in resources if r.is_required)
+    total_reading_hours = _sum_resource_reading_hours(resources)
+    return {
+        "required": _fa(required_count) if required_count else "—",
+        "reading": (
+            f"~{format_reading_hours(total_reading_hours)}"
+            if total_reading_hours > 0
+            else "—"
+        ),
+    }
+
+
 async def _get_hiring_display_stats(db: AsyncSession) -> dict[str, str]:
     """Stats for the hiring hero aside and the roadmap L0 card."""
     stmt = (
@@ -448,9 +462,12 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     # Gantt data for sequence section
     sequence_gantt = _build_sequence_gantt(level_slug, comp_data)
 
+    stats = build_level_display_stats(all_resources)
+
     ctx: dict = {
         "is_stub": False,
         "level": lv,
+        "stats": stats,
         "texts": APM_TEXTS if level_slug == "apm" else {},
         "entry_resources": resources_by_cat.get("entry", []),
         "core_competencies": core_competencies,
@@ -465,10 +482,9 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     }
 
     if level_slug == "apm":
-        map_stations, map_bands, map_tail = _build_apm_map(comp_data)
+        map_stations, map_bands = _build_apm_map(comp_data)
         ctx["map_stations"] = map_stations
         ctx["map_bands"] = map_bands
-        ctx["map_tail"] = map_tail
 
     return ctx
 
@@ -528,8 +544,8 @@ def _build_sequence_gantt(level_slug: str, comp_data: dict) -> list[dict]:
     return bars
 
 
-def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict], list[dict]]:
-    """Build map section data (bands, stations, tail) for the APM page."""
+def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
+    """Build map section data (bands, stations) for the APM page."""
     stations: list[dict] = []
     core_weeks = 0
     supp_weeks = 0
@@ -572,22 +588,7 @@ def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict], list[dict]]
         },
     ]
 
-    tail = [
-        {
-            "label": "ماه ۸ تا ۱۵ — بدون اسپرینت",
-            "note": "چیزی برای خواندن نمانده؛ همه‌چیز در حال رسیدن است.",
-            "kind": "gap",
-            "flex": 7,
-        },
-        {
-            "label": "ماه ۱۵ تا ۱۸ — پل",
-            "note": "فقط خواندن، آماده‌سازی برای مدیر محصول.",
-            "kind": "bridge",
-            "flex": 3,
-        },
-    ]
-
-    return stations, bands, tail
+    return stations, bands
 
 
 # ── Admin queries ─────────────────────────────────────────────────────────────

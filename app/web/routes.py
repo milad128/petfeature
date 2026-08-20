@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from pydantic import ValidationError
 from app.schemas.contact import ContactForm
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
@@ -13,6 +14,7 @@ from app.core.database import get_db
 from app.core.rate_limit import is_rate_limited
 from app.core.templates import templates
 from app.core.visitor import ensure_visitor_cookie, peek_visitor_token
+from app.models.roadmap import RoadmapResource
 from app.schemas.book import BookCommentForm
 from app.schemas.post import CommentForm
 from app.services import about as about_service
@@ -415,5 +417,14 @@ async def roadmap_level(
         )
     lv = ctx["level"]
     ctx["page_title"] = f"{lv.num} — {lv.fa} | مسیر یادگیری"
+    if level_slug == "apm" and "stats" not in ctx:
+        result = await db.execute(
+            select(RoadmapResource)
+            .where(RoadmapResource.level_slug == level_slug)
+            .order_by(RoadmapResource.sort_order.asc())
+        )
+        ctx["stats"] = roadmap_service.build_level_display_stats(
+            list(result.scalars().all())
+        )
     template = "pages/roadmap_apm.html" if level_slug == "apm" else "pages/roadmap_level.html"
     return templates.TemplateResponse(request, template, ctx)
