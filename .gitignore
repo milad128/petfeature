@@ -13,6 +13,9 @@ build/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+.pytest_petfeature.db
 
 # Environment
 .env

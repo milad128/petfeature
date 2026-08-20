@@ -31,9 +31,16 @@ docker compose up --build
 # Migrations (once models exist)
 alembic revision --autogenerate -m "describe change"
 alembic upgrade head
+
+# Tests (pytest + httpx against a throwaway SQLite DB — no Postgres needed)
+pip install -r requirements-dev.txt
+pytest                                   # full suite
+pytest --cov=app --cov-report=term-missing
 ```
 
 App runs at http://localhost:8000. Health check: `GET /api/v1/health`.
+
+**Testing:** `tests/` holds pytest suites (backend services, `/api/v1`, SSR HTML pages, admin auth). Shared fixtures (`client`, `admin_client`, `db_session`) live in `tests/conftest.py`, which points the app at SQLite and gives each test a fresh schema. CI runs `pytest` on every push/PR via `.github/workflows/tests.yml`. Use the **`qa-test-engineer`** agent to write/extend tests.
 
 ## Architecture
 
