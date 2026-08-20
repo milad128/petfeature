@@ -259,21 +259,25 @@
       </button>
       <div class="rm-stairs">
         {% set step_data = [
-          ('APM',      '۱', 40),
-          ('PM',       '۲', 72),
-          ('Sr PM',    '۳', 104),
-          ('Lead',     '۴', 136),
-          ('Director', '۵', 168),
-          ('CPO',      '۶', 200),
+          ('APM',      '۱', 40, 'apm'),
+          ('PM',       '۲', 72, ''),
+          ('Sr PM',    '۳', 104, ''),
+          ('Lead',     '۴', 136, ''),
+          ('Director', '۵', 168, ''),
+          ('CPO',      '۶', 200, ''),
         ] %}
-        {% for short, num, h in step_data %}
+        {% for short, num, h, slug in step_data %}
+        {% if slug %}
+        <a href="{{ url_for('roadmap_level', level_slug=slug) }}" class="rm-step" style="height:{{ h }}px;" aria-label="سطح {{ num }} — {{ short }}">
+        {% else %}
         <div class="rm-step" style="height:{{ h }}px;" aria-label="سطح {{ num }} — {{ short }}">
+        {% endif %}
           <div class="rm-step-tread"></div>
           <div class="rm-step-label">
             <span class="rm-step-short">{{ short }}</span>
             <span class="rm-step-num">سطح {{ num }}</span>
           </div>
-        </div>
+        {% if slug %}</a>{% else %}</div>{% endif %}
         {% endfor %}
       </div>
     </div>

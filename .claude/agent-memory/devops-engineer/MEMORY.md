@@ -1,0 +1,1 @@
+- [Deployment Patterns](project-deployment-patterns.md) — push-to-deploy workflow, migration policy, files to never commit, health check
