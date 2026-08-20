@@ -532,7 +532,7 @@ APM_SUPPORTING_DETAIL: dict[str, dict[str, str]] = {
             "واقعیت‌ها چیست، داستان شما چیست، و چه چیزی واقعاً می‌خواهید. "
             "بعد انجامش دهید."
         ),
-        "optional": "عمیق‌تر (اختیاری): Never Split the Difference — Chris Voss · ۷ ساعت",
+        "optional": "",
     },
     "prioritization": {
         "owner_note": (

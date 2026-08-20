@@ -182,6 +182,25 @@ def _sum_resource_reading_hours(resources: list[RoadmapResource]) -> float:
     return sum(parse_reading_time_to_hours(r.reading_time) for r in resources)
 
 
+def _reading_from_resources(resources: list[RoadmapResource]) -> tuple[float, str]:
+    hours = _sum_resource_reading_hours(resources)
+    display = format_reading_hours(hours) if hours > 0 else "—"
+    return hours, display
+
+
+def _section_meta_for_category(
+    category_resources: list[RoadmapResource],
+    comp_data: dict,
+    category: str,
+) -> str:
+    sprint_weeks = sum(
+        cd.sprint_weeks for cd in comp_data.values() if cd.category == category
+    )
+    hours = _sum_resource_reading_hours(category_resources)
+    reading = format_reading_hours(hours) if hours > 0 else "—"
+    return f"{_fa(sprint_weeks)} هفته اسپرینت · {reading} مطالعه"
+
+
 def build_level_display_stats(resources: list[RoadmapResource]) -> dict[str, str]:
     """Hero aside stats: required resource count + total reading hours."""
     required_count = sum(1 for r in resources if r.is_required)
@@ -381,6 +400,7 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             if r.competency_slug == slug
         ]
         rationale = APM_CORE_RATIONALE.get(slug, {})
+        reading_hours, reading_hours_display = _reading_from_resources(resources)
         core_competencies.append({
             "slug": slug,
             "fa": comp.fa,
@@ -389,8 +409,8 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "is_habit": comp.is_habit,
             "sprint_weeks": cd.sprint_weeks,
             "maturation_months": cd.maturation_months,
-            "reading_hours": cd.reading_hours,
-            "reading_hours_display": format_reading_hours(cd.reading_hours),
+            "reading_hours": reading_hours,
+            "reading_hours_display": reading_hours_display,
             "resources": resources,
             "rationale": rationale.get("rationale", ""),
             "quote": rationale.get("quote", ""),
@@ -412,6 +432,7 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             if r.competency_slug == slug
         ]
         detail = APM_SUPPORTING_DETAIL.get(slug, {})
+        reading_hours, reading_hours_display = _reading_from_resources(resources)
         supporting_competencies.append({
             "slug": slug,
             "fa": comp.fa,
@@ -419,8 +440,8 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "depth_label": DEPTH_LABELS.get(depth, ""),
             "sprint_weeks": cd.sprint_weeks,
             "maturation_months": cd.maturation_months,
-            "reading_hours": cd.reading_hours,
-            "reading_hours_display": format_reading_hours(cd.reading_hours),
+            "reading_hours": reading_hours,
+            "reading_hours_display": reading_hours_display,
             "resources": resources,
             "owner_note": detail.get("owner_note", ""),
             "homework": detail.get("homework", ""),
@@ -457,17 +478,32 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
         })
 
     # Competency table (all non-passive for this level)
-    asks_table = _build_asks_table(level_slug, comp_data)
+    resources_by_competency: dict[str, list[RoadmapResource]] = {}
+    for r in all_resources:
+        if r.competency_slug:
+            resources_by_competency.setdefault(r.competency_slug, []).append(r)
+    asks_table = _build_asks_table(level_slug, comp_data, resources_by_competency)
 
     # Gantt data for sequence section
     sequence_gantt = _build_sequence_gantt(level_slug, comp_data)
 
     stats = build_level_display_stats(all_resources)
+    section_meta: dict[str, str] = {}
+    if level_slug == "apm":
+        section_meta = {
+            "core": _section_meta_for_category(
+                resources_by_cat.get("core", []), comp_data, "core"
+            ),
+            "supporting": _section_meta_for_category(
+                resources_by_cat.get("supporting", []), comp_data, "supporting"
+            ),
+        }
 
     ctx: dict = {
         "is_stub": False,
         "level": lv,
         "stats": stats,
+        "section_meta": section_meta,
         "texts": APM_TEXTS if level_slug == "apm" else {},
         "entry_resources": resources_by_cat.get("entry", []),
         "core_competencies": core_competencies,
@@ -489,10 +525,15 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     return ctx
 
 
-def _build_asks_table(level_slug: str, comp_data: dict) -> list[dict]:
+def _build_asks_table(
+    level_slug: str,
+    comp_data: dict,
+    resources_by_competency: Optional[dict[str, list[RoadmapResource]]] = None,
+) -> list[dict]:
     """Build rows for the 'what this level asks' competency table."""
     level_idx = {"apm": 0, "pm": 1, "senior-pm": 2, "lead": 3, "director": 4, "cpo": 5}
     idx = level_idx.get(level_slug, 0)
+    resources_by_competency = resources_by_competency or {}
 
     CATEGORY_FA = {
         "entry": "ورود",
@@ -507,6 +548,9 @@ def _build_asks_table(level_slug: str, comp_data: dict) -> list[dict]:
             continue
         comp = COMPETENCY_BY_SLUG[slug]
         depth = DEPTH_MATRIX[slug][idx]
+        reading_hours, reading_hours_display = _reading_from_resources(
+            resources_by_competency.get(slug, [])
+        )
         rows.append({
             "slug": slug,
             "fa": comp.fa,
@@ -516,8 +560,8 @@ def _build_asks_table(level_slug: str, comp_data: dict) -> list[dict]:
             "category_fa": CATEGORY_FA.get(cd.category, ""),
             "sprint_weeks": cd.sprint_weeks,
             "maturation_months": cd.maturation_months,
-            "reading_hours": cd.reading_hours,
-            "reading_hours_display": format_reading_hours(cd.reading_hours),
+            "reading_hours": reading_hours,
+            "reading_hours_display": reading_hours_display,
         })
     return rows
 

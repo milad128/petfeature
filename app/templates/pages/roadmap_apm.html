@@ -338,9 +338,9 @@
             <div>
               {% if r.is_linked %}
               <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
-                 dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+                 dir="auto" style="font-size:.96rem; font-weight:600; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
               {% else %}
-              <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+              <span dir="auto" style="font-size:.96rem; font-weight:600; display:inline-block;">{{ r.title }}</span>
               <span class="ra-no-link">هنوز لینکی ندارد</span>
               {% endif %}
               <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
@@ -364,7 +364,7 @@
     <div class="ra-section-head">
       <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">هسته</span>
       <b class="ra-section-title">کاری که روزانه شخصاً پاسخ‌گویش هستید</b>
-      <span class="ra-section-meta">۲۶ هفته اسپرینت · ۲۶٫۵ ساعت مطالعه</span>
+      <span class="ra-section-meta">{{ section_meta.core }}</span>
     </div>
     {% if tx.core_note and not tx.core_note.startswith('TODO') %}
     <p class="ra-note">{{ tx.core_note }}</p>
@@ -399,9 +399,9 @@
               <div>
                 {% if r.is_linked %}
                 <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
-                   dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+                   dir="auto" style="font-size:.96rem; font-weight:600; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
                 {% else %}
-                <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+                <span dir="auto" style="font-size:.96rem; font-weight:600; display:inline-block;">{{ r.title }}</span>
                 <span class="ra-no-link">هنوز لینکی ندارد</span>
                 {% endif %}
                 <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
@@ -428,7 +428,7 @@
     <div class="ra-section-head ra-section-head--plain">
       <span class="ra-section-badge" style="color:var(--muted); background:rgba(236,229,220,.06);">حمایتی</span>
       <b class="ra-section-title">سهم دارید، اما مالکش کسِ دیگری است</b>
-      <span class="ra-section-meta">۵ هفته اسپرینت · ۷٫۵ ساعت مطالعه</span>
+      <span class="ra-section-meta">{{ section_meta.supporting }}</span>
     </div>
     {% if tx.supporting_note and not tx.supporting_note.startswith('TODO') %}
     <p class="ra-note" style="margin-bottom:8px;">{{ tx.supporting_note }}</p>
@@ -454,9 +454,9 @@
             <div>
               {% if r.is_linked %}
               <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
-                 dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+                 dir="auto" style="font-size:.96rem; font-weight:600; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
               {% else %}
-              <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+              <span dir="auto" style="font-size:.96rem; font-weight:600; display:inline-block;">{{ r.title }}</span>
               <span class="ra-no-link">هنوز لینکی ندارد</span>
               {% endif %}
               <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
@@ -528,9 +528,9 @@
         <div>
           {% if r.is_linked %}
           <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
-             dir="ltr" style="font-size:.98rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
+             dir="auto" style="font-size:.98rem; font-weight:600; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
           {% else %}
-          <span dir="ltr" style="font-size:.98rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}</span>
+          <span dir="auto" style="font-size:.98rem; font-weight:600; display:inline-block;">{{ r.title }}</span>
           <span class="ra-no-link">هنوز لینکی ندارد</span>
           {% endif %}
           {# subtitle used as "covers" info for bridge resources #}
