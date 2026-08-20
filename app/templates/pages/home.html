@@ -52,6 +52,89 @@
   <p class="home-shelf-hint">برای خواندن یادداشت هر کتاب، روی عطفش بزنید — چراغ مطالعه هم روشن و خاموش می‌شود.</p>
 </section>
 
+{# ── ROADMAP LADDER ────────────────────────────────────── #}
+<section class="home-roadmap" id="roadmap">
+  <div class="home-roadmap-inner">
+
+    <div class="home-roadmap-eyebrow">
+      <span class="home-roadmap-line"></span>
+      <span class="home-roadmap-eyebrow-label">مسیر یادگیری</span>
+    </div>
+    <div class="home-roadmap-header">
+      <h2 class="home-roadmap-title">شش سطح، از APM تا CPO</h2>
+      <span class="home-roadmap-hint">از پایین شروع کنید</span>
+    </div>
+    <p class="home-roadmap-desc">کتابخانه می‌گوید چه چیزی هست؛ این نردبان می‌گوید حالا کدامش را بخوانید. هر سطح مشخص می‌کند در پانزده شایستگی تا چه عمقی باید بروید، چند هفته اسپرینت لازم دارید و کدام منابع اجباری‌اند.</p>
+
+    {# Build the ordered list: CPO→APM + hiring outside #}
+    {% set main_levels = levels | rejectattr('is_track', 'equalto', true) | list | reverse | list %}
+    {% set hiring_lv = levels | selectattr('is_track', 'equalto', true) | first %}
+    {% set n_main = main_levels | length %}
+
+    <div class="home-ladder">
+
+      {# ── Levels 6→1 (CPO at top, APM at bottom) #}
+      {% for lv in main_levels %}
+      {% set step = n_main - 1 - loop.index0 %}
+      {% set indent = step * 44 %}
+      {% set is_built = lv.slug == 'apm' %}
+
+      <div class="home-ladder-rung" style="padding-inline-end:{{ indent }}px;">
+        <span class="home-ladder-tick" style="width:{{ indent }}px;"></span>
+        {% if is_built %}
+        <a href="{{ url_for('roadmap_level', level_slug=lv.slug) }}" class="home-ladder-card home-ladder-card--active">
+        {% else %}
+        <div class="home-ladder-card home-ladder-card--soon">
+        {% endif %}
+          <span class="home-ladder-card-main">
+            <span class="home-ladder-num">{{ loop.revindex | fa_digits }}</span>
+            <b class="home-ladder-fa">{{ lv.fa }}</b>
+            <span class="home-ladder-en" dir="ltr">{{ lv.en }}</span>
+            {% if not is_built %}
+            <span class="home-ladder-badge">به‌زودی</span>
+            {% endif %}
+          </span>
+          <span class="home-ladder-meta">
+            <span class="home-ladder-chip home-ladder-chip--amber">{{ lv.sprint }}</span>
+            <span class="home-ladder-chip home-ladder-chip--muted">{{ lv.tenure }}</span>
+            {% if is_built %}<span class="home-ladder-arrow">←</span>{% endif %}
+          </span>
+        {% if is_built %}
+        </a>
+        {% else %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      {# ── Level 0: Hiring — outside the main ladder, green dashed #}
+      {% if hiring_lv %}
+      {% set hiring_indent = n_main * 44 %}
+      <div class="home-ladder-rung" style="padding-inline-end:{{ hiring_indent }}px; margin-top:6px;">
+        <span class="home-ladder-tick home-ladder-tick--green" style="width:{{ hiring_indent }}px;"></span>
+        <a href="{{ url_for('roadmap_hiring') }}" class="home-ladder-card home-ladder-card--hiring">
+          <span class="home-ladder-card-main">
+            <span class="home-ladder-num home-ladder-num--green">۰</span>
+            <b class="home-ladder-fa">مسیر استخدام</b>
+            <span class="home-ladder-en">هنوز استخدام نشده‌اید؟</span>
+          </span>
+          <span class="home-ladder-meta">
+            <span class="home-ladder-chip home-ladder-chip--green">{{ hiring_lv.sprint }}</span>
+            <span class="home-ladder-chip home-ladder-chip--muted">{{ hiring_lv.tenure }}</span>
+            <span class="home-ladder-arrow">←</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+
+    </div>{# /home-ladder #}
+
+    <p class="home-roadmap-note">مسیر ۰ سطح شغلی نیست و بیرون از نردبان می‌ماند — به سؤال «چطور این کار را بگیرم؟» جواب می‌دهد، نه «چطور در این کار خوب شوم؟».</p>
+    <a href="{{ url_for('roadmap_landing') }}" class="home-roadmap-more">مشاهده مسیر یادگیری کامل ←</a>
+
+  </div>
+</section>
+
 {# ── ABOUT PET FEATURE ────────────────────────────────── #}
 <section class="home-about">
   <div class="home-about-inner">

@@ -620,6 +620,82 @@ main { padding: 0; }
 .home-tool-name { font-size: .98rem; font-weight: 600; }
 .home-tool-desc { font-size: .8rem; color: var(--muted); line-height: 1.8; }
 
+/* ── HOME: Roadmap ladder ────────────────────────────────────────────────── */
+.home-roadmap { border-top: 1px solid var(--border); }
+.home-roadmap-inner { max-width: 1120px; margin: 0 auto; padding: 56px 1.5rem 72px; }
+.home-roadmap-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.home-roadmap-line { width: 24px; height: 1px; background: var(--accent); display: block; flex-shrink: 0; }
+.home-roadmap-eyebrow-label { font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--accent); }
+.home-roadmap-header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+.home-roadmap-title { font-size: 1.7rem; font-weight: 800; }
+.home-roadmap-hint { font-size: .8rem; color: var(--faint); }
+.home-roadmap-desc { font-size: .95rem; color: var(--muted); max-width: 700px; line-height: 2.1; margin-bottom: 28px; }
+.home-roadmap-more { display: inline-block; margin-top: 20px; font-size: .88rem; color: var(--accent); text-decoration: none; }
+.home-roadmap-more:hover { text-decoration: none; opacity: .8; color: var(--accent); }
+.home-roadmap-note { font-size: .85rem; color: var(--faint); line-height: 2; margin-top: 14px; }
+
+/* Ladder rungs */
+.home-ladder { position: relative; border-inline-end: 1px solid var(--border-2); }
+.home-ladder-rung { position: relative; display: flex; justify-content: flex-start; padding: 7px 0; }
+.home-ladder-tick {
+  position: absolute; inset-inline-end: 0; top: 50%; height: 1px; display: block;
+  background: linear-gradient(to left, color-mix(in srgb, var(--accent) 40%, transparent), transparent);
+}
+.home-ladder-tick--green { background: linear-gradient(to left, rgba(143,191,134,.45), transparent); }
+.home-ladder-card {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+  text-decoration: none; color: inherit;
+  background: rgba(217,160,95,.06);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  border-radius: 12px; padding: 16px 20px;
+  transition: border-color .18s, background .18s;
+}
+.home-ladder-card--active:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  background: rgba(217,160,95,.1);
+  text-decoration: none; color: inherit;
+}
+.home-ladder-card--soon { opacity: .4; cursor: default; pointer-events: none; }
+.home-ladder-card--hiring {
+  background: rgba(143,191,134,.06);
+  border: 1px dashed rgba(143,191,134,.4);
+}
+.home-ladder-card--hiring:hover {
+  border-color: rgba(143,191,134,.6);
+  background: rgba(143,191,134,.1);
+  text-decoration: none; color: inherit;
+}
+.home-ladder-card-main { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.home-ladder-num {
+  width: 26px; height: 26px; border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700; flex-shrink: 0;
+}
+.home-ladder-num--green { background: rgba(143,191,134,.16); color: #8fbf86; }
+.home-ladder-fa { font-size: 1.05rem; font-weight: 700; line-height: 1.6; }
+.home-ladder-en { font-size: .76rem; color: var(--faint); }
+.home-ladder-badge {
+  font-size: .7rem; color: var(--faint);
+  background: rgba(236,229,220,.05);
+  border: 1px dashed var(--border-2);
+  border-radius: 6px; padding: 3px 10px;
+}
+.home-ladder-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.home-ladder-chip { font-size: .76rem; border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
+.home-ladder-chip--amber { color: var(--accent); background: color-mix(in srgb, var(--accent) 11%, transparent); }
+.home-ladder-chip--muted { color: var(--muted); background: rgba(236,229,220,.05); }
+.home-ladder-chip--green { color: #8fbf86; background: rgba(143,191,134,.11); }
+.home-ladder-arrow { color: var(--faint); font-size: .9rem; }
+
+@media (max-width: 760px) {
+  .home-ladder-rung { padding-inline-end: 0 !important; }
+  .home-ladder-tick { display: none !important; }
+  .home-ladder-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
 /* ─────────────────────────────────────────────
    BOOK CARDS (shared: home preview + library)
 ───────────────────────────────────────────── */

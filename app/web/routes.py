@@ -44,6 +44,7 @@ async def home(request: Request, db: AsyncSession = Depends(get_db)):
             "books": books,
             "recent_posts": posts,
             "recent_tools": tools,
+            "levels": LEVELS,
         },
     )
 
