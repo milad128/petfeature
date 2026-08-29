@@ -190,12 +190,12 @@ COMPETENCY_BY_SLUG: dict[str, Competency] = {c.slug: c for c in COMPETENCIES}
 # 0 = not required ("—"), 1–5 = depth level
 
 DEPTH_MATRIX: dict[str, list[int]] = {
-    "product-discovery":     [2, 4, 4, 4, 5, 5],
+    "product-discovery":     [2, 3, 4, 4, 5, 5],
     "delivery-execution":    [3, 4, 4, 3, 2, 2],
     "prioritization":        [2, 4, 4, 4, 5, 5],
     "experimentation":       [1, 3, 4, 4, 4, 4],
-    "technical-literacy":    [3, 3, 3, 3, 3, 3],
-    "data-metrics":          [1, 4, 4, 4, 5, 5],
+    "technical-literacy":    [2, 3, 3, 3, 3, 3],
+    "data-metrics":          [1, 3, 4, 4, 5, 5],
     "business-acumen":       [1, 2, 3, 3, 4, 5],
     "product-vision":        [1, 2, 4, 4, 4, 5],
     "product-strategy":      [1, 3, 4, 4, 5, 5],
@@ -235,7 +235,7 @@ APM_COMPETENCY_DATA: dict[str, CompetencyLevelData] = {
     "delivery-execution":    CompetencyLevelData("core",        6,  6,   6.0),
     "product-discovery":     CompetencyLevelData("core",        8,  6,   5.0),
     "communication":         CompetencyLevelData("core",        6,  6,   4.5),
-    "technical-literacy":    CompetencyLevelData("core",        6,  4,  11.0),
+    "technical-literacy":    CompetencyLevelData("supporting",  6,  4,  11.0),
     "stakeholder-influence": CompetencyLevelData("supporting",  3,  3,   7.0),
     "prioritization":        CompetencyLevelData("supporting",  2,  2,   0.5),
     "data-metrics":          CompetencyLevelData("passive",     0,  0,   0.0,
@@ -453,7 +453,7 @@ APM_TEXTS: dict[str, str] = {
     ),
     "tenure_bar_note": "۱۲ تا ۲۴ ماه تصدی — ۷ ماه اسپرینت",
     "tenure_bar_body": "TODO: APM tenure bar explanation",
-    "asks_note": "چهار شایستگی هسته، دو حمایتی، شش تای رایگان. سه شایستگی رهبری اصلاً بخشی از این شغل نیستند.",
+    "asks_note": "سه شایستگی هسته، سه حمایتی، شش تای رایگان. سه شایستگی رهبری اصلاً بخشی از این شغل نیستند.",
 }
 
 # Per-core-competency richtext (shown in core section body)
@@ -501,26 +501,23 @@ APM_CORE_RATIONALE: dict[str, dict[str, str]] = {
             "مسئله، داستان کاربر، معیار پذیرش، حالت‌های لبه، و صراحتاً آنچه نمی‌سازید."
         ),
     },
-    "technical-literacy": {
-        "rationale": (
-            "به دلیل ارتباط بسیار زیاد با هم‌تیمی‌های فنی، داشتن سطح حداقلی از سواد فنی "
-            "به شما کمک می‌کند تا بتوانید ارتباط بهتری با اعضای فنی شرکت و تیم بگیرید "
-            "و همچنین در محصولاتی که نیاز بیشتری به این دانش است، ضریب شکست خود را کاهش دهید."
-        ),
-        "quote": (
-            "«چرا یک دوره‌ی کامل برنامه‌نویسی نه؟» قرار نیست مهندس شوید. "
-            "هدف: بفهمید چه چیزی سخت است، چه چیزی ساده، و چه چیزی ممکن. همان‌جا بایستید."
-        ),
-        "practice": (
-            "از یک مهندس بخواهید یک قابلیت را فنی توضیح دهد. "
-            "همان را برای یک آدم غیرفنی توضیح دهید. "
-            "هر دو جهت که کار کرد، روی ۳ هستید."
-        ),
-    },
 }
 
 # Per-supporting-competency (shown in supporting section cards)
 APM_SUPPORTING_DETAIL: dict[str, dict[str, str]] = {
+    "technical-literacy": {
+        "owner_note": (
+            "تصمیم فنی نهایی با لید فنی است، نه شما. کاری که از شما انتظار می‌رود این است که "
+            "گفت‌وگوی مهندس‌ها را دنبال کنید و سؤال درستی بپرسید — نه اینکه خودتان راه‌حل فنی بدهید. "
+            "همین سطح از سواد فنی کافی است تا در جلسات فنی گم نشوید و ریسک‌ها را زودتر تشخیص دهید."
+        ),
+        "homework": (
+            "از یک مهندس بخواهید یک قابلیت را فنی توضیح دهد. "
+            "همان را برای یک آدم غیرفنی توضیح دهید. "
+            "اگر هر دو جهت جواب داد، در همین سطح هستید."
+        ),
+        "optional": "",
+    },
     "stakeholder-influence": {
         "owner_note": (
             "وظیفه‌ی اصلی مدیریت ذی‌نفعان و ارتباط با مدیران با PM است، "

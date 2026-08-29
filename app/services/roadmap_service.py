@@ -188,15 +188,11 @@ def _reading_from_resources(resources: list[RoadmapResource]) -> tuple[float, st
     return hours, display
 
 
-def _section_meta_for_category(
-    category_resources: list[RoadmapResource],
-    comp_data: dict,
-    category: str,
-) -> str:
-    sprint_weeks = sum(
-        cd.sprint_weeks for cd in comp_data.values() if cd.category == category
-    )
-    hours = _sum_resource_reading_hours(category_resources)
+def _section_meta_from_competencies(competencies: list[dict]) -> str:
+    """Sprint-week + reading-hour meta line, summed from an already-built
+    core_competencies/supporting_competencies list (see get_level_context)."""
+    sprint_weeks = sum(c["sprint_weeks"] for c in competencies)
+    hours = sum(c["reading_hours"] for c in competencies)
     reading = format_reading_hours(hours) if hours > 0 else "—"
     return f"{_fa(sprint_weeks)} هفته اسپرینت · {reading} مطالعه"
 
@@ -491,12 +487,8 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     section_meta: dict[str, str] = {}
     if level_slug == "apm":
         section_meta = {
-            "core": _section_meta_for_category(
-                resources_by_cat.get("core", []), comp_data, "core"
-            ),
-            "supporting": _section_meta_for_category(
-                resources_by_cat.get("supporting", []), comp_data, "supporting"
-            ),
+            "core": _section_meta_from_competencies(core_competencies),
+            "supporting": _section_meta_from_competencies(supporting_competencies),
         }
 
     ctx: dict = {

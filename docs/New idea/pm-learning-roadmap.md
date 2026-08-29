@@ -27,8 +27,8 @@ The roadmap has two layers, plus one separate track.
 
 ### How resources are assigned
 
-- **Core** — competencies reaching the level's *highest* required depth. Two required resources, one optional.
-- **Supporting** — competencies that rise, but below the level's top depth. One required, one optional.
+- **Core** — competencies you are personally accountable for at this level. Two required resources, one optional. These usually reach the level's highest required depth, but **accountability decides the category, not depth** — an APM owns discovery work at depth 2, while technical literacy at the same depth is something they contribute to and someone else answers for.
+- **Supporting** — competencies you feed into but do not own. One required, one optional. A competency can sit here while still rising, and can sit here at the same depth as a Core one.
 - **Maintain** — required depth is unchanged from the previous level. **No new study.** Listed so you know it still counts.
 - **Acquired free** — depth 1. No resource assigned. You get awareness by sitting in the room; reading a strategy classic at depth 1 doesn't bank the learning, it burns the book.
 - **⇈** marks a two-step jump (e.g. 1→3). Expect it to take roughly twice as long as a single step.
@@ -76,7 +76,7 @@ Then two modifiers, each **+50%**:
 |---|-------|--------------|----------|---------|---------|--------|
 | **0** | **Getting Hired** *(not a seniority level)* | Decides whether PM is the right career, builds a résumé and portfolio that read as product, practises the three interview formats, runs a job search, and negotiates an offer. | 13 | ~35h | 18 wk (~4 mo) | 3–6 months (a campaign) |
 | 1 | **Beginner (APM)** | Learns fundamentals, contributes to execution under guidance, develops core analytical, technical, and communication skills. | 15 | ~53h | 31 wk (~7 mo) | 12–24 months |
-| 2 | **Product Manager** | Independently owns a product or feature, discovers customer problems, prioritizes solutions, and delivers measurable business outcomes. | 18 | ~81h | 58 wk (~13.5 mo) | 24–36 months |
+| 2 | **Product Manager** | Independently owns a product or feature, discovers customer problems, prioritizes solutions, and delivers measurable business outcomes. | 18 | ~81h | 56 wk (~13 mo) | 24–36 months |
 | 3 | **Senior Product Manager** | Solves ambiguous product problems, leads strategic initiatives, mentors other PMs, and influences direction across multiple teams. | 16 | ~86h | 54 wk (~12.5 mo) | 24–36 months |
 | 4 | **Product Lead** | Leads a small group of PMs, sets direction for a significant product area, bridges IC excellence and people leadership. | 8 | ~49h | 19 wk (~4.5 mo) | 12–24 months |
 | 5 | **Director of Product** | Builds and leads product teams, defines strategy and operating processes, aligns investment with business objectives. | 15 | ~83h | 52 wk (~12 mo) | 36–60 months |
@@ -84,7 +84,7 @@ Then two modifiers, each **+50%**:
 
 > **Tenure** = how long to actually work at that level before levelling up. **Sprints** = total weeks of deliberate, one-at-a-time study. The gap between the two columns is maturation — real, unavoidable, and impossible to accelerate.
 
-**Full path: 96 required resources · ~452 hours of reading · 276 sprint-weeks (~64 months) · 10–17 years of career time**
+**Full path: 96 required resources · ~452 hours of reading · 274 sprint-weeks (~63 months) · 10–17 years of career time**
 
 **Roadmap 0 is a separate track, not a seventh level.** It runs *before* the ladder starts and ends the day you accept an offer. Everything about getting hired — résumé, portfolio, interview practice, job search, negotiation — lives there and nowhere else. The six seniority roadmaps assume you already hold the job.
 
@@ -95,7 +95,7 @@ The useful comparison is not which level has the most reading — it is how much
 | Level | Sprints | Tenure (mid) | Maturation-only |
 |---|:--:|:--:|:--:|
 | L1 APM | ~7 mo | 18 mo | **61%** |
-| L2 PM | ~13.5 mo | 30 mo | **55%** |
+| L2 PM | ~13 mo | 30 mo | **57%** |
 | L3 Senior PM | ~12.5 mo | 30 mo | **58%** |
 | **L4 Product Lead** | **~4.5 mo** | **18 mo** | **75%** |
 | L5 Director | ~12 mo | 48 mo | **75%** |
@@ -133,13 +133,13 @@ The scale measures **required mastery, not hands-on frequency**. A CPO scores 5 
 | Competency | L1 APM | L2 PM | L3 Sr PM | L4 Lead | L5 Dir | L6 CPO |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|
 | **— Product craft —** | | | | | | |
-| Product Discovery | 3 | 4 | 4 | 4 | 5 | 5 |
+| Product Discovery | 2 | 3 | 4 | 4 | 5 | 5 |
 | Delivery & Execution | 3 | 4 | 4 | 3 | 2 | 2 |
 | Prioritization & Tradeoffs | 2 | 4 | 4 | 4 | 5 | 5 |
 | Experimentation & Validation | 1 | 3 | 4 | 4 | 4 | 4 |
 | **— Analytical & business —** | | | | | | |
-| Technical Literacy | 3 | 3 | 3 | 3 | 3 | 3 |
-| Data, Metrics & Goal-setting | 1 | 4 | 4 | 4 | 5 | 5 |
+| Technical Literacy | 2 | 3 | 3 | 3 | 3 | 3 |
+| Data, Metrics & Goal-setting | 1 | 3 | 4 | 4 | 5 | 5 |
 | Business & Commercial Acumen | 1 | 2 | 3 | 3 | 4 | 5 |
 | **— Strategy —** | | | | | | |
 | Product Vision | 1 | 2 | 4 | 4 | 4 | 5 |
@@ -157,23 +157,27 @@ The scale measures **required mastery, not hands-on frequency**. A CPO scores 5 
 **Four competencies decline or flatten — that is the most useful signal here.**
 
 - **Delivery & Execution peaks at L2–L3 and falls to 2.** This is the most common failure mode in the move to Lead and Director: the leader who keeps running the sprint. You are supposed to get *less* hands-on here.
-- **Technical Literacy is flat at 3 across all six levels.** It is a threshold, not a ladder — reach credible-conversations-with-engineers and stop.
+- **Technical Literacy rises once, then never again** (2 at APM, 3 from PM onward). It is a threshold, not a ladder — reach credible-conversations-with-engineers and stop. The threshold is reached at PM, not APM: an APM follows a technical conversation with help, a PM holds one unaided.
 - **Market & Competitive Insight dips at L4** (4 → 3 → 4). Not an error. Product Lead is the management bridge — its entire curriculum is people skills. Strategic breadth pauses while leadership catches up.
 - **Experimentation plateaus at 4.** Few organizations need one person to define experimentation company-wide.
 
-**Three competencies are step functions, not ramps.** People Leadership (– → 3 at L4), Coaching (1 → 3 at L3), and Org Design & Culture (1 → 4 at L5) each jump two or more points at a single boundary. Those jumps *are* the L3→L4 and L4→L5 promotions. Everything else drifts upward gradually; these are the actual gates.
+**No competency climbs more than two depths at any single boundary.** Two is the ceiling, and nine rows in the matrix hit it: Prioritization, Data, Experimentation, Strategy and Market (all at L1→L2), Vision and Coaching (L2→L3), People Leadership (L3→L4), and Org Design & Culture (L4→L5). Everything else moves one step at a time or holds.
 
-**The L1→L2 gate is different in kind.** No single row jumps alone. Instead eight rows move together — Data & Goal-setting 1→4, Prioritization 2→4, Product Strategy 1→3, Experimentation 1→3, Market 1→3, Discovery 3→4, Vision 1→2, Business 1→2. APM→PM is not one new skill; it is the whole craft deepening from "can do" to "leads." That is why it is the most common plateau: there is no single thing to study your way past.
+**In the leadership half, those jumps arrive alone — and that is what makes them gates.** People Leadership (1 → 3 at L4), Coaching (1 → 3 at L3), and Org Design & Culture (2 → 4 at L5) each land at a boundary where little else is moving. There is one thing to learn and nowhere to hide from it. Those jumps *are* the L3→L4 and L4→L5 promotions.
 
-**Data & Goal-setting 1→4 is the largest single jump in the matrix** — three depths at one boundary, larger than People Leadership at L4. An APM is not expected to own a metric; a PM is accountable for one. There is no gentle version of that transition, which is why the L1 Bridge carries a metrics resource and L2 treats Data as its heaviest core competency.
+**The L1→L2 gate is different in kind: the jumps arrive together.** Ten rows move at once — Discovery 2→3, Prioritization 2→4, Data & Goal-setting 1→3, Product Strategy 1→3, Experimentation 1→3, Market 1→3, Technical Literacy 2→3, Stakeholder 2→3, Vision 1→2, Business 1→2 — and five of the ten are two-step climbs. APM→PM is not one new skill; it is the whole craft deepening from "can do" to "leads." That is why it is the most common plateau: there is no single thing to study your way past, and nothing finishes early.
 
-**An APM's job is delivery.** L1 requires depth 3 on only four competencies — delivery, research, writing, and technical literacy. Six of the fifteen sit at depth 1 and get no study at all. Metrics and commercial thinking arrive at L2, not L1.
+**Data & Goal-setting is the most expensive of the four cold starts.** Data, Experimentation, Strategy and Market all climb 1→3 at the same boundary, but Data carries 16 hours of required reading against their 1, 2 and 6 — more than any other competency at L2, core or supporting. An APM is not expected to own a metric; a PM is accountable for one. There is no gentle version of that transition, which is why it leads the L2 sequence and why the L1 Bridge carries a metrics resource — you should not arrive at the boundary having never looked closely at a dashboard.
+
+**An APM's job is delivery.** L1 requires depth 3 on only two competencies — delivery and writing. Discovery and technical literacy sit at 2, done with guidance rather than alone. Six of the fifteen sit at depth 1 and get no study at all. Metrics and commercial thinking arrive at L2, not L1.
 
 **Levels 1–3 are IC competencies; 4–6 are leadership competencies.** Stopping at Senior PM is a legitimate destination, not a failure to climb.
 
 ### A note on Product Discovery
 
-**Product Discovery** consolidates two of Cagan's core outcomes — "Customer Knowledge" at APM and "Continuous Discovery" at PM. At depth 3 it means you can run an interview and synthesize what you heard. At depth 4 it is a weekly habit with opportunity solution trees. At depth 5 it is an organizational capability you instill rather than a practice you run.
+**Product Discovery** consolidates two of Cagan's core outcomes — "Customer Knowledge" at APM and "Continuous Discovery" at PM. At depth 2 — where an APM sits — it means you take part in interviews and help synthesize them, but someone more senior sets the questions and decides what the findings mean; you are learning the craft on real sessions, not running the practice. At depth 3 you can run an interview and synthesize what you heard, unaided. At depth 4 it is a weekly habit with opportunity solution trees. At depth 5 it is an organizational capability you instill rather than a practice you run.
+
+**Discovery is Core at APM even at depth 2** — it is the clearest case of accountability outranking depth. An APM is in the interviews, and the quality of every spec they write afterward depends on what they heard. The depth is low because the judgment is still borrowed, not because the work is optional.
 
 But discovery in the full sense — de-risking **value, usability, feasibility, and viability** before you build — deliberately spans four rows of this matrix, because its parts mature at different rates and belong to different halves of the job:
 
@@ -386,15 +390,19 @@ You have accepted an offer. **This roadmap is finished — everything after sign
 | Competency | Depth | Category | Sprint | Maturation | Reading |
 |---|:--:|---|:--:|:--:|:--:|
 | Delivery & Execution | 3 | Core | 6 wk | 6 mo | 6h |
-| Product Discovery | 3 | Core | 8 wk | 6 mo | 5h |
+| Product Discovery | 2 | Core | 8 wk | 6 mo | 5h |
 | Communication & Writing | 3 | Core | 6 wk | 6 mo | 4.5h |
-| Technical Literacy | 3 | Core | 6 wk | 4 mo | 11h |
+| Technical Literacy | 2 | Supporting | 6 wk | 4 mo | 11h |
 | Stakeholder & Exec Influence | 2 | Supporting | 3 wk | 3 mo | 7h |
 | Prioritization & Tradeoffs | 2 | Supporting | 2 wk | 2 mo | 30m |
 | Data · Business · Experimentation · Strategy · Vision · Market | 1 | Acquired free | — | — | — |
 | People Leadership · Coaching · Org Design | – | Not applicable | — | — | — |
 
-**Four core competencies, two supporting, six acquired free.** This level is unambiguously about shipping: build things, understand who you are building them for, write it down, and talk to engineers. Metrics and commercial thinking are not an APM's job — your PM owns those, and you absorb the vocabulary by being in the room.
+**Three core competencies, three supporting, six acquired free.** This level is unambiguously about shipping: build things, understand who you are building them for, and write it down. Only delivery and writing reach depth 3 — the two things you are handed and expected to return finished. Discovery stays Core at depth 2 because you are in the room for it and your specs depend on it, but the judgment is still your PM's.
+
+Talking to engineers is supporting work here, not core: you need enough to follow the conversation and ask the right question, and the engineering lead answers for the technical call. Metrics and commercial thinking are not an APM's job at all — your PM owns those, and you absorb the vocabulary by being in the room.
+
+**Note the inversion in the table:** the heaviest reading at this level (11h) sits on a *supporting* competency at depth 2, while the three core competencies together come to 15.5h. Technical literacy is expensive to start and cheap to maintain — you are buying vocabulary once, not building a practice.
 
 ---
 
@@ -434,10 +442,12 @@ The spine of the role. This is what you do every day, from week one. Six months 
 
 **Practice:** Map your team's idea→shipped flow as a diagram. Mark where it stalls.
 
-### 2 · Product Discovery → 3
+### 2 · Product Discovery → 2
 **Sprint: 8 weeks** · Matures over 6 months · Reading: 5h · *Habit competency*
 
 The longest sprint at this level, and it comes second because it gates the quality of every spec you will write afterward. You can't spec what you don't understand.
+
+Depth 2 is deliberate. You are in the interviews and doing the synthesis, but your PM frames the questions and calls what the findings mean. The eight weeks and six months of maturation are not there to get you to depth 3 — they are there so that when discovery becomes your own call at PM, the reps are already behind you. This is the competency that climbs furthest at the next boundary (2 → 4), and the only reason that climb is survivable is the work you put in here.
 
 *The Mom Test* takes 3 hours; the competency takes 6 months to mature. **Interview targets: 5 during the sprint** (the practice exercise), **~20 by the end of maturation**, **10 is the promotion floor.** Reps cannot be compressed — you need the gap between them to synthesize, and you need enough of them to hear yourself ask a leading question, notice it, and stop.
 
@@ -466,10 +476,28 @@ The artifact your delivery work produces. A spec nobody reads doesn't exist. Rea
 
 **Practice:** Write a full PRD for a feature you use every day. Include problem, user story, acceptance criteria, edge cases, and what you're explicitly *not* building.
 
-### 4 · Technical Literacy → 3
+---
+
+## Supporting — you contribute, someone else owns
+
+| Competency | Sprint | Matures | Who owns it | Resource | Reading | Persian |
+|---|:--:|:--:|---|---|---|---|
+| Technical Literacy → 2 | 6 wk | 4 mo | Your engineering lead owns the technical call; you need to follow it | *see below* | 11h | 🔴 |
+| Stakeholder & Exec Influence → 2 | 3 wk | 3 mo | Your PM shields you; you present occasionally | *Crucial Conversations* — Patterson et al. | 7h | 🇮🇷 |
+| Prioritization & Tradeoffs → 2 | 2 wk | 2 mo | Your PM owns the backlog; you score and argue | RICE scoring — Intercom | 30m | 🔴 |
+
+Stakeholder Influence matures a month longer than Prioritization as a habit competency — the reps are real conversations, and you get maybe one a fortnight at this level.
+
+**Optional deeper:** *Never Split the Difference* — Chris Voss 🇮🇷 (7h), if you want a head start on the L2 material.
+
+**Practice:** Take your team's current backlog and score every item with RICE. Bring the result to your PM and defend the three items you ranked differently from them.
+
+### Technical Literacy → 2 — the one supporting competency with a real reading load
 **Sprint: 6 weeks** · Matures over 4 months · Reading: 11h · *Knowledge competency*
 
-Threshold skill — reach 3 and stop. It is the only competency that never rises again across all six levels. It also carries the **most reading hours in Core and the shortest maturation**, because it is the only knowledge competency here. That inversion is the clearest illustration of why reading and maturation are tracked separately.
+Threshold skill — reach 2 here, 3 at PM, and stop. It never rises again after that. It is supporting rather than core because the engineering lead answers for the technical call; at depth 2 your target is to follow the conversation and ask the right question, not to hold your own judgment against theirs.
+
+It carries **the most reading hours of any competency at this level and the shortest maturation** — more reading than all three core competencies combined. That inversion is the clearest illustration of why reading and maturation are tracked separately: you buy the vocabulary once, in a block, and then it simply stops costing you anything.
 
 | Resource | Type | Time | Diff | Persian | |
 |---|---|---|---|---|---|
@@ -479,22 +507,7 @@ Threshold skill — reach 3 and stop. It is the only competency that never rises
 
 > **Why not a full programming course?** You're not becoming an engineer. Target: understand what's hard, what's easy, and what's possible. Stop there.
 
-**Practice:** Have an engineer explain one feature technically. Explain it back to a non-technical person. Both directions working = you're at 3.
-
----
-
-## Supporting — you contribute, someone else owns
-
-| Competency | Sprint | Matures | Who owns it | Resource | Reading | Persian |
-|---|:--:|:--:|---|---|---|---|
-| Stakeholder & Exec Influence → 2 | 3 wk | 3 mo | Your PM shields you; you present occasionally | *Crucial Conversations* — Patterson et al. | 7h | 🇮🇷 |
-| Prioritization & Tradeoffs → 2 | 2 wk | 2 mo | Your PM owns the backlog; you score and argue | RICE scoring — Intercom | 30m | 🔴 |
-
-Stakeholder Influence matures a month longer than Prioritization as a habit competency — the reps are real conversations, and you get maybe one a fortnight at this level.
-
-**Optional deeper:** *Never Split the Difference* — Chris Voss 🇮🇷 (7h), if you want a head start on the L2 material.
-
-**Practice:** Take your team's current backlog and score every item with RICE. Bring the result to your PM and defend the three items you ranked differently from them.
+**Practice:** Have an engineer explain one feature technically. Explain it back to a non-technical person. Both directions working = you're at 2 and ready for the PM bar.
 
 ---
 
@@ -512,7 +525,7 @@ Stakeholder Influence matures a month longer than Prioritization as a habit comp
 
 > **Exception:** if you are switching careers and not yet working in a product org, you have no exposure channel. Read the Bridge material early — for you it is study, not osmosis.
 
-> **The one to watch: Data.** It sits at depth 1 here and depth 4 at PM — the largest jump in the whole matrix. Absorbing metric vocabulary passively is enough for this level, but do not arrive at the boundary having never looked closely at a dashboard. The Bridge carries a metrics resource for exactly this reason.
+> **The one to watch: Data.** It sits at depth 1 here and depth 3 at PM — a two-step climb, and the coldest start of the six that move at that boundary. Absorbing metric vocabulary passively is enough for this level, but do not arrive at the boundary having never looked closely at a dashboard. The Bridge carries a metrics resource for exactly this reason.
 
 ---
 
@@ -541,12 +554,12 @@ Stakeholder Influence matures a month longer than Prioritization as a habit comp
 
 *Reading only — no sprint. Months 15–18.*
 
-Eight competencies jump at this boundary: **Data 1→4 ⇈** (the largest jump in the matrix), Prioritization 2→4 ⇈, Strategy 1→3 ⇈, Experimentation 1→3 ⇈, Market 1→3 ⇈, Discovery 3→4, Vision 1→2, Business 1→2. These three resources cover the cheapest of them and blunt the steepest.
+Ten competencies jump at this boundary, five of them two full depths: **Prioritization 2→4 ⇈**, **Data 1→3 ⇈**, **Strategy 1→3 ⇈**, **Experimentation 1→3 ⇈**, **Market 1→3 ⇈**, plus Discovery 2→3, Technical Literacy 2→3, Stakeholder 2→3, Vision 1→2 and Business 1→2. This is the widest boundary in the roadmap. These three resources cover the cheapest of them and blunt the coldest starts.
 
 | Resource | Covers | Type | Time | Persian |
 |---|---|---|---|---|
 | *The Lean Startup* — Eric Ries | Experimentation, validation, some strategy | Book | 7h | 🇮🇷 |
-| Product Analytics Playbook — Amplitude | First real look at metrics, ahead of the 1→4 jump | eBook (free) | 2h | 🔴 |
+| Product Analytics Playbook — Amplitude | First real look at metrics, ahead of the 1→3 jump | eBook (free) | 2h | 🔴 |
 | "Product Strategy" + "Product Vision vs Strategy" — Cagan | Strategy and vision vocabulary | Articles (free) | 40m | 🔴 |
 
 ### Ready for PM when:
@@ -562,24 +575,27 @@ Eight competencies jump at this boundary: **Data 1→4 ⇈** (the largest jump i
 
 **Tenure:** 24–36 months · **Sprints:** 58 weeks (~13.5 months) · **Reading:** 18 required resources, ~81 hours
 
-The hardest transition in the path, and the longest sprint load of any level. Nothing single jumps — the entire craft deepens at once, and Data climbs three depths.
+The hardest transition in the path, and the longest sprint load of any level. Nothing jumps alone — ten rows move together and five of them climb two full depths.
 
 ### What changes at this level
 
 | Competency | L1 → L2 | Sprint | Matures | Category |
 |---|:--:|:--:|:--:|---|
-| **Data, Metrics & Goal-setting** | **1 → 4 ⇊** | 10 wk | 9 mo | Core |
-| Product Discovery | 3 → 4 | 8 wk | 9 mo | Core |
-| Prioritization & Tradeoffs | 2 → 4 ⇈ | 8 wk | 9 mo | Core |
+| Product Discovery | **2 → 3** | 6 wk | 6 mo | Core |
+| Prioritization & Tradeoffs | **2 → 4 ⇈** | 8 wk | 9 mo | Core |
 | Delivery & Execution | 3 → 4 | 6 wk | 9 mo | Core |
+| **Data, Metrics & Goal-setting** | **1 → 3 ⇈** | 8 wk | 6 mo | Supporting |
 | Experimentation & Validation | 1 → 3 ⇈ | 6 wk | 9 mo | Supporting |
 | Market & Competitive Insight | 1 → 3 ⇈ | 6 wk | 6 mo | Supporting |
 | Product Strategy | 1 → 3 ⇈ | 6 wk | 6 mo | Supporting |
 | Stakeholder & Exec Influence | 2 → 3 | 4 wk | 6 mo | Supporting |
+| Technical Literacy | 2 → 3 | 2 wk | 4 mo | Supporting |
 | Product Vision | 1 → 2 | 2 wk | 2 mo | Supporting |
 | Business & Commercial Acumen | 1 → 2 | 2 wk | 2 mo | Supporting |
-| Communication & Writing · Technical Literacy | unchanged | — | — | Maintain |
+| Communication & Writing | unchanged | — | — | Maintain |
 | Coaching, Hiring & Talent | – → 1 | — | — | Acquired free |
+
+**Three core competencies, eight supporting.** The weight of this level sits in supporting rather than core — which is exactly what makes it hard. There is no single headline competency to organise your year around; there are three things you answer for and eight more climbing underneath them.
 
 ---
 
@@ -596,10 +612,10 @@ The L1 Bridge *is* the entry requirement. If you are joining from another compan
 
 ## Core — your daily job
 
-### 1 · Product Discovery → 4
-**Sprint: 8 weeks** · Matures over 9 months · Reading: 7h+ · *Habit competency*
+### 1 · Product Discovery → 3
+**Sprint: 6 weeks** · Matures over 6 months · Reading: 7h+ · *Habit competency*
 
-Discovery stops being a project phase and becomes a weekly habit. This is the competency that separates good PMs from great ones. Nine months to mature is roughly how long it takes for weekly interviews to survive a quarter where everything is on fire — which is the real test of whether it's a habit or a phase.
+Discovery moves from guided work to something you own unaided. You run the interviews, set the questions, and call what the findings mean — without a senior PM in the room. Six months to mature is how long it takes to accumulate enough sessions to hear the difference between a pattern and a coincidence.
 
 | Resource | Type | Time | Diff | Persian | |
 |---|---|---|---|---|---|
@@ -626,24 +642,7 @@ Double jump. You now own the backlog and must defend every "no." The maturation 
 
 **Practice:** Score your backlog with RICE. Re-score using cost of delay. Present the difference and what it changes.
 
-### 3 · Data, Metrics & Goal-setting → 4 ⇊
-**Sprint: 10 weeks** · Matures over 9 months · Reading: 16h · *Knowledge competency, three-step jump*
-
-**The largest jump in the entire matrix — 1 → 4 in one boundary.** An APM is never asked to own a metric; a PM is accountable for one. You arrive here owing three depths, which is why this carries the longest sprint and the most reading of any competency at this level.
-
-Nine months to mature because you need to set a metric, ship against it, and be wrong at least once. The being-wrong is the part that teaches.
-
-| Resource | Type | Time | Diff | Persian | |
-|---|---|---|---|---|---|
-| *Outcomes Over Output* — Josh Seiden | Book | 3h | ⭐ | 🔴 | required |
-| *Escaping the Build Trap* — Melissa Perri | Book | 5h | ⭐⭐ | 🔴 | required |
-| *Lean Analytics* — Croll & Yoskovitz | Book | 8h | ⭐⭐ | 🔴 | **required** |
-
-> *Lean Analytics* is required rather than optional here precisely because of the three-step jump — Seiden and Perri give you outcome *thinking*, but nothing in them teaches you which metric to pick.
-
-**Practice:** Rewrite your team's roadmap in pure outcome language — no feature names, only metric changes and user behaviour shifts. Present it to a stakeholder and see if they understand it.
-
-### 4 · Delivery & Execution → 4
+### 3 · Delivery & Execution → 4
 **Sprint: 6 weeks** · Matures over 9 months · Reading: 7h · *Habit competency*
 
 You now lead the trio through delivery rather than contributing to it. This is the last level where delivery rises — it declines from L4 onward. The short sprint reflects that you already reached depth 3 as an APM; you are extending a competency, not building one.
@@ -662,12 +661,18 @@ You now lead the trio through delivery rather than contributing to it. This is t
 
 | Competency | Sprint | Matures | Resource | Reading | Diff | Persian |
 |---|:--:|:--:|---|---|---|---|
+| **Data, Metrics & Goal-setting → 3 ⇈** | 8 wk | 6 mo | *see below* | 16h | ⭐⭐ | 🔴 |
 | Experimentation & Validation → 3 ⇈ | 6 wk | 9 mo | Experimentation guide — Optimizely | 1h | ⭐ | 🔴 |
 | Market & Competitive Insight → 3 ⇈ | 6 wk | 6 mo | *Competing Against Luck* — Christensen | 6h | ⭐⭐ | 🔴 |
 | Product Strategy → 3 ⇈ | 6 wk | 6 mo | SVPG product strategy articles — Cagan | 2h | ⭐⭐ | 🔴 |
 | Stakeholder & Exec Influence → 3 | 4 wk | 6 mo | *Never Split the Difference* — Chris Voss | 7h | ⭐⭐ | 🇮🇷 |
+| Technical Literacy → 3 | 2 wk | 4 mo | *no resource* — arrives through daily work with engineers | — | — | — |
 | Product Vision → 2 | 2 wk | 2 mo | *Start With Why* — Simon Sinek | 5h | ⭐ | 🇮🇷 |
 | Business & Commercial Acumen → 2 | 2 wk | 2 mo | Unit economics basics — a16z | 1h | ⭐⭐ | 🔴 |
+
+**Eight supporting competencies against three core** — more than any other level. Supporting does not mean small here; it means someone else answers for the outcome while you have to be credible inside it.
+
+**Technical Literacy crosses its threshold here and gets no resource.** You bought the vocabulary at APM with 11 hours of courses; the step from following a technical conversation to holding one comes from doing the job next to engineers for a few months, not from more reading. Two weeks of deliberate attention — sit in on technical design, read your team's own docs — and then it is done for the rest of your career.
 
 **Business Acumen arrives here, not at APM** — it rises 1→2 at this boundary. One free hour of reading and a fortnight of attention is the whole requirement; you need to follow a margin conversation, not build the model.
 
@@ -679,11 +684,30 @@ Note the inversion in Experimentation: the **least** reading (1 free hour) and o
 
 **Practice:** Write a JTBD statement for your product's top 3 use cases: "When [situation], I want to [motivation], so I can [expected outcome]." Then identify what users currently hire instead of you.
 
+### Data, Metrics & Goal-setting → 3 ⇈ — the heaviest supporting competency in the roadmap
+**Sprint: 8 weeks** · Matures over 6 months · Reading: 16h · *Knowledge competency, two-step jump*
+
+**An APM is never asked to own a metric; a PM is accountable for one.** That is the whole change, and it is why this carries more reading than any other competency at this level despite being supporting rather than core. You arrive owing two depths from a standing start — depth 1 is the coldest beginning of the six competencies climbing at this boundary.
+
+Supporting, not core, because at depth 3 you own the metric for *your* scope: you pick it, defend it, and answer for it. Deciding how the organisation measures anything is a Director's job, and it is the reason this competency keeps climbing to 4 at Senior PM and 5 at Director.
+
+Six months to mature because you need to set a metric, ship against it, and be wrong at least once. The being-wrong is the part that teaches.
+
+| Resource | Type | Time | Diff | Persian | |
+|---|---|---|---|---|---|
+| *Outcomes Over Output* — Josh Seiden | Book | 3h | ⭐ | 🔴 | required |
+| *Escaping the Build Trap* — Melissa Perri | Book | 5h | ⭐⭐ | 🔴 | required |
+| *Lean Analytics* — Croll & Yoskovitz | Book | 8h | ⭐⭐ | 🔴 | **required** |
+
+> *Lean Analytics* is required rather than optional here precisely because of the two-step jump — Seiden and Perri give you outcome *thinking*, but nothing in them teaches you which metric to pick.
+
+**Practice:** Rewrite your team's roadmap in pure outcome language — no feature names, only metric changes and user behaviour shifts. Present it to a stakeholder and see if they understand it.
+
 ---
 
 ## Maintain — no new study
 
-Communication & Writing (3) · Technical Literacy (3). You reached these at L1; the bar has not moved.
+Communication & Writing (3). You reached this at L1; the bar has not moved. It is the only competency at this level that asks nothing new of you.
 
 ## Acquired free
 
@@ -691,32 +715,35 @@ Coaching, Hiring & Talent (→1) — you start being asked for advice. Notice it
 
 ---
 
-## Sequencing — 58 sprint-weeks across a 30-month tenure
+## Sequencing — 56 sprint-weeks across a 30-month tenure
 
 | Weeks | Sprint — one at a time | Maturing in background |
 |---|---|---|
-| **1–10** | Data, Metrics & Goal-setting | — |
-| **11–18** | Prioritization & Tradeoffs | Data |
-| **19–26** | Product Discovery | Data, Prioritization |
-| **27–32** | Delivery & Execution | Prioritization, Research |
-| **33–38** | Experimentation & Validation | Research, Delivery |
-| **39–44** | Product Strategy | Delivery, Experimentation |
-| **45–50** | Market & Competitive Insight | Experimentation, Strategy |
-| **51–54** | Stakeholder & Exec Influence | Strategy, Market |
-| **55–56** | Product Vision | Market, Stakeholder |
-| **57–58** | Business & Commercial Acumen | Stakeholder, Vision |
+| **1–8** | Data, Metrics & Goal-setting | — |
+| **9–16** | Prioritization & Tradeoffs | Data |
+| **17–22** | Product Discovery | Data, Prioritization |
+| **23–28** | Delivery & Execution | Prioritization, Discovery |
+| **29–34** | Experimentation & Validation | Discovery, Delivery |
+| **35–40** | Product Strategy | Delivery, Experimentation |
+| **41–46** | Market & Competitive Insight | Experimentation, Strategy |
+| **47–50** | Stakeholder & Exec Influence | Strategy, Market |
+| **51–52** | Technical Literacy | Stakeholder, Market |
+| **53–54** | Product Vision | Stakeholder, Technical Literacy |
+| **55–56** | Business & Commercial Acumen | Vision, Technical Literacy |
 | **Months 14–27** | *No sprints* | Everything |
 | **Months 28–30** | Bridge — reading only | — |
 
-**Data goes first, and it goes first because it is the three-step jump.** Everything else at this level is downstream of knowing what "worked" means. Prioritization follows immediately — they are the same conversation from two sides, what to build next and how you'll know it mattered. Studying them apart makes both harder.
+**Data goes first, and it goes first despite being supporting.** Everything else at this level is downstream of knowing what "worked" means — you cannot prioritise, validate or defend a roadmap without it, so it leads the year even though someone else owns the measurement strategy. Prioritization follows immediately; they are the same conversation from two sides, what to build next and how you'll know it mattered. Studying them apart makes both harder.
 
-**13.5 months of sprints is the heaviest study load in the roadmap**, but it still leaves more than half the tenure for maturation. L2 is where people stall not because any one thing is hard, but because eight competencies are mid-climb at once and none of them finish early.
+**Technical Literacy sits near the end deliberately.** It needs two weeks of attention, no reading, and a year of working alongside engineers behind it — putting it early would waste the sprint on something that had not had time to accumulate.
+
+**~13 months of sprints is the heaviest study load in the roadmap**, but it still leaves more than half the tenure for maturation. L2 is where people stall not because any one thing is hard, but because ten competencies are mid-climb at once and none of them finish early.
 
 ---
 
 ## Bridge — making the case for Senior PM
 
-Vision jumps 2→4 ⇈ and Coaching 1→3 ⇈ at the next boundary. Start both now — informal mentoring for six months *is* the promotion evidence.
+Vision jumps 2→4 ⇈ and Coaching 1→3 ⇈ at the next boundary, and Data climbs again 3→4. Start the first two now — informal mentoring for six months *is* the promotion evidence. Data needs no new reading here; it needs you to have owned a metric long enough to have an opinion about how the team should pick the next one.
 
 | Resource | Covers | Type | Time | Persian |
 |---|---|---|---|---|
@@ -749,8 +776,9 @@ The heaviest study level in the path. Six competencies rise to depth 4 simultane
 | Stakeholder & Exec Influence | 3 → 4 | Core |
 | Experimentation & Validation | 3 → 4 | Core |
 | Coaching, Hiring & Talent | 1 → 3 ⇈ | Supporting |
+| Data, Metrics & Goal-setting | 3 → 4 | Supporting |
 | Business & Commercial Acumen | 2 → 3 | Supporting |
-| Research · Delivery · Prioritization · Data · Tech Lit | unchanged | Maintain |
+| Research · Delivery · Prioritization · Tech Lit | unchanged | Maintain |
 | People Leadership · Org Design & Culture | – → 1 | Acquired free |
 
 ---
@@ -857,6 +885,9 @@ You now set the standard for how your area validates bets — including when *no
 |---|:--:|:--:|---|---|---|---|
 | Coaching, Hiring & Talent → 3 ⇈ | 8 wk | 9 mo | *The Coaching Habit* — Michael Bungay Stanier | 4h | ⭐ | 🔴 |
 | Business & Commercial Acumen → 3 | 4 wk | 4 mo | *Financial Intelligence* — Berman & Knight | 6h | ⭐⭐ | 🔴 |
+| Data, Metrics & Goal-setting → 4 | — | 6 mo | *no resource* — the L2 reading already covers the ground | — | — | — |
+
+**Data rises again here and gets neither a sprint nor new reading.** At L2 you learned to own a metric for your scope; at 4 you set how your area picks them and coach other PMs through the choice. That is a judgement shift, not a knowledge gap — you already read Seiden, Perri and *Lean Analytics*, and re-reading them will not teach you what six months of reviewing someone else's metric proposals will. It is the one competency in the roadmap that gains a full depth on maturation alone, which is why it costs nothing against this level's 54 sprint-weeks.
 
 Coaching is nominally "supporting" here but carries a 9-month window — a habit competency making a two-step jump. Treat it as core in everything but name: it is the single clearest signal that you're ready for Product Lead, and the doc's own promotion criterion asks for six months of informal leading *before* the title.
 
@@ -868,7 +899,7 @@ Coaching is nominally "supporting" here but carries a 9-month window — a habit
 
 ## Maintain — no new study
 
-Product Discovery (4) · Delivery & Execution (4) · Prioritization (4) · Data & Goal-setting (4) · Technical Literacy (3).
+Product Discovery (4) · Delivery & Execution (4) · Prioritization (4) · Technical Literacy (3).
 
 ## Acquired free
 
