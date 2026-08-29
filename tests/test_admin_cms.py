@@ -22,6 +22,7 @@ from app.models.book import Book
 from app.models.category import Category
 from app.models.post import Post
 from app.models.tool import Tool
+from tests.conftest import ADMIN_PASSWORD, ADMIN_USERNAME
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -749,7 +750,7 @@ class TestAdminAuth:
     async def test_login_success_redirects_to_books(self, client):
         resp = await client.post(
             "/admin/login/",
-            data={"username": "admin", "password": "test-admin-pass"},
+            data={"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD},
             follow_redirects=False,
         )
         assert resp.status_code == 303
