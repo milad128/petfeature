@@ -961,3 +961,66 @@ textarea.form-control.tall { min-height: 260px; }
   .an-cards { grid-template-columns: 1fr; }
   .toolbar-search { max-width: none; width: 100%; }
 }
+
+.an-learn-summary {
+  padding: 0 20px 18px;
+  font-size: .9rem;
+  color: var(--text);
+}
+.an-learn-summary a {
+  margin-inline-start: 12px;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 0;
+}
+.admin-pagination__btn {
+  font-size: .8rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 13px;
+  color: var(--text);
+  text-decoration: none;
+}
+.admin-pagination__btn--disabled {
+  color: var(--muted);
+  cursor: default;
+}
+.admin-pagination__info { font-size: .85rem; color: var(--muted); }
+.admin-meta-line { font-size: .78rem; color: var(--muted); margin-bottom: 16px; }
+
+.learn-admin-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 110px;
+}
+.learn-admin-bar {
+  display: block;
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--border);
+  overflow: hidden;
+}
+.learn-admin-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+.learn-admin-badge {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.learn-admin-badge--enrolled { color: var(--muted); background: var(--surface-2, var(--bg)); }
+.learn-admin-badge--progress { color: var(--accent); background: var(--accent-bg); }
+.learn-admin-badge--done { color: var(--success); background: var(--success-bg); }

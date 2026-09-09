@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۹ — آکاردئون | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .acc { display: flex; flex-direction: column; gap: 8px; }
+    .acc-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .acc-item[open] { border-color: var(--border-2); }
+    .acc-item.is-core { border-inline-start: 3px solid var(--core); }
+    .acc-item.is-supp { border-inline-start: 3px solid var(--supp); }
+    .acc-item summary {
+      list-style: none;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+    }
+    .acc-item summary::-webkit-details-marker { display: none; }
+    .acc-item summary h3 { margin: 0; font-size: .92rem; font-weight: 700; }
+    .acc-weeks { font-size: .78rem; color: var(--muted); font-weight: 700; }
+    .acc-body {
+      padding: 0 16px 16px 16px;
+      font-size: .84rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .acc-body p { margin: 0 0 10px; }
+    .acc-range { font-size: .74rem; color: var(--faint); }
+  </style>
+</head>
+<body data-alt="9">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۹ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 9 · Accordion list</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">فهرست جمع‌شونده. پیش‌فرض ایستگاه اول باز است. مناسب موبایل و وقتی بخواهید توضیح کوتاه هر ایستگاه را همین‌جا نشان دهید.</p>
+
+  <div class="acc">
+    <details class="acc-item is-core" open>
+      <summary>
+        <span class="station-num station-num--core">۱</span>
+        <h3>تحویل و اجرا</h3>
+        <span class="acc-weeks">۶ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>اولین و مهم‌ترین وظیفه APM. اسپرینت را تمام کنید، چیزی تحویل بدهید، بعد بروید سراغ کشف.</p>
+        <span class="acc-range">هفته ۱–۶ · هسته</span>
+      </div>
+    </details>
+    <details class="acc-item is-core">
+      <summary>
+        <span class="station-num station-num--core">۲</span>
+        <h3>کشف محصول</h3>
+        <span class="acc-weeks">۸ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>بلندترین ایستگاه هسته. با کاربر حرف بزنید و مسئله را قبل از ساختن بفهمید.</p>
+        <span class="acc-range">هفته ۷–۱۴ · هسته</span>
+      </div>
+    </details>
+    <details class="acc-item is-core">
+      <summary>
+        <span class="station-num station-num--core">۳</span>
+        <h3>ارتباط و نوشتن</h3>
+        <span class="acc-weeks">۶ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>آنچه می‌سازید را بنویسید و به ذی‌نفعان بگویید. مهارت اتصال همه ایستگاه‌های دیگر.</p>
+        <span class="acc-range">هفته ۱۵–۲۰ · هسته</span>
+      </div>
+    </details>
+    <details class="acc-item is-supp">
+      <summary>
+        <span class="station-num station-num--supp">۴</span>
+        <h3>سواد فنی</h3>
+        <span class="acc-weeks">۶ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>با مهندس‌ها حرف بزنید، سؤال درست بپرسید. راه‌حل فنی از شما نیست.</p>
+        <span class="acc-range">هفته ۲۱–۲۶ · حمایتی</span>
+      </div>
+    </details>
+    <details class="acc-item is-supp">
+      <summary>
+        <span class="station-num station-num--supp">۵</span>
+        <h3>نفوذ بر ذی‌نفعان و مدیران</h3>
+        <span class="acc-weeks">۳ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>کوتاه و تمرینی. وقتی فرصتی برای ارائه پیش آمد، آماده باشید.</p>
+        <span class="acc-range">هفته ۲۷–۲۹ · حمایتی</span>
+      </div>
+    </details>
+    <details class="acc-item is-supp">
+      <summary>
+        <span class="station-num station-num--supp">۶</span>
+        <h3>اولویت‌بندی و موازنه</h3>
+        <span class="acc-weeks">۲ هفته</span>
+      </summary>
+      <div class="acc-body">
+        <p>کوتاه‌ترین ایستگاه. روش‌ها را بدانید؛ مالک بک‌لاگ هنوز PM است.</p>
+        <span class="acc-range">هفته ۳۰–۳۱ · حمایتی</span>
+      </div>
+    </details>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

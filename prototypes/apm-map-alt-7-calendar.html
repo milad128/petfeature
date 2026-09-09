@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۷ — تقویم | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .cal-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .cal-legend i {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-inline-end: 6px;
+      vertical-align: middle;
+    }
+    .cal-wrap {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(72px, 1fr));
+      gap: 6px;
+      min-width: 680px;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--border);
+      background: rgba(236,229,220,.03);
+    }
+    .cal-cell.is-core { background: var(--core-bg); border-color: var(--core-bd); }
+    .cal-cell.is-supp { background: var(--supp-bg); border-color: var(--supp-bd); }
+    .cal-cell.is-empty { opacity: .35; }
+    .cal-week { font-size: .68rem; font-weight: 700; color: var(--faint); }
+    .cal-cell.is-core .cal-week { color: var(--core); }
+    .cal-cell.is-supp .cal-week { color: var(--supp); }
+    .cal-name { font-size: .68rem; font-weight: 600; line-height: 1.45; }
+    .cal-caption {
+      margin-top: 14px;
+      font-size: .78rem;
+      color: var(--faint);
+    }
+  </style>
+</head>
+<body data-alt="7">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۷ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 7 · Week calendar</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">هر خانه یک هفته است. رنگ خانه = ایستگاه جاری. مثل تقویم دیواری — مدت اسپرینت را با تعداد خانه‌ها می‌بینید، نه با عرض نوار.</p>
+
+  <div class="cal-legend">
+    <span><i style="background:var(--core)"></i>هسته</span>
+    <span><i style="background:var(--supp)"></i>حمایتی</span>
+  </div>
+
+  <div class="cal-wrap">
+    <div class="cal-grid" id="cal"></div>
+    <p class="cal-caption">۳۱ خانه پر · یک خانه خالی برای بستن ردیف آخر</p>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+<script>
+(function () {
+  var stations = [
+    { name: "تحویل و اجرا", weeks: 6, kind: "core" },
+    { name: "کشف محصول", weeks: 8, kind: "core" },
+    { name: "ارتباط و نوشتن", weeks: 6, kind: "core" },
+    { name: "سواد فنی", weeks: 6, kind: "supp" },
+    { name: "نفوذ ذی‌نفعان", weeks: 3, kind: "supp" },
+    { name: "اولویت‌بندی", weeks: 2, kind: "supp" },
+  ];
+  var grid = document.getElementById("cal");
+  var week = 1;
+  stations.forEach(function (s) {
+    for (var i = 0; i < s.weeks; i++) {
+      var cell = document.createElement("div");
+      cell.className = "cal-cell is-" + s.kind;
+      cell.innerHTML = "<span class=\"cal-week\">هفته " + week + "</span><span class=\"cal-name\">" + (i === 0 ? s.name : "") + "</span>";
+      grid.appendChild(cell);
+      week++;
+    }
+  });
+  var empty = document.createElement("div");
+  empty.className = "cal-cell is-empty";
+  empty.innerHTML = "<span class=\"cal-week\">—</span>";
+  grid.appendChild(empty);
+})();
+</script>
+</body>
+</html>

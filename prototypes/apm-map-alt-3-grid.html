@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۳ — کارت شبکه‌ای | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .grid-bands {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .grid-bands div {
+      flex: 1 1 200px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .grid-bands b { display: block; font-size: .9rem; margin-bottom: 4px; }
+    .grid-bands span { font-size: .78rem; color: var(--faint); }
+    .grid-bands .is-core b { color: var(--core); }
+    .grid-bands .is-supp b { color: var(--supp); }
+
+    .station-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px) { .station-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .station-grid { grid-template-columns: 1fr; } }
+
+    .grid-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      min-height: 148px;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .grid-card:hover {
+      border-color: var(--border-2);
+      box-shadow: 0 10px 28px rgba(0,0,0,.22);
+      text-decoration: none;
+    }
+    .grid-card.is-core { border-top: 3px solid var(--core); }
+    .grid-card.is-supp { border-top: 3px solid var(--supp); }
+    .grid-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .grid-card h3 {
+      margin: 0;
+      font-size: .92rem;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+    .grid-card-foot {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .74rem;
+      color: var(--faint);
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+    }
+    .grid-card-foot b { color: var(--muted); font-size: .8rem; }
+  </style>
+</head>
+<body data-alt="3">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۳ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 3 · Equal card grid</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">هر ایستگاه وزن بصری یکسان دارد — بدون اسکرول افقی. طول اسپرینت در پاورقی کارت آمده، نه در عرض.</p>
+
+  <div class="grid-bands">
+    <div class="is-core"><b>هسته · ۲۰ هفته</b><span>تحویل، کشف، ارتباط</span></div>
+    <div class="is-supp"><b>حمایتی · ۱۱ هفته</b><span>فنی، نفوذ، اولویت‌بندی</span></div>
+  </div>
+
+  <div class="station-grid">
+    <a class="grid-card is-core" href="#station-1">
+      <div class="grid-card-top">
+        <span class="station-num station-num--core">۱</span>
+        <span class="badge badge--core">هسته</span>
+      </div>
+      <h3>تحویل و اجرا</h3>
+      <div class="grid-card-foot"><b>۶ هفته</b><span>هفته ۱–۶</span></div>
+    </a>
+    <a class="grid-card is-core" href="#station-2">
+      <div class="grid-card-top">
+        <span class="station-num station-num--core">۲</span>
+        <span class="badge badge--core">هسته</span>
+      </div>
+      <h3>کشف محصول</h3>
+      <div class="grid-card-foot"><b>۸ هفته</b><span>هفته ۷–۱۴</span></div>
+    </a>
+    <a class="grid-card is-core" href="#station-3">
+      <div class="grid-card-top">
+        <span class="station-num station-num--core">۳</span>
+        <span class="badge badge--core">هسته</span>
+      </div>
+      <h3>ارتباط و نوشتن</h3>
+      <div class="grid-card-foot"><b>۶ هفته</b><span>هفته ۱۵–۲۰</span></div>
+    </a>
+    <a class="grid-card is-supp" href="#station-4">
+      <div class="grid-card-top">
+        <span class="station-num station-num--supp">۴</span>
+        <span class="badge badge--supp">حمایتی</span>
+      </div>
+      <h3>سواد فنی</h3>
+      <div class="grid-card-foot"><b>۶ هفته</b><span>هفته ۲۱–۲۶</span></div>
+    </a>
+    <a class="grid-card is-supp" href="#station-5">
+      <div class="grid-card-top">
+        <span class="station-num station-num--supp">۵</span>
+        <span class="badge badge--supp">حمایتی</span>
+      </div>
+      <h3>نفوذ بر ذی‌نفعان و مدیران</h3>
+      <div class="grid-card-foot"><b>۳ هفته</b><span>هفته ۲۷–۲۹</span></div>
+    </a>
+    <a class="grid-card is-supp" href="#station-6">
+      <div class="grid-card-top">
+        <span class="station-num station-num--supp">۶</span>
+        <span class="badge badge--supp">حمایتی</span>
+      </div>
+      <h3>اولویت‌بندی و موازنه</h3>
+      <div class="grid-card-foot"><b>۲ هفته</b><span>هفته ۳۰–۳۱</span></div>
+    </a>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

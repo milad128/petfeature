@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سطح ۱ — مبتدی (APM) | مسیر یادگیری | پت فیچر</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../app/static/css/main.css">
+  <link rel="stylesheet" href="learning.css">
+</head>
+<body data-state="guest">
+
+<div class="proto-bar">
+  <div class="proto-bar-inner">
+    <b>پیش‌نمایش v17 · صفحه عمومی /path/apm/</b>
+    <span class="proto-bar-sep">·</span>
+    <label class="proto-toggle"><input type="radio" name="st" value="guest" checked> مهمان</label>
+    <label class="proto-toggle"><input type="radio" name="st" value="logged"> وارد شده</label>
+    <label class="proto-toggle"><input type="radio" name="st" value="enrolled"> ثبت‌نام‌شده</label>
+    <span class="proto-bar-sep">·</span>
+    <a href="learning-level.html">صفحه یادگیری</a>
+    <a href="learning-dashboard.html">مسیرهای من</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <button class="lamp-btn" type="button" aria-hidden="true">
+        <span class="lamp-shade-top"></span><span class="lamp-pole"></span><span class="lamp-base-bar"></span>
+      </button>
+      <a href="learning-dashboard.html" class="brand-name">پت فیچر</a>
+    </div>
+    <nav class="site-nav" aria-label="ناوبری اصلی">
+      <a href="#">کتابخانه</a>
+      <a href="#">یادداشت</a>
+      <a href="#">ابزارها</a>
+      <a href="#">درباره من</a>
+      <a href="#">تماس</a>
+      <a href="learning-path.html" class="active">مسیر یادگیری</a>
+      <a href="#" class="login-btn only-guest">ورود</a>
+      <div class="user-chip only-auth" style="display:flex;">
+        <span class="user-chip__avatar" aria-hidden="true">سا</span>
+        <span class="user-chip__name">سارا</span>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="ra-strip-wrap">
+  <div class="ra-strip" role="navigation" aria-label="سطوح مسیر">
+    <a href="#" class="ra-strip-btn">مسیر ۰</a>
+    <span class="ra-strip-btn" aria-current="true">Associate</span>
+    <a href="#" class="ra-strip-btn">Product</a>
+    <span class="ra-strip-btn" aria-disabled="true">Senior <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
+  </div>
+</div>
+
+<div style="border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--accent) 4%, transparent);">
+  <div class="ra-inner ra-pad" style="padding-top:13px; padding-bottom:13px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <a href="#" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">سطح ۱ — مبتدی (APM)</b>
+    <span style="font-size:.72rem; color:var(--faint); border:1px solid var(--border-2); border-radius:6px; padding:3px 10px;">پله‌ی اول نردبان</span>
+  </div>
+</div>
+
+<section class="ra-pad" style="max-width:1120px; margin:0 auto; padding-top:64px; padding-bottom:80px;">
+  <div class="ra-hero-grid">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">سطح ۱</span>
+      </div>
+      <h1 style="font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25;">مبتدی (APM)</h1>
+      <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:6px;">Associate PM</p>
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); font-weight:500; max-width:640px; line-height:2.05;">تمرکز این سطح برای توسعه محصول است و همچنین داکیومنت کردن و ارتباط مؤثر گرفتن با ذی‌نفعان.</p>
+    </div>
+
+    <aside style="border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+        <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شرط پایان</span>
+      </div>
+      <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک فیچر را از ابتدا تا انتها تحویل داده‌اید.</b>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">نه تعداد کتاب خوانده‌شده، نه ماه‌های گذشته.</p>
+
+      <div class="ra-facts" style="margin-top:20px;">
+        <div class="ra-fact"><span class="ra-fact-lbl">منابع اجباری</span><b class="ra-fact-val">۱۵</b></div>
+        <div class="ra-fact"><span class="ra-fact-lbl">مطالعه</span><b class="ra-fact-val">~۵۳ ساعت</b></div>
+        <div class="ra-fact"><span class="ra-fact-lbl">اسپرینت</span><b class="ra-fact-val" style="color:var(--accent);">۳۱ هفته</b></div>
+        <div class="ra-fact"><span class="ra-fact-lbl">تصدی</span><b class="ra-fact-val" style="color:var(--sprout);">۱۲ تا ۲۴ ماه</b></div>
+      </div>
+
+      <a class="learn-cta only-logged" href="learning-dashboard.html#track" style="margin-top:18px;">شروع یادگیری</a>
+      <a class="learn-cta only-guest" href="#" id="enroll-guest" style="margin-top:18px;">شروع یادگیری</a>
+      <a class="learn-cta learn-cta--ghost only-enrolled" href="learning-dashboard.html#track" style="margin-top:18px;">ادامه یادگیری</a>
+      <p class="only-guest" style="font-size:.74rem; color:var(--faint); margin-top:10px; line-height:1.8;">بدون حساب: ورود با گوگل، بعد ثبت‌نام خودکار همین سطح و باز شدن پنل.</p>
+
+      <div class="learn-social">
+        <span>۴۲ نفر در حال یادگیری</span>
+        <span>۹ نفر این سطح را تکمیل کرده‌اند</span>
+      </div>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <span class="footer-brand">پت فیچر — دفترچه‌ی عمومی یک مدیر محصول</span>
+    <span class="footer-domain">petfeature.ir</span>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('input[name="st"]').forEach(function (r) {
+  r.addEventListener("change", function () { document.body.setAttribute("data-state", r.value); });
+});
+document.getElementById("enroll-guest").addEventListener("click", function (e) {
+  e.preventDefault();
+  alert("در محصول: /login/?next=/dashboard/learning/apm/enroll/ — بعد از گوگل، همین سطح ثبت می‌شود و پنل پیگیری باز می‌شود.");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۴ — نقشه مترو | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .metro {
+      position: relative;
+      padding: 24px 0 8px;
+    }
+    .metro-line {
+      position: absolute;
+      inset-inline: 8%;
+      top: 50%;
+      height: 6px;
+      transform: translateY(-50%);
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--core) 0%, var(--core) 64.5%, var(--supp) 64.5%, var(--supp) 100%);
+      box-shadow: 0 0 0 4px rgba(166,195,160,.08);
+    }
+    .metro-nodes {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 4%;
+    }
+    .metro-node {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+    }
+    .metro-node:hover { text-decoration: none; }
+    .metro-node:hover .metro-dot { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(166,195,160,.12); }
+    .metro-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .78rem;
+      font-weight: 800;
+      background: var(--bg);
+      border: 3px solid currentColor;
+      transition: transform .18s, box-shadow .18s;
+      z-index: 1;
+    }
+    .metro-node.is-core { color: var(--core); }
+    .metro-node.is-supp { color: var(--supp); }
+    .metro-node.is-core .metro-dot { background: color-mix(in srgb, var(--core) 20%, var(--bg)); }
+    .metro-node.is-supp .metro-dot { background: color-mix(in srgb, var(--supp) 20%, var(--bg)); }
+    .metro-title {
+      margin-top: 14px;
+      font-size: .78rem;
+      font-weight: 700;
+      line-height: 1.65;
+      color: var(--text);
+      max-width: 110px;
+    }
+    .metro-meta {
+      margin-top: 6px;
+      font-size: .68rem;
+      color: var(--faint);
+      line-height: 1.6;
+    }
+    .metro-junction {
+      position: absolute;
+      inset-inline-start: 64.5%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: var(--bg);
+      border: 2px solid var(--text);
+      z-index: 2;
+    }
+    .metro-legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 28px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .metro-legend span { display: inline-flex; align-items: center; gap: 8px; }
+    .metro-legend i {
+      width: 28px;
+      height: 4px;
+      border-radius: 99px;
+      display: inline-block;
+    }
+    @media (max-width: 760px) {
+      .metro-line { display: none; }
+      .metro-nodes {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+        gap: 0;
+      }
+      .metro-node {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        text-align: start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .metro-title { margin: 0; max-width: none; flex: 1; }
+      .metro-meta { margin: 0; white-space: nowrap; }
+      .metro-junction { display: none; }
+    }
+  </style>
+</head>
+<body data-alt="4">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۴ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 4 · Metro map</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">یک خط پیوسته با تغییر رنگ در مرز هسته/حمایتی. ایستگاه‌ها به‌صورت گره روی خط — در موبایل به لیست عمودی تبدیل می‌شود.</p>
+
+  <div class="metro">
+    <div class="metro-line" aria-hidden="true"></div>
+    <div class="metro-junction" title="مرز هسته و حمایتی" aria-hidden="true"></div>
+    <div class="metro-nodes">
+      <a class="metro-node is-core" href="#station-1">
+        <span class="metro-dot">۱</span>
+        <span class="metro-title">تحویل و اجرا</span>
+        <span class="metro-meta">۶ هفته<br>۱–۶</span>
+      </a>
+      <a class="metro-node is-core" href="#station-2">
+        <span class="metro-dot">۲</span>
+        <span class="metro-title">کشف محصول</span>
+        <span class="metro-meta">۸ هفته<br>۷–۱۴</span>
+      </a>
+      <a class="metro-node is-core" href="#station-3">
+        <span class="metro-dot">۳</span>
+        <span class="metro-title">ارتباط و نوشتن</span>
+        <span class="metro-meta">۶ هفته<br>۱۵–۲۰</span>
+      </a>
+      <a class="metro-node is-supp" href="#station-4">
+        <span class="metro-dot">۴</span>
+        <span class="metro-title">سواد فنی</span>
+        <span class="metro-meta">۶ هفته<br>۲۱–۲۶</span>
+      </a>
+      <a class="metro-node is-supp" href="#station-5">
+        <span class="metro-dot">۵</span>
+        <span class="metro-title">نفوذ ذی‌نفعان</span>
+        <span class="metro-meta">۳ هفته<br>۲۷–۲۹</span>
+      </a>
+      <a class="metro-node is-supp" href="#station-6">
+        <span class="metro-dot">۶</span>
+        <span class="metro-title">اولویت‌بندی</span>
+        <span class="metro-meta">۲ هفته<br>۳۰–۳۱</span>
+      </a>
+    </div>
+    <div class="metro-legend">
+      <span><i style="background:var(--core)"></i>خط هسته · ۲۰ هفته</span>
+      <span><i style="background:var(--supp)"></i>خط حمایتی · ۱۱ هفته</span>
+    </div>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

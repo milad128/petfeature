@@ -1,6 +1,6 @@
 # Feature Spec — Learning Enrollment & Progress Tracking
 **Version:** v17 (candidate)
-**Status:** Draft — not yet accepted into roadmap
+**Status:** Implemented in repo — official write-up in [spec-v17-learning-enrollment.md](../spec-v17-learning-enrollment.md)
 **Author:** PM Agent
 **Date:** 2026-08-09
 **Blocked on:** v12 (User Auth) → v14 (User Dashboard) → v16 (Roadmap)
@@ -26,6 +26,8 @@ Registered users need a way to formally enroll in a level and convert a static r
 ## User Stories
 
 ### Enrollment
+- As a visitor on a level's learning page, I want to click an explicit enrollment button so that I choose to start that path — enrollment is never implicit.
+- As a visitor who is not registered, I want clicking enroll to send me to registration first, then complete enrollment, so I do not lose the level I intended to start.
 - As a registered user, I want to enroll in a roadmap level so that I have a personal learning path to follow.
 - As a registered user, I want to enroll in multiple levels simultaneously so that I can prepare for a future level while still completing my current one.
 - As a registered user, I want each enrollment to have its own separate dashboard so that I can track progress per level independently.
@@ -43,11 +45,10 @@ Registered users need a way to formally enroll in a level and convert a static r
 
 ## Resource Status Model
 
-Five statuses, shown in Persian in the UI:
+Four statuses + blank, shown in Persian in the UI:
 
 | Status Key | Persian Label | Meaning |
 |---|---|---|
-| `WANT_TO_STUDY` | می‌خوام بخونم | Queued — flagged for later, not yet started |
 | `STUDYING` | دارم می‌خونم | Currently active — at most one per enrollment (soft limit, not enforced) |
 | `DONE` | خوندم | Completed as part of this learning path |
 | `ALREADY_KNEW` | قبلاً می‌دونستم | Existed in user's knowledge before enrollment; counts toward progress |
@@ -57,7 +58,7 @@ Five statuses, shown in Persian in the UI:
 
 **Default state:** All resources start with no status set (blank). The user must actively set a status — nothing is pre-populated.
 
-**Progress calculation:** `(DONE + ALREADY_KNEW) / total required resources` — SKIPPED and WANT_TO_STUDY do not count. Optional resources never block completion.
+**Progress calculation:** `(DONE + ALREADY_KNEW) / total required resources` — SKIPPED does not count. Optional resources never block completion. There is no queue status; blank means not started.
 
 ---
 
@@ -73,10 +74,11 @@ Five statuses, shown in Persian in the UI:
 ## Acceptance Criteria
 
 ### Enrollment Flow
-- [ ] Authenticated user sees an "شروع یادگیری" (Start Learning) CTA on each level page in `/roadmap/`.
-- [ ] Clicking CTA creates an `Enrollment` record and redirects to the user's learning dashboard for that level.
-- [ ] Unauthenticated users clicking the CTA are redirected to `/login/` and returned to the roadmap after auth.
-- [ ] A user already enrolled in a level sees "ادامه یادگیری" (Continue Learning) instead of the CTA.
+- [ ] The learning page for a level shows an explicit enrollment button (e.g. «شروع یادگیری» / «ثبت‌نام در این سطح»). Enrollment does not happen on page view.
+- [ ] Registered user clicks the button → create an `Enrollment` record → **redirect to the user-panel tracker** (`/dashboard/learning/{slug}/track/`). Statuses are not on the public learning page. See the official spec.
+- [ ] Unregistered visitor clicks the button → redirect to registration / login (v12 Google OAuth) with a return URL for this level → after auth, complete enrollment for that same level (do not drop them on a generic profile with no enrollment).
+- [ ] A user already enrolled in a level sees «ادامه یادگیری» instead of the enroll button; the button does not create a second enrollment.
+- [ ] Authenticated user may also see the same CTA on each public level page in `/roadmap/` / `/path/`, with the same register-then-enroll return path.
 
 ### Learning Dashboard (per enrollment)
 - [ ] Dashboard is accessible at `/dashboard/learning/{level_slug}/` (e.g., `/dashboard/learning/apm/`).
@@ -118,7 +120,7 @@ Five statuses, shown in Persian in the UI:
 | `id` | PK | |
 | `enrollment_id` | FK → Enrollment | |
 | `roadmap_resource_id` | FK → RoadmapResource | Reuses v16 model |
-| `status` | enum | `WANT_TO_STUDY`, `STUDYING`, `DONE`, `ALREADY_KNEW`, `SKIPPED` |
+| `status` | enum | `STUDYING`, `DONE`, `ALREADY_KNEW`, `SKIPPED` |
 | `updated_at` | datetime | Last status change |
 
 **Unique constraint:** `(enrollment_id, roadmap_resource_id)` — one status row per resource per enrollment.
@@ -130,7 +132,8 @@ Five statuses, shown in Persian in the UI:
 | Route | Description |
 |---|---|
 | `GET /dashboard/learning/` | Enrollment index — all of the user's active enrollments |
-| `GET /dashboard/learning/{level_slug}/` | Per-level learning dashboard |
+| `GET /dashboard/learning/{level_slug}/` | Public learning page — catalog + enroll only |
+| `GET /dashboard/learning/{level_slug}/track/` | Panel tracker — statuses + progress |
 | `POST /dashboard/learning/{level_slug}/enroll/` | Create enrollment (form action or AJAX) |
 | `POST /dashboard/learning/{level_slug}/unenroll/` | Soft-delete enrollment |
 | `POST /api/v1/learning/{level_slug}/progress/` | Update a single resource status (JSON, for async UI) |
@@ -153,13 +156,13 @@ Five statuses, shown in Persian in the UI:
 - **RTL / Persian:** all labels, status names, and CTA text in Persian. Level names match v16 exactly.
 - **Performance:** `/dashboard/learning/{level_slug}/` must load within 300ms on a warm DB. Avoid N+1 on resource status lookups — fetch all `ResourceProgress` rows for the enrollment in one query.
 - **Accessibility:** status selectors must be keyboard-navigable and screen-reader labelled.
-- **Auth:** all `/dashboard/learning/` routes require authentication; redirect to `/login/` if unauthenticated.
+- **Auth:** setting resource status and viewing personal progress require authentication. The enroll button is visible to visitors. Unauthenticated enroll clicks go to `/login/?next=…` (v12 Google OAuth; first login auto-registers) and then enroll.
 
 ---
 
 ## Open Questions
 
-1. **Status ambiguity:** Confirm that `ALREADY_KNEW` (قبلاً می‌دونستم) and `DONE` (خوندم) are the intended split for "already studied" vs "studied." If they are the same, we collapse to four statuses.
+1. **Status set (resolved):** blank + `STUDYING` / `DONE` / `ALREADY_KNEW` / `SKIPPED`. No queue status. `DONE` vs `ALREADY_KNEW` stay split.
 2. **Profile visibility:** Should the badge and enrollment be visible on a public-facing profile page, or private by default? (Relevant to v14 scope.)
 3. **Completion definition:** Is 100% required resources = completed, or should the user explicitly click a "تکمیل کردم" button? An explicit confirmation prevents accidental auto-completion.
 4. **Re-enrollment:** If a user unenrolls and re-enrolls, should prior progress be restored or reset?
@@ -203,3 +206,7 @@ Five statuses, shown in Persian in the UI:
 | 2026-08-09 | Multi-level enrollment allowed, separate dashboards | Milad confirmed: users may study for current + target level in parallel |
 | 2026-08-09 | Badges on user profile | Milad confirmed: social proof element wanted |
 | 2026-08-09 | Resources = v16 RoadmapResource | Confirmed assumption; no new content type needed |
+| 2026-09-06 | Explicit enroll button on the learning page; unregistered users register first, then enroll | Milad: enrollment is a click, not automatic; auth is a gate on the click, not on seeing the page CTA |
+| 2026-09-06 | Button on **both** learning page and `/path/{slug}/` | Milad |
+| 2026-09-06 | After Google login / first registration, auto-enroll that level and open its dashboard | Milad |
+| 2026-09-06 | Official spec = full v17 (enroll + progress + badges) | Milad |

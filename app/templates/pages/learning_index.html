@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-page">
+  <section class="profile-hero">
+    <div class="profile-hero__glow" aria-hidden="true"></div>
+    <div class="container profile-hero__inner">
+      <span class="section-kicker">داشبورد من</span>
+      <h1 class="profile-info__greeting">مسیرهای من</h1>
+      <p style="color:var(--muted); max-width:640px; line-height:2; margin-top:10px;">هر سطح ثبت‌نام‌شده پیشرفت جدا دارد. می‌توانید هم‌زمان چند سطح را دنبال کنید.</p>
+    </div>
+  </section>
+
+  <section class="profile-section">
+    <div class="container">
+      {% if cards %}
+      <div class="learn-grid">
+        {% for card in cards %}
+        <a class="learn-card" href="{{ url_for('learning_track', level_slug=card.level_slug) }}">
+          <div class="learn-card-k">{{ card.level_num }}</div>
+          <h3>{{ card.level_fa }}</h3>
+          <p class="learn-card-date">ثبت‌نام: {{ card.enrollment.enrolled_at | jalali }}</p>
+          <div class="learn-bar" aria-hidden="true" style="margin-top:16px;"><i style="--p:{{ card.progress.pct }}%"></i></div>
+          <div class="learn-card-foot">
+            <span class="learn-badge {% if card.progress.badge == 'completed' %}learn-badge--done{% elif card.progress.badge == 'in_progress' %}learn-badge--progress{% else %}learn-badge--enrolled{% endif %}">{{ card.progress.badge_fa }}</span>
+            <span class="learn-card-date">{{ card.progress.done | fa_digits }} از {{ card.progress.required | fa_digits }} منبع الزامی</span>
+          </div>
+          <span class="learn-card-cta">ادامه یادگیری ←</span>
+        </a>
+        {% endfor %}
+        <a class="learn-card learn-card--add" href="{{ url_for('roadmap_landing') }}">
+          <div class="learn-card-k">مسیر دیگر</div>
+          <h3>سطح دیگری شروع کنید</h3>
+          <p class="learn-card-date" style="margin:0;">از نقشه راه یک سطح انتخاب کنید. پیش‌نیاز اجباری نیست.</p>
+        </a>
+      </div>
+      {% else %}
+      <div class="learn-empty">
+        <h2>هنوز در هیچ سطحی ثبت‌نام نکرده‌اید</h2>
+        <p>نقشه راه را ببینید، سطح فعلی یا هدف‌تان را انتخاب کنید، و یادگیری را شروع کنید.</p>
+        <a class="btn btn--primary" href="{{ url_for('roadmap_landing') }}">دیدن مسیر یادگیری</a>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

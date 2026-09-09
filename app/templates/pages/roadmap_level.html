@@ -179,7 +179,7 @@ details[open] .rl-chev { transform:rotate(180deg); }
     {% if l.slug != 'hiring' %}
     {% if l.slug == lv.slug %}
     <span class="rl-strip-btn" aria-current="true">{{ l.en.split(' ')[0] }}</span>
-    {% elif l.slug in ['apm'] %}
+    {% elif l.slug in full_page_slugs %}
     <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}" class="rl-strip-btn">{{ l.en.split(' ')[0] }}</a>
     {% else %}
     <span class="rl-strip-btn" aria-disabled="true" title="به زودی">{{ l.en.split(' ')[0] }} <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
@@ -241,6 +241,10 @@ details[open] .rl-chev { transform:rotate(180deg); }
     {% if not tx.tenure_bar_body.startswith('TODO') %}
     <p style="margin-top:14px; font-size:.86rem; color:var(--muted); line-height:2.05;">{{ tx.tenure_bar_body }}</p>
     {% endif %}
+  </div>
+
+  <div style="margin-top:28px;">
+    {% include "partials/learn_enroll_cta.html" %}
   </div>
 </section>
 
@@ -624,7 +628,7 @@ details[open] .rl-chev { transform:rotate(180deg); }
     <!-- Bridge checklist -->
     {% if bridge_checklist %}
     <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px 26px; margin-top:24px;">
-      <h3 style="font-size:1rem; font-weight:700; margin-bottom:14px; color:var(--accent);">آماده‌ی سطح ۲ هستید وقتی:</h3>
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:14px; color:var(--accent);">{% if next_level %}آماده‌ی {{ next_level.fa }} هستید وقتی:{% else %}آماده‌ی سطح بعد هستید وقتی:{% endif %}</h3>
       {% for item in bridge_checklist %}
       <div class="rl-bridge-item">
         <span style="color:var(--accent); flex-shrink:0;">☑</span>
@@ -634,22 +638,38 @@ details[open] .rl-chev { transform:rotate(180deg); }
     </div>
     {% endif %}
 
-    <!-- L2 stub link -->
-    <div style="margin-top:24px; background:rgba(236,229,220,.04); border:1px dashed var(--border-2); border-radius:12px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; opacity:.55;">
+    {% if next_level %}
+    <div style="margin-top:24px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
       <span>
-        <b style="display:block; font-size:.9rem;">سطح ۲ — مدیر محصول</b>
+        <b style="display:block; font-size:.9rem;">{{ next_level.num }} — {{ next_level.fa }}</b>
+        {% if next_level.slug not in full_page_slugs %}
         <span style="font-size:.74rem; color:var(--faint);">به زودی در دسترس خواهد بود</span>
+        {% endif %}
       </span>
-      <span style="color:var(--faint);">به زودی</span>
+      {% if next_level.slug in full_page_slugs %}
+      <a href="{{ url_for('roadmap_level', level_slug=next_level.slug) }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">{{ next_level.fa }} ←</a>
+      {% else %}
+      <span style="color:var(--faint); font-size:.85rem;">به زودی</span>
+      {% endif %}
     </div>
+    {% endif %}
   </div>
 </section>
 
 <!-- Footer nav -->
 <div style="border-top:1px solid var(--border);">
   <div style="max-width:1000px; margin:0 auto; padding:32px 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    {% if prev_level %}
+    <a href="{{ url_for('roadmap_level', level_slug=prev_level.slug) }}" style="font-size:.9rem; color:var(--muted); text-decoration:none;">→ {{ prev_level.num }} — {{ prev_level.fa }}</a>
+    {% else %}
     <a href="{{ url_for('roadmap_hiring') }}" style="font-size:.9rem; color:var(--muted); text-decoration:none;">→ مسیر ۰ — مسیر استخدام</a>
+    {% endif %}
     <a href="{{ url_for('roadmap_landing') }}" style="font-size:.9rem; color:var(--muted); text-decoration:none;">مسیر یادگیری ←</a>
+    {% if next_level and next_level.slug in full_page_slugs %}
+    <a href="{{ url_for('roadmap_level', level_slug=next_level.slug) }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">{{ next_level.fa }} ←</a>
+    {% elif next_level %}
+    <span style="font-size:.9rem; color:var(--faint);">{{ next_level.fa }} (به زودی)</span>
+    {% endif %}
   </div>
 </div>
 

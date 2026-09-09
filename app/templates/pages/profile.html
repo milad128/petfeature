@@ -25,9 +25,20 @@
             <span>ایمیل: <span dir="ltr" class="profile-info__email">{{ current_user.email }}</span></span>
             <span>عضو از: <span>{{ current_user.created_at | jalali }}</span></span>
           </div>
+          {% if learning_cards %}
+          <div class="badge-row" aria-label="نشان‌های یادگیری">
+            {% for card in learning_cards %}
+            <span class="learn-badge {% if card.progress.badge == 'completed' %}learn-badge--done{% elif card.progress.badge == 'in_progress' %}learn-badge--progress{% else %}learn-badge--enrolled{% endif %}">{{ card.level_fa }} · {{ card.progress.badge_fa }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
           <div class="profile-info__actions">
-            <a href="{{ url_for('bookshelf') }}" class="btn btn--primary">قفسه کتاب من</a>
-            <a href="{{ url_for('library') }}" class="btn btn--outline">رفتن به کتابخانه</a>
+            {% if learning_cards %}
+            <a href="{{ url_for('learning_track', level_slug=learning_cards[0].level_slug) }}" class="btn btn--primary">ادامه یادگیری</a>
+            {% else %}
+            <a href="{{ url_for('roadmap_landing') }}" class="btn btn--primary">شروع یادگیری</a>
+            {% endif %}
+            <a href="{{ url_for('bookshelf') }}" class="btn btn--outline">قفسه کتاب من</a>
           </div>
         </div>
 
@@ -71,6 +82,37 @@
         </div>
 
       </div>
+    </div>
+  </section>
+
+  {# ── Learning enrollments (v17) ─────────────────────────────────── #}
+  <section class="profile-section" id="learning">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">یادگیری</span>
+      </div>
+      {% if learning_cards %}
+      <div class="learn-grid">
+        {% for card in learning_cards %}
+        <a class="learn-card" href="{{ url_for('learning_track', level_slug=card.level_slug) }}">
+          <div class="learn-card-k">{{ card.level_num }}</div>
+          <h3>{{ card.level_fa }}</h3>
+          <div class="learn-bar" aria-hidden="true" style="margin-top:16px;"><i style="--p:{{ card.progress.pct }}%"></i></div>
+          <div class="learn-card-foot">
+            <span class="learn-badge {% if card.progress.badge == 'completed' %}learn-badge--done{% elif card.progress.badge == 'in_progress' %}learn-badge--progress{% else %}learn-badge--enrolled{% endif %}">{{ card.progress.badge_fa }}</span>
+            <span class="learn-card-cta">ادامه یادگیری ←</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      <p style="margin-top:16px;"><a href="{{ url_for('learning_index') }}">همه مسیرهای من ←</a></p>
+      {% else %}
+      <div class="learn-empty">
+        <h2>هنوز در هیچ سطحی ثبت‌نام نکرده‌اید</h2>
+        <p>از نقشه راه یک سطح انتخاب کنید و یادگیری را شروع کنید.</p>
+        <a class="btn btn--primary" href="{{ url_for('roadmap_landing') }}">دیدن مسیر یادگیری</a>
+      </div>
+      {% endif %}
     </div>
   </section>
 

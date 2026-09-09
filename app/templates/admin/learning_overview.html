@@ -1,0 +1,181 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_learning_enrollments') }}" class="btn btn-primary">همه ثبت‌نام‌ها</a>
+{% endblock %}
+
+{% block content %}
+{% set snap = overview.snapshot %}
+{% set period_stats = overview.period %}
+
+<div class="toolbar" style="margin-bottom:24px;">
+  <div class="filter-strip">
+    <a href="{{ url_for('admin_learning') }}?period=7"
+       class="filter-pill {% if period == '7' %}active{% endif %}">۷ روز</a>
+    <a href="{{ url_for('admin_learning') }}?period=30"
+       class="filter-pill {% if period == '30' %}active{% endif %}">۳۰ روز</a>
+    <a href="{{ url_for('admin_learning') }}?period=90"
+       class="filter-pill {% if period == '90' %}active{% endif %}">۹۰ روز</a>
+    <a href="{{ url_for('admin_learning') }}?period=all"
+       class="filter-pill {% if period == 'all' %}active{% endif %}">همه</a>
+  </div>
+</div>
+
+<p class="card-section-title" style="margin-bottom:12px;">الان</p>
+<div class="an-cards">
+  <div class="an-card">
+    <span class="an-card-label">ثبت‌نام فعال</span>
+    <span class="an-card-value">{{ snap.active | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">در حال یادگیری</span>
+    <span class="an-card-value">{{ snap.learning | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">تکمیل‌شده</span>
+    <span class="an-card-value">{{ snap.completed | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">لغوشده</span>
+    <span class="an-card-value">{{ snap.unenrolled | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">یادگیرنده یکتا</span>
+    <span class="an-card-value">{{ snap.unique_learners | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">میانگین پیشرفت</span>
+    <span class="an-card-value">{% if snap.avg_progress is not none %}{{ snap.avg_progress | fa_digits }}٪{% else %}—{% endif %}</span>
+  </div>
+</div>
+
+<p class="card-section-title" style="margin-bottom:12px;">
+  {% if period == 'all' %}در همه‌وقت{% elif period == '7' %}در ۷ روز اخیر{% elif period == '90' %}در ۹۰ روز اخیر{% else %}در ۳۰ روز اخیر{% endif %}
+</p>
+<div class="an-cards">
+  <div class="an-card">
+    <span class="an-card-label">ثبت‌نام جدید</span>
+    <span class="an-card-value">{{ period_stats.new_enrolls | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">تکمیل جدید</span>
+    <span class="an-card-value">{{ period_stats.new_completions | fa_digits }}</span>
+  </div>
+  <div class="an-card">
+    <span class="an-card-label">لغو جدید</span>
+    <span class="an-card-value">{{ period_stats.new_unenrolls | fa_digits }}</span>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">به تفکیک سطح</div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>سطح</th>
+          {% if overview.show_conversion %}
+          <th>بازدید صفحه</th>
+          {% endif %}
+          <th>ثبت‌نام جدید</th>
+          {% if overview.show_conversion %}
+          <th>تبدیل</th>
+          {% endif %}
+          <th>فعال</th>
+          <th>در حال یادگیری</th>
+          <th>تکمیل‌شده</th>
+          <th>لغوشده</th>
+          <th>میانگین پیشرفت</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in overview.levels %}
+        <tr>
+          <td>{{ row.fa }}</td>
+          {% if overview.show_conversion %}
+          <td>{{ row.views | fa_digits }}</td>
+          {% endif %}
+          <td>{{ row.new_enrolls | fa_digits }}</td>
+          {% if overview.show_conversion %}
+          <td>{% if row.conversion is not none %}{{ row.conversion | fa_digits }}٪{% else %}—{% endif %}</td>
+          {% endif %}
+          <td>{{ row.active | fa_digits }}</td>
+          <td>{{ row.learning | fa_digits }}</td>
+          <td>{{ row.completed | fa_digits }}</td>
+          <td>{{ row.unenrolled | fa_digits }}</td>
+          <td>{% if row.avg_progress is not none %}{{ row.avg_progress | fa_digits }}٪{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">
+    {% if overview.series_bucket == 'month' %}ثبت‌نام و تکمیل ماهانه{% else %}ثبت‌نام و تکمیل روزانه{% endif %}
+  </div>
+  {% if overview.series %}
+  <table class="admin-table">
+    <thead>
+      <tr><th>تاریخ</th><th>ثبت‌نام</th><th>تکمیل</th></tr>
+    </thead>
+    <tbody>
+      {% for row in overview.series %}
+      <tr>
+        <td>{{ row.label }}</td>
+        <td>{{ row.enrolls | fa_digits }}</td>
+        <td>{{ row.completions | fa_digits }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty" style="padding:24px;"><p>داده‌ای برای این بازه نیست.</p></div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">استفاده از وضعیت منابع</div>
+  <table class="admin-table">
+    <thead>
+      <tr><th>وضعیت</th><th>تعداد</th></tr>
+    </thead>
+    <tbody>
+      {% for row in overview.status_mix %}
+      <tr>
+        <td>{{ row.fa }}</td>
+        <td>{{ row.count | fa_digits }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">متوقف‌شده</div>
+  {% if overview.stalled %}
+  <table class="admin-table">
+    <thead>
+      <tr><th>نام</th><th>سطح</th><th>تاریخ ثبت‌نام</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for row in overview.stalled %}
+      <tr>
+        <td>
+          <a href="{{ url_for('admin_learning_enrollment_detail', enrollment_id=row.id) }}">{{ row.user_name }}</a>
+        </td>
+        <td>{{ row.level_fa }}</td>
+        <td class="muted">{{ row.enrolled_at | jalali }}</td>
+        <td><a href="{{ url_for('admin_learning_enrollment_detail', enrollment_id=row.id) }}">جزئیات</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="admin-empty" style="padding:24px;"><p>ثبت‌نام متوقف‌شده‌ای نیست.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

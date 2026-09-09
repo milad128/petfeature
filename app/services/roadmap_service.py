@@ -19,13 +19,11 @@ from sqlalchemy.orm import selectinload
 from app.models.roadmap import ImmigrationVideo, RoadmapResource
 from app.core.jalali import format_reading_hours, parse_reading_time_to_hours
 from app.services.roadmap_data import (
-    APM_COMPETENCY_DATA,
-    APM_CORE_RATIONALE,
-    APM_SUPPORTING_DETAIL,
-    APM_TEXTS,
-    APM_BRIDGE_CHECKLIST,
+    BRIDGE_CHECKLIST_BY_LEVEL,
     COMPETENCIES,
     COMPETENCY_BY_SLUG,
+    COMPETENCY_DATA_BY_LEVEL,
+    CORE_RATIONALE_BY_LEVEL,
     DEPTH_LABELS,
     DEPTH_MATRIX,
     DEPTH_SCALE,
@@ -38,8 +36,11 @@ from app.services.roadmap_data import (
     L0_PHASES,
     L0_PHASE_BY_SLUG,
     LEVEL_BY_SLUG,
+    LEVEL_DEPTH_INDEX,
     LEVELS,
     STUB_SLUGS,
+    SUPPORTING_DETAIL_BY_LEVEL,
+    TEXTS_BY_LEVEL,
 )
 
 
@@ -50,6 +51,18 @@ _FA_TRANS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
 
 def _fa(n: int) -> str:
     return str(n).translate(_FA_TRANS)
+
+
+def _non_track_levels() -> list:
+    return [lv for lv in LEVELS if not lv.is_track]
+
+
+def _adjacent_levels(level_slug: str) -> tuple[Optional[object], Optional[object]]:
+    levels = _non_track_levels()
+    idx = next(i for i, lv in enumerate(levels) if lv.slug == level_slug)
+    prev_lv = levels[idx - 1] if idx > 0 else None
+    next_lv = levels[idx + 1] if idx + 1 < len(levels) else None
+    return prev_lv, next_lv
 
 
 def _bar_pct(sprint_weeks: int, tenure_months: int) -> int:
@@ -368,7 +381,20 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     if level_slug in STUB_SLUGS:
         return {"is_stub": True, "level": lv}
 
-    # ── Full page: APM ──────────────────────────────────────────────────────
+    if level_slug not in FULL_PAGE_SLUGS:
+        return {"is_stub": True, "level": lv}
+
+    comp_data = COMPETENCY_DATA_BY_LEVEL.get(level_slug, {})
+    if not comp_data:
+        return {"is_stub": True, "level": lv}
+
+    depth_idx = LEVEL_DEPTH_INDEX[level_slug]
+    texts = TEXTS_BY_LEVEL.get(level_slug, {})
+    core_rationale = CORE_RATIONALE_BY_LEVEL.get(level_slug, {})
+    supporting_detail = SUPPORTING_DETAIL_BY_LEVEL.get(level_slug, {})
+    bridge_checklist = BRIDGE_CHECKLIST_BY_LEVEL.get(level_slug, [])
+    prev_level, next_level = _adjacent_levels(level_slug)
+
     stmt = (
         select(RoadmapResource)
         .where(RoadmapResource.level_slug == level_slug)
@@ -382,21 +408,32 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
     for r in all_resources:
         resources_by_cat.setdefault(r.category or "other", []).append(r)
 
+    # Station numbers follow sprint-sequence order (core + supporting in comp_data order)
+    station_by_slug: dict[str, dict[str, str]] = {}
+    station_idx = 1
+    for slug, cd in comp_data.items():
+        if cd.category not in ("core", "supporting"):
+            continue
+        station_by_slug[slug] = {
+            "station_n": _fa(station_idx),
+            "station_id": f"station-{station_idx}",
+        }
+        station_idx += 1
+
     # Group core resources by competency
     core_competencies = []
-    comp_data = APM_COMPETENCY_DATA if level_slug == "apm" else {}
-    station_idx = 1
     for slug, cd in comp_data.items():
         if cd.category != "core":
             continue
         comp = COMPETENCY_BY_SLUG[slug]
-        depth = DEPTH_MATRIX[slug][0]  # index 0 = APM (level 1)
+        depth = DEPTH_MATRIX[slug][depth_idx]
         resources = [
             r for r in resources_by_cat.get("core", [])
             if r.competency_slug == slug
         ]
-        rationale = APM_CORE_RATIONALE.get(slug, {})
+        rationale = core_rationale.get(slug, {})
         reading_hours, reading_hours_display = _reading_from_resources(resources)
+        st = station_by_slug[slug]
         core_competencies.append({
             "slug": slug,
             "fa": comp.fa,
@@ -411,10 +448,9 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "rationale": rationale.get("rationale", ""),
             "quote": rationale.get("quote", ""),
             "practice": rationale.get("practice", ""),
-            "station_n": _fa(station_idx),
-            "station_id": f"station-{station_idx}",
+            "station_n": st["station_n"],
+            "station_id": st["station_id"],
         })
-        station_idx += 1
 
     # Supporting competencies
     supporting_competencies = []
@@ -422,13 +458,14 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
         if cd.category != "supporting":
             continue
         comp = COMPETENCY_BY_SLUG[slug]
-        depth = DEPTH_MATRIX[slug][0]
+        depth = DEPTH_MATRIX[slug][depth_idx]
         resources = [
             r for r in resources_by_cat.get("supporting", [])
             if r.competency_slug == slug
         ]
-        detail = APM_SUPPORTING_DETAIL.get(slug, {})
+        detail = supporting_detail.get(slug, {})
         reading_hours, reading_hours_display = _reading_from_resources(resources)
+        st = station_by_slug[slug]
         supporting_competencies.append({
             "slug": slug,
             "fa": comp.fa,
@@ -442,10 +479,9 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
             "owner_note": detail.get("owner_note", ""),
             "homework": detail.get("homework", ""),
             "optional": detail.get("optional", ""),
-            "station_n": _fa(station_idx),
-            "station_id": f"station-{station_idx}",
+            "station_n": st["station_n"],
+            "station_id": st["station_id"],
         })
-        station_idx += 1
 
     # Passive competencies
     passive_competencies = []
@@ -453,7 +489,7 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
         if cd.category != "passive":
             continue
         comp = COMPETENCY_BY_SLUG[slug]
-        depth = DEPTH_MATRIX[slug][0]
+        depth = DEPTH_MATRIX[slug][depth_idx]
         passive_competencies.append({
             "slug": slug,
             "fa": comp.fa,
@@ -479,40 +515,44 @@ async def get_level_context(db: AsyncSession, level_slug: str) -> Optional[dict]
         if r.competency_slug:
             resources_by_competency.setdefault(r.competency_slug, []).append(r)
     asks_table = _build_asks_table(level_slug, comp_data, resources_by_competency)
+    asks_footer_rows = _build_asks_footer_rows(level_slug)
 
     # Gantt data for sequence section
     sequence_gantt = _build_sequence_gantt(level_slug, comp_data)
 
     stats = build_level_display_stats(all_resources)
-    section_meta: dict[str, str] = {}
-    if level_slug == "apm":
-        section_meta = {
-            "core": _section_meta_from_competencies(core_competencies),
-            "supporting": _section_meta_from_competencies(supporting_competencies),
-        }
+    section_meta: dict[str, str] = {
+        "core": _section_meta_from_competencies(core_competencies),
+        "supporting": _section_meta_from_competencies(supporting_competencies),
+    }
 
     ctx: dict = {
         "is_stub": False,
+        "level_slug": level_slug,
         "level": lv,
         "stats": stats,
         "section_meta": section_meta,
-        "texts": APM_TEXTS if level_slug == "apm" else {},
+        "texts": texts,
         "entry_resources": resources_by_cat.get("entry", []),
         "core_competencies": core_competencies,
         "supporting_competencies": supporting_competencies,
         "passive_competencies": passive_competencies,
         "bridge_resources": resources_by_cat.get("bridge", []),
-        "bridge_checklist": APM_BRIDGE_CHECKLIST if level_slug == "apm" else [],
+        "bridge_checklist": bridge_checklist,
         "asks_table": asks_table,
+        "asks_footer_rows": asks_footer_rows,
         "sequence_gantt": sequence_gantt,
         "levels": LEVELS,
         "depth_labels": DEPTH_LABELS,
+        "full_page_slugs": FULL_PAGE_SLUGS,
+        "prev_level": prev_level,
+        "next_level": next_level,
     }
 
-    if level_slug == "apm":
-        map_stations, map_bands = _build_apm_map(comp_data)
-        ctx["map_stations"] = map_stations
-        ctx["map_bands"] = map_bands
+    map_stations, map_bands = _build_level_map(comp_data)
+    ctx["map_stations"] = map_stations
+    ctx["map_bands"] = map_bands
+    ctx["map_total_weeks"] = sum(b["weeks"] for b in map_bands)
 
     return ctx
 
@@ -523,8 +563,7 @@ def _build_asks_table(
     resources_by_competency: Optional[dict[str, list[RoadmapResource]]] = None,
 ) -> list[dict]:
     """Build rows for the 'what this level asks' competency table."""
-    level_idx = {"apm": 0, "pm": 1, "senior-pm": 2, "lead": 3, "director": 4, "cpo": 5}
-    idx = level_idx.get(level_slug, 0)
+    level_idx = LEVEL_DEPTH_INDEX.get(level_slug, 0)
     resources_by_competency = resources_by_competency or {}
 
     CATEGORY_FA = {
@@ -539,7 +578,7 @@ def _build_asks_table(
         if cd.category == "passive":
             continue
         comp = COMPETENCY_BY_SLUG[slug]
-        depth = DEPTH_MATRIX[slug][idx]
+        depth = DEPTH_MATRIX[slug][level_idx]
         reading_hours, reading_hours_display = _reading_from_resources(
             resources_by_competency.get(slug, [])
         )
@@ -558,12 +597,48 @@ def _build_asks_table(
     return rows
 
 
+def _build_asks_footer_rows(level_slug: str) -> list[dict]:
+    """Synthetic trailing rows for the asks table (passive / N/A summaries)."""
+    if level_slug == "apm":
+        return [
+            {
+                "fa": "داده · کسب‌وکار · آزمایش · استراتژی · چشم‌انداز · بازار",
+                "depth": 1,
+                "category_fa": "رایگان به دست می‌آید",
+                "category_style": "passive",
+            },
+            {
+                "fa": "رهبری افراد · کوچینگ · طراحی سازمان",
+                "depth": 0,
+                "category_fa": "لازم نیست",
+                "category_style": "na",
+            },
+        ]
+    if level_slug == "pm":
+        return [
+            {
+                "fa": "ارتباط و نوشتن",
+                "depth": 3,
+                "category_fa": "تثبیت — مطالعه‌ی جدید ندارد",
+                "category_style": "maintain",
+            },
+            {
+                "fa": "کوچینگ، استخدام و استعداد",
+                "depth": 1,
+                "category_fa": "رایگان به دست می‌آید",
+                "category_style": "passive",
+            },
+        ]
+    return []
+
+
 def _build_sequence_gantt(level_slug: str, comp_data: dict) -> list[dict]:
-    """Build Gantt bars for the sequence section (core competencies only)."""
+    """Build Gantt bars for the sequence section."""
+    categories = ("core", "supporting") if level_slug == "pm" else ("core",)
     week_cursor = 1
     bars = []
     for slug, cd in comp_data.items():
-        if cd.category != "core":
+        if cd.category not in categories or cd.sprint_weeks <= 0:
             continue
         comp = COMPETENCY_BY_SLUG[slug]
         start = week_cursor
@@ -580,11 +655,13 @@ def _build_sequence_gantt(level_slug: str, comp_data: dict) -> list[dict]:
     return bars
 
 
-def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
-    """Build map section data (bands, stations) for the APM page."""
+def _build_level_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
+    """Build Gantt map section data (bands, stations) for a full level page."""
     stations: list[dict] = []
     core_weeks = 0
     supp_weeks = 0
+    core_count = 0
+    supp_count = 0
     idx = 1
     cursor = 0
 
@@ -597,8 +674,10 @@ def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
         cursor = to_w
         if cd.category == "core":
             core_weeks += cd.sprint_weeks
+            core_count += 1
         else:
             supp_weeks += cd.sprint_weeks
+            supp_count += 1
         stations.append({
             "n": _fa(idx),
             "station_n": idx,
@@ -606,6 +685,7 @@ def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
             "sprint": f"{_fa(cd.sprint_weeks)} هفته",
             "week_range": f"هفته {_fa(from_w)}–{_fa(to_w)}",
             "weeks": cd.sprint_weeks,
+            "from_week": from_w,
             "href": f"#station-{idx}",
             "category": cd.category,
         })
@@ -614,12 +694,12 @@ def _build_apm_map(comp_data: dict) -> tuple[list[dict], list[dict]]:
     bands = [
         {
             "fa": "هسته",
-            "note": f"{_fa(core_weeks)} هفته · چهار شایستگی",
+            "note": f"{_fa(core_weeks)} هفته · {_fa(core_count)} شایستگی",
             "weeks": core_weeks,
         },
         {
             "fa": "حمایتی",
-            "note": f"{_fa(supp_weeks)} هفته",
+            "note": f"{_fa(supp_weeks)} هفته · {_fa(supp_count)} شایستگی",
             "weeks": supp_weeks,
         },
     ]

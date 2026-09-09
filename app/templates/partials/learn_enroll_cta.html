@@ -1,0 +1,62 @@
+{% set learning_n = (social.learning if social else 0) | int %}
+{% set completed_n = (social.completed if social else 0) | int %}
+{% set enroll_fa = (lv.fa if lv is defined and lv else none) or (level.fa if level is defined and level else '') %}
+{% set is_banner = enroll_layout | default('compact') == 'banner' %}
+
+{% if is_banner %}
+<div class="learn-enroll-card">
+  <div class="learn-enroll-copy">
+    {% if enrolled %}
+    <span class="learn-enroll-kicker">ثبت‌نام شده‌اید</span>
+    <b class="learn-enroll-title">از همان‌جا که ماندید ادامه دهید.</b>
+    <p class="learn-enroll-body">منابع، وضعیت‌ها و پیشرفتتان در پنل شخصی است — نه روی این صفحه.</p>
+    {% else %}
+    <span class="learn-enroll-kicker">شروع مسیر</span>
+    <b class="learn-enroll-title">{% if enroll_fa %}{{ enroll_fa }} را برای خودتان ثبت کنید.{% else %}این سطح را برای خودتان ثبت کنید.{% endif %}</b>
+    <p class="learn-enroll-body">یک کلیک کافی است. بعد به پنل می‌روید، منابع را تیک می‌زنید و می‌بینید کجای مسیر ایستاده‌اید.</p>
+    {% endif %}
+    <div class="learn-social learn-social--stats" aria-label="آمار ثبت‌نام این سطح">
+      <span class="learn-social-stat">
+        <b>{{ learning_n | fa_digits }}</b>
+        نفر در حال یادگیری
+      </span>
+      <span class="learn-social-stat">
+        <b>{{ completed_n | fa_digits }}</b>
+        نفر این سطح را تمام کرده‌اند
+      </span>
+    </div>
+    {% if not enrolled and learning_n == 0 and completed_n == 0 %}
+    <p class="learn-enroll-nudge">هنوز خلوت است — اولین کسانی باشید که این سطح را جدی شروع می‌کنند.</p>
+    {% elif not enrolled and learning_n > 0 %}
+    <p class="learn-enroll-nudge">{{ learning_n | fa_digits }} نفر همین حالا این مسیر را می‌روند. به آن‌ها بپیوندید.</p>
+    {% endif %}
+  </div>
+  <div class="learn-enroll-actions">
+    {% if enrolled %}
+    <a class="learn-cta learn-cta--banner learn-cta--ghost" href="{{ url_for('learning_track', level_slug=level_slug) }}">ادامه یادگیری در پنل من</a>
+    {% elif request.state.current_user %}
+    <form method="post" action="{{ url_for('learning_enroll_post', level_slug=level_slug) }}">
+      <button type="submit" class="learn-cta learn-cta--banner">شروع یادگیری این سطح</button>
+    </form>
+    {% else %}
+    <a class="learn-cta learn-cta--banner" href="{{ url_for('login') }}?next=/dashboard/learning/{{ level_slug }}/enroll/">شروع یادگیری این سطح</a>
+    <p class="learn-cta-note">ورود با گوگل؛ یک دقیقه، بعد پنل شخصی‌تان باز می‌شود.</p>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+{% if enrolled %}
+<a class="learn-cta learn-cta--ghost" href="{{ url_for('learning_track', level_slug=level_slug) }}">ادامه یادگیری</a>
+{% elif request.state.current_user %}
+<form method="post" action="{{ url_for('learning_enroll_post', level_slug=level_slug) }}">
+  <button type="submit" class="learn-cta">شروع یادگیری</button>
+</form>
+{% else %}
+<a class="learn-cta" href="{{ url_for('login') }}?next=/dashboard/learning/{{ level_slug }}/enroll/">شروع یادگیری</a>
+<p class="learn-cta-note">اگر حساب ندارید، اول با گوگل وارد می‌شوید؛ بعد همین سطح ثبت می‌شود و پنل باز می‌شود.</p>
+{% endif %}
+<div class="learn-social" aria-label="آمار ثبت‌نام این سطح">
+  <span>{{ learning_n | fa_digits }} نفر در حال یادگیری</span>
+  <span>{{ completed_n | fa_digits }} نفر این سطح را تکمیل کرده‌اند</span>
+</div>
+{% endif %}

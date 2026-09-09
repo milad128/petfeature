@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۱ — خط عمودی | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .v-timeline { position: relative; padding-inline-end: 28px; }
+    .v-timeline::before {
+      content: "";
+      position: absolute;
+      inset-inline-end: 10px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--core) 0%, var(--core) 62%, var(--supp) 62%, var(--supp) 100%);
+      border-radius: 2px;
+    }
+    .v-band {
+      margin-bottom: 28px;
+    }
+    .v-band-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .v-band-head b { font-size: .95rem; }
+    .v-band-head span { font-size: .78rem; color: var(--faint); }
+    .v-station {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color .18s, transform .18s;
+    }
+    .v-station:hover {
+      border-color: var(--border-2);
+      transform: translateX(-2px);
+    }
+    .v-station::after {
+      content: "";
+      position: absolute;
+      inset-inline-end: -24px;
+      top: 22px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid currentColor;
+    }
+    .v-station.is-core { color: var(--core); }
+    .v-station.is-supp { color: var(--supp); }
+    .v-station-main h3 {
+      margin: 8px 0 0;
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .v-station-meta {
+      text-align: end;
+      font-size: .74rem;
+      color: var(--faint);
+      white-space: nowrap;
+    }
+    .v-station-meta b {
+      display: block;
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body data-alt="1">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۱ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 1 · Vertical timeline</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">برای گذشتن از این سطح عجله نکنید. تمرکز اصلی این است که بتوانید با کاربران و ذی‌نفعان تعامل کنید و توسعه محصول را به‌خوبی رهبری کنید.</p>
+
+  <div class="v-timeline">
+    <div class="v-band">
+      <div class="v-band-head">
+        <span class="badge badge--core">هسته</span>
+        <b>۲۰ هفته</b>
+        <span>· سه شایستگی</span>
+      </div>
+      <a class="v-station is-core" href="#station-1">
+        <div class="v-station-main">
+          <span class="station-num station-num--core">۱</span>
+          <h3>تحویل و اجرا</h3>
+        </div>
+        <div class="v-station-meta"><b>۶ هفته</b>هفته ۱–۶</div>
+      </a>
+      <a class="v-station is-core" href="#station-2">
+        <div class="v-station-main">
+          <span class="station-num station-num--core">۲</span>
+          <h3>کشف محصول</h3>
+        </div>
+        <div class="v-station-meta"><b>۸ هفته</b>هفته ۷–۱۴</div>
+      </a>
+      <a class="v-station is-core" href="#station-3">
+        <div class="v-station-main">
+          <span class="station-num station-num--core">۳</span>
+          <h3>ارتباط و نوشتن</h3>
+        </div>
+        <div class="v-station-meta"><b>۶ هفته</b>هفته ۱۵–۲۰</div>
+      </a>
+    </div>
+
+    <div class="v-band">
+      <div class="v-band-head">
+        <span class="badge badge--supp">حمایتی</span>
+        <b>۱۱ هفته</b>
+        <span>· سه شایستگی</span>
+      </div>
+      <a class="v-station is-supp" href="#station-4">
+        <div class="v-station-main">
+          <span class="station-num station-num--supp">۴</span>
+          <h3>سواد فنی</h3>
+        </div>
+        <div class="v-station-meta"><b>۶ هفته</b>هفته ۲۱–۲۶</div>
+      </a>
+      <a class="v-station is-supp" href="#station-5">
+        <div class="v-station-main">
+          <span class="station-num station-num--supp">۵</span>
+          <h3>نفوذ بر ذی‌نفعان و مدیران</h3>
+        </div>
+        <div class="v-station-meta"><b>۳ هفته</b>هفته ۲۷–۲۹</div>
+      </a>
+      <a class="v-station is-supp" href="#station-6">
+        <div class="v-station-main">
+          <span class="station-num station-num--supp">۶</span>
+          <h3>اولویت‌بندی و موازنه</h3>
+        </div>
+        <div class="v-station-meta"><b>۲ هفته</b>هفته ۳۰–۳۱</div>
+      </a>
+    </div>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

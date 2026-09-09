@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۸ — مسیر زیگزاگ | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .path {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 28px;
+    }
+    .path::before {
+      content: "";
+      position: absolute;
+      inset: 24px 18%;
+      border: 2px dashed var(--border-2);
+      border-radius: 40px;
+      pointer-events: none;
+    }
+    .path-card {
+      position: relative;
+      z-index: 1;
+      display: block;
+      padding: 18px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      min-height: 128px;
+    }
+    .path-card:hover { border-color: var(--border-2); text-decoration: none; }
+    .path-card.is-core { box-shadow: inset -3px 0 0 var(--core); }
+    .path-card.is-supp { box-shadow: inset -3px 0 0 var(--supp); }
+    .path-card:nth-child(even) { margin-top: 36px; }
+    .path-card h3 { margin: 8px 0 0; font-size: .92rem; font-weight: 700; }
+    .path-meta { margin-top: 12px; font-size: .74rem; color: var(--faint); display: flex; justify-content: space-between; }
+    .path-arrow {
+      position: absolute;
+      inset-inline-end: -18px;
+      top: 50%;
+      color: var(--faint);
+      font-size: 1.2rem;
+      transform: translateY(-50%);
+    }
+    .path-card:nth-child(even) .path-arrow { display: none; }
+    @media (max-width: 720px) {
+      .path { grid-template-columns: 1fr; }
+      .path::before { display: none; }
+      .path-card:nth-child(even) { margin-top: 0; }
+      .path-arrow { display: none; }
+    }
+  </style>
+</head>
+<body data-alt="8">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۸ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 8 · Zigzag path</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">مسیر خوانده‌شده از راست به چپ، سپس پایین. خط چین مسیر را نشان می‌دهد — مناسب حس «سفر»، نه جدول زمانی دقیق.</p>
+
+  <div class="path">
+    <a class="path-card is-core" href="#station-1">
+      <span class="station-num station-num--core">۱</span>
+      <h3>تحویل و اجرا</h3>
+      <div class="path-meta"><span>۶ هفته</span><span>۱–۶</span></div>
+      <span class="path-arrow" aria-hidden="true">←</span>
+    </a>
+    <a class="path-card is-core" href="#station-2">
+      <span class="station-num station-num--core">۲</span>
+      <h3>کشف محصول</h3>
+      <div class="path-meta"><span>۸ هفته</span><span>۷–۱۴</span></div>
+    </a>
+    <a class="path-card is-core" href="#station-3">
+      <span class="station-num station-num--core">۳</span>
+      <h3>ارتباط و نوشتن</h3>
+      <div class="path-meta"><span>۶ هفته</span><span>۱۵–۲۰</span></div>
+      <span class="path-arrow" aria-hidden="true">←</span>
+    </a>
+    <a class="path-card is-supp" href="#station-4">
+      <span class="station-num station-num--supp">۴</span>
+      <h3>سواد فنی</h3>
+      <div class="path-meta"><span>۶ هفته</span><span>۲۱–۲۶</span></div>
+    </a>
+    <a class="path-card is-supp" href="#station-5">
+      <span class="station-num station-num--supp">۵</span>
+      <h3>نفوذ بر ذی‌نفعان</h3>
+      <div class="path-meta"><span>۳ هفته</span><span>۲۷–۲۹</span></div>
+      <span class="path-arrow" aria-hidden="true">←</span>
+    </a>
+    <a class="path-card is-supp" href="#station-6">
+      <span class="station-num station-num--supp">۶</span>
+      <h3>اولویت‌بندی و موازنه</h3>
+      <div class="path-meta"><span>۲ هفته</span><span>۳۰–۳۱</span></div>
+    </a>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

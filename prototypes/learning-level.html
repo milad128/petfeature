@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>یادگیری — مبتدی (APM) | پت فیچر | دانشنامه یک مدیر محصول</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../app/static/css/main.css">
+  <link rel="stylesheet" href="learning.css">
+</head>
+<body data-state="guest">
+
+<div class="proto-bar">
+  <div class="proto-bar-inner">
+    <b>پیش‌نمایش v17</b>
+    <span class="proto-bar-sep">·</span>
+    <label class="proto-toggle"><input type="radio" name="st" value="guest" checked> مهمان / بدون ورود</label>
+    <label class="proto-toggle"><input type="radio" name="st" value="logged"> وارد شده، ثبت‌نام‌نشده</label>
+    <label class="proto-toggle"><input type="radio" name="st" value="enrolled"> ثبت‌نام‌شده</label>
+    <span class="proto-bar-sep">·</span>
+    <a href="learning-dashboard.html#track">پیگیری در پنل</a>
+    <a href="learning-path.html">صفحه عمومی سطح</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <button class="lamp-btn" type="button" aria-hidden="true">
+        <span class="lamp-shade-top"></span><span class="lamp-pole"></span><span class="lamp-base-bar"></span>
+      </button>
+      <a href="learning-dashboard.html" class="brand-name">پت فیچر</a>
+    </div>
+    <nav class="site-nav" aria-label="ناوبری اصلی">
+      <a href="#">کتابخانه</a>
+      <a href="#">یادداشت</a>
+      <a href="#">ابزارها</a>
+      <a href="#">درباره من</a>
+      <a href="#">تماس</a>
+      <a href="learning-path.html" class="active">مسیر یادگیری</a>
+      <a href="learning-dashboard.html" class="login-btn only-guest">ورود</a>
+      <div class="user-chip only-auth" style="display:flex;">
+        <span class="user-chip__avatar" aria-hidden="true">سا</span>
+        <span class="user-chip__name">سارا</span>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="ra-strip-wrap">
+  <div class="ra-strip" role="navigation" aria-label="سطوح مسیر">
+    <a href="learning-path.html" class="ra-strip-btn">مسیر ۰</a>
+    <span class="ra-strip-btn" aria-current="true">Associate</span>
+    <a href="#" class="ra-strip-btn">Product</a>
+    <span class="ra-strip-btn" aria-disabled="true">Senior <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
+  </div>
+</div>
+
+<div style="border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--accent) 4%, transparent);">
+  <div class="ra-inner ra-pad" style="padding-top:13px; padding-bottom:13px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <a href="learning-dashboard.html" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیرهای من</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">سطح ۱ — مبتدی (APM)</b>
+    <span class="only-enrolled learn-badge learn-badge--progress">ثبت‌نام شده</span>
+  </div>
+</div>
+
+<section class="ra-pad" style="max-width:1120px; margin:0 auto; padding-top:64px;">
+  <div class="ra-hero-grid">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">سطح ۱</span>
+      </div>
+      <h1 style="font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25;">مبتدی (APM)</h1>
+      <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:6px;">Associate PM</p>
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); font-weight:500; max-width:640px; line-height:2.05;">تمرکز این سطح برای توسعه محصول است و همچنین داکیومنت کردن و ارتباط مؤثر گرفتن با ذی‌نفعان.</p>
+      <p style="margin-top:14px; font-size:.88rem; color:var(--muted); max-width:640px; line-height:2;">
+        <a href="learning-path.html">متن کامل این سطح در مسیر یادگیری ←</a>
+      </p>
+    </div>
+
+    <aside style="border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface);">
+      <div class="only-start">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+          <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شروع مسیر</span>
+        </div>
+        <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک کلیک — بعد پیشرفت شخصی.</b>
+        <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">مشاهده صفحه ثبت‌نام نمی‌سازد. بعد از شروع، به پنل خودتان می‌روید و آنجا وضعیت منابع را می‌زنید.</p>
+        <a class="learn-cta only-logged" href="learning-dashboard.html#track" id="enroll-logged" style="margin-top:18px;">شروع یادگیری</a>
+        <a class="learn-cta only-guest" href="#" id="enroll-guest" style="margin-top:18px;">شروع یادگیری</a>
+        <p class="only-guest" style="font-size:.74rem; color:var(--faint); margin-top:10px; line-height:1.8;">اگر حساب ندارید، اول با گوگل وارد می‌شوید؛ بعد همین سطح ثبت می‌شود و پنل باز می‌شود.</p>
+      </div>
+      <div class="only-enrolled">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+          <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">ثبت‌نام شده‌اید</span>
+        </div>
+        <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">پیگیری منابع در پنل شماست.</b>
+        <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">وضعیت خواندن را اینجا عوض نکنید — در داشبورد من.</p>
+        <a class="learn-cta learn-cta--ghost" href="learning-dashboard.html#track" style="margin-top:18px;">ادامه یادگیری</a>
+      </div>
+      <div class="learn-social">
+        <span>۴۲ نفر در حال یادگیری</span>
+        <span>۹ نفر این سطح را تکمیل کرده‌اند</span>
+      </div>
+    </aside>
+  </div>
+
+</section>
+
+<div class="ra-phase-nav">
+  <div class="ra-phase-nav-inner">
+    <a href="#entry" class="ra-phase-link">ورود</a>
+    <a href="#core" class="ra-phase-link">هسته</a>
+    <a href="#supporting" class="ra-phase-link">حمایتی</a>
+    <a href="#bridge" class="ra-phase-link">پل</a>
+  </div>
+</div>
+
+<section class="ra-section" id="entry">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-split">
+      <div>
+        <span style="display:inline-block; font-size:.7rem; font-weight:700; color:var(--sprout); border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); border-radius:6px; padding:4px 11px; margin-bottom:14px;">پیش از عنوان</span>
+        <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">آشنایی نقش و وظایف مدیر محصول</h2>
+      </div>
+      <div class="ra-split-body">
+        <p style="font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1;">در ابتدا بهتر است بدانید مدیر محصول چه وظیفه‌ای دارد و موفقیت و شکستش به چه عواملی بستگی دارد.</p>
+        <div style="margin-top:24px; border-top:1px solid var(--border);">
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/inspired/" dir="auto">Inspired — Marty Cagan، فصل‌های ۱ تا ۵</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳ ساعت</span>
+              <span class="ra-tag-meta">⭐⭐</span>
+            </div>
+          </div>
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <span dir="auto" style="font-size:.96rem; font-weight:600;">The First 90 Days — Michael Watkins</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۶ ساعت</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ra-section" id="core">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:8px;">
+    <div class="ra-section-head">
+      <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">هسته</span>
+      <b class="ra-section-title">کاری که روزانه شخصاً پاسخ‌گویش هستید</b>
+      <span class="ra-section-meta">۲۰ هفته اسپرینت</span>
+    </div>
+    <p class="ra-note">هسته این نقش بر اساس توسعه و اجرا بسته شده است. مهارت ارتباطی و ادبیات اولیه کشف محصول را هم باید یاد بگیرید.</p>
+
+    <div id="station-1" class="ra-station">
+      <div class="ra-rail">
+        <span class="ra-rail-n">۱</span>
+        <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75; margin-top:12px;">تحویل و اجرا</b>
+        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق ۳</span>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه ۶ ساعت</span>
+          <span class="ra-chip-sprint">اسپرینت ۶ هفته</span>
+          <span class="ra-chip-mat">بلوغ ۶ ماه</span>
+        </div>
+      </div>
+      <div>
+        <div style="border-top:1px solid var(--border);">
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/agile-product-with-scrum/" dir="auto">Scrum — Jeff Sutherland</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۴ ساعت</span>
+            </div>
+          </div>
+          <div class="ra-res is-optional" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://basecamp.com/shapeup" target="_blank" rel="noopener noreferrer" dir="auto">Shape Up — Ryan Singer</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-opt">اختیاری</span>
+              <span class="ra-tag-meta">۵ ساعت</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="station-2" class="ra-station">
+      <div class="ra-rail">
+        <span class="ra-rail-n">۲</span>
+        <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75; margin-top:12px;">کشف محصول</b>
+        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق ۲</span>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه ۵ ساعت</span>
+          <span class="ra-chip-sprint">اسپرینت ۸ هفته</span>
+          <span class="ra-chip-mat">بلوغ ۶ ماه</span>
+        </div>
+      </div>
+      <div>
+        <div style="border-top:1px solid var(--border);">
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/mom-test/" dir="auto">The Mom Test — Rob Fitzpatrick</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳ ساعت</span>
+            </div>
+          </div>
+          <div class="ra-res is-optional" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <span dir="auto" style="font-size:.96rem; font-weight:600;">Interviewing Users — Steve Portigal</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-opt">اختیاری</span>
+              <span class="ra-tag-meta">۶ ساعت</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="station-3" class="ra-station" style="border-bottom:none;">
+      <div class="ra-rail">
+        <span class="ra-rail-n">۳</span>
+        <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75; margin-top:12px;">ارتباط و نوشتن</b>
+        <span style="display:block; font-size:.82rem; color:var(--accent); font-weight:600; margin-top:4px;">به عمق ۳</span>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه ۴٫۵ ساعت</span>
+          <span class="ra-chip-sprint">اسپرینت ۶ هفته</span>
+          <span class="ra-chip-mat">بلوغ ۶ ماه</span>
+        </div>
+      </div>
+      <div>
+        <div style="border-top:1px solid var(--border);">
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/writing-for-busy-readers/" dir="auto">Writing for Busy Readers — Rogers &amp; Levy</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۴ ساعت</span>
+            </div>
+          </div>
+          <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/tools/prd-template/" dir="auto">قالب‌های PRD — Lenny Rachitsky</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">راهنما</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳۰ دقیقه</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ra-section" id="supporting">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-section-head ra-section-head--plain">
+      <span class="ra-section-badge" style="color:var(--muted); background:rgba(236,229,220,.06);">حمایتی</span>
+      <b class="ra-section-title">سهم دارید، اما مالکش کسِ دیگری است</b>
+      <span class="ra-section-meta">۱۱ هفته اسپرینت</span>
+    </div>
+    <div class="ra-station" style="border-bottom:none;">
+      <div>
+        <b style="display:block; font-size:1.05rem; font-weight:700;">سواد فنی</b>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه ۱۱ ساعت</span>
+          <span class="ra-chip-sprint">اسپرینت ۶ هفته</span>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);">
+        <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+          <div>
+            <a class="ra-res-link" href="https://www.khanacademy.org/computing/computer-science" target="_blank" rel="noopener noreferrer" dir="auto">Khan Academy: Computer Science</a>
+            <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">دوره</div>
+          </div>
+          <div class="ra-res-meta">
+            <span class="ra-tag-req">اجباری</span>
+            <span class="ra-tag-meta">۵ ساعت</span>
+          </div>
+        </div>
+        <div class="ra-res" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+          <div>
+            <a class="ra-res-link" href="https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/" target="_blank" rel="noopener noreferrer" dir="auto">امتیازدهی RICE — Intercom</a>
+            <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">مقاله · اولویت‌بندی</div>
+          </div>
+          <div class="ra-res-meta">
+            <span class="ra-tag-req">اجباری</span>
+            <span class="ra-tag-meta">۳۰ دقیقه</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ra-section" id="bridge">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-section-head">
+      <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">پل</span>
+      <b class="ra-section-title">ماه ۱۵ تا ۱۸ — فقط خواندن</b>
+      <span class="ra-section-meta">آماده‌سازی برای مدیر محصول</span>
+    </div>
+    <div style="margin-top:24px; border-top:1px solid var(--border);">
+      <div class="ra-res" style="padding:15px 2px; border-bottom:1px solid var(--border);">
+        <div>
+          <span dir="auto" style="font-size:.98rem; font-weight:600;">The Lean Startup — Eric Ries</span>
+          <span class="ra-no-link">هنوز لینکی ندارد</span>
+          <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+        </div>
+        <div class="ra-res-meta">
+          <span class="ra-tag-req">اجباری</span>
+          <span class="ra-tag-meta">۷ ساعت</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:36px;">
+      <a href="learning-path.html" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ متن کامل مسیر APM</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <span class="footer-brand">پت فیچر — دفترچه‌ی عمومی یک مدیر محصول</span>
+    <span class="footer-domain">petfeature.ir</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  document.querySelectorAll('input[name="st"]').forEach(function (r) {
+    r.addEventListener("change", function () { document.body.setAttribute("data-state", r.value); });
+  });
+  document.getElementById("enroll-guest").addEventListener("click", function (e) {
+    e.preventDefault();
+    alert("در محصول: /login/?next=/dashboard/learning/apm/enroll/ — بعد از گوگل، همین سطح ثبت می‌شود و پنل پیگیری باز می‌شود.");
+  });
+})();
+</script>
+</body>
+</html>

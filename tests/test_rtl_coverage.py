@@ -8,7 +8,7 @@ Layers covered:
      here so this file is self-contained as a RTL audit.
   2. Detail pages that require seeded data (book, post, tool) — rows are created via
      the service layer using `db_session`, then the detail URL is fetched via `client`.
-  3. Roadmap pages — /path/, /path/hiring/, /path/apm/ (full), /path/pm/ (stub).
+  3. Roadmap pages — /path/, /path/hiring/, /path/apm/ (full), /path/pm/ (full).
   4. Admin pages — GET /admin/login/ (public) and GET /admin/books/ (authenticated).
 """
 
@@ -148,7 +148,16 @@ async def test_roadmap_apm_full_page_is_rtl(client):
     _assert_rtl_200(resp, "/path/apm/")
 
 
-@pytest.mark.parametrize("stub_slug", ["pm", "senior-pm", "lead", "director", "cpo"])
+async def test_roadmap_pm_full_page_is_rtl(client):
+    """/path/pm/ — L2 full page (PM), same v2 design as APM."""
+    resp = await client.get("/path/pm/")
+    _assert_rtl_200(resp, "/path/pm/")
+    assert "ra-hero-grid" in resp.text
+    assert "gantt-wrap" in resp.text
+    assert "stub-wrap" not in resp.text
+
+
+@pytest.mark.parametrize("stub_slug", ["senior-pm", "lead", "director", "cpo"])
 async def test_roadmap_stub_pages_are_rtl(client, stub_slug):
     """/path/{stub_slug}/ — L2–L6 stub pages return 200 RTL (not 404)."""
     path = f"/path/{stub_slug}/"
@@ -164,6 +173,16 @@ async def test_roadmap_unknown_slug_renders_rtl(client):
     assert 'dir="rtl"' in resp.text, "/path/unknown-slug/ 404 page should be RTL"
 
 
+@pytest.mark.parametrize("path", [
+    "/dashboard/learning/hiring/",
+    "/dashboard/learning/apm/",
+])
+async def test_learning_catalog_is_rtl(client, path):
+    """Public learning catalogs are RTL even with an empty resource list."""
+    resp = await client.get(path)
+    _assert_rtl_200(resp, path)
+
+
 # ── 4. Admin pages ────────────────────────────────────────────────────────────
 
 async def test_admin_login_page_is_rtl(client):
@@ -176,3 +195,12 @@ async def test_admin_books_page_is_rtl(admin_client):
     """GET /admin/books/ (authenticated) must render RTL."""
     resp = await admin_client.get("/admin/books/")
     _assert_rtl_200(resp, "/admin/books/")
+
+
+@pytest.mark.parametrize("path", [
+    "/admin/learning/",
+    "/admin/learning/enrollments/",
+])
+async def test_admin_learning_pages_are_rtl(admin_client, path):
+    resp = await admin_client.get(path)
+    _assert_rtl_200(resp, path)

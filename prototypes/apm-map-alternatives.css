@@ -1,0 +1,151 @@
+/* Shared styles for APM map section redesign prototypes (v17 exploration).
+   Not wired to the app — standalone preview only. */
+
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #171210;
+  --surface: #1e1813;
+  --surface-2: #241d16;
+  --border: rgba(236,229,220,.08);
+  --border-2: rgba(236,229,220,.15);
+  --text: #ece5dc;
+  --muted: #8f8378;
+  --faint: #63594e;
+  --accent: #a6c3a0;
+  --sprout: #8fbf86;
+  --core: #a6c3a0;
+  --core-bg: color-mix(in srgb, var(--core) 10%, transparent);
+  --core-bd: color-mix(in srgb, var(--core) 28%, transparent);
+  --supp: #93aed4;
+  --supp-bg: color-mix(in srgb, var(--supp) 10%, transparent);
+  --supp-bd: color-mix(in srgb, var(--supp) 28%, transparent);
+  --max: 1120px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: 'Vazirmatn', system-ui, Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.proto-index {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(23,18,16,.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.proto-index-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: .82rem;
+}
+.proto-index b { color: var(--accent); }
+.proto-index a {
+  color: var(--muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.proto-index a.is-active {
+  color: var(--text);
+  border-color: var(--core-bd);
+  background: var(--core-bg);
+}
+
+.map-section {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 48px 24px 72px;
+}
+.map-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.map-head h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.map-head span {
+  font-size: .8rem;
+  color: var(--faint);
+}
+.map-note {
+  margin: 12px 0 28px;
+  font-size: .92rem;
+  color: var(--muted);
+  max-width: 720px;
+  line-height: 2;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.badge--core { color: var(--core); background: var(--core-bg); border: 1px solid var(--core-bd); }
+.badge--supp { color: var(--supp); background: var(--supp-bg); border: 1px solid var(--supp-bd); }
+
+.station-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.station-num--core {
+  background: color-mix(in srgb, var(--core) 18%, transparent);
+  color: var(--core);
+}
+.station-num--supp {
+  background: color-mix(in srgb, var(--supp) 18%, transparent);
+  color: var(--supp);
+}
+
+.alt-label {
+  margin: 0 0 18px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .map-section { padding-inline: 18px; }
+}
+
+/* Shared prototype nav (all 10 alternatives) */
+.proto-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

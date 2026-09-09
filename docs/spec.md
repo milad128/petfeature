@@ -79,6 +79,9 @@ flowchart LR
 | **v13.5** | [Product Spec v13.5](./spec-v13.5-telegram-popup.md) | Telegram Popup | 30-second popup inviting visitors to join @petfeature; dismissed once via localStorage; no DB | **Backlog** |
 | **v14** | [Product Spec v14](./spec-v14-user-dashboard.md) | User Dashboard | My Comments with admin replies + Telegram channel link; expands v12 profile page | **Backlog** |
 | **v15** | [Product Spec v15](./spec-v15-bookshelf.md) | Bookshelf (قفسه کتاب) | Personal bookshelf with reading statuses; social proof save count; admin save counts; requires v12 | **Backlog** |
+| **v16** | [Product Spec v16](./spec-v16-roadmap.md) | Roadmap | Public PM learning path — `/path/`, L0 hiring, L1 APM, admin resource CMS | **Shipped** |
+| **v17** | [Product Spec v17](./spec-v17-learning-enrollment.md) | Roadmap | Enroll in a level (register first if needed), per-level learning dashboard, progress statuses, badges | **In development** |
+| **v18** | [Product Spec v18](./spec-v18-enrollment-admin.md) | Roadmap | Admin enrollment page: statistics, enrollment list, read-only learner detail | **In development** |
 
 ---
 
@@ -112,6 +115,9 @@ flowchart LR
 | [spec-v13.5-telegram-popup.md](./spec-v13.5-telegram-popup.md) | PRD for Telegram Popup — 30s delay popup inviting visitors to join @petfeature; localStorage dismiss; no DB (backlog) |
 | [spec-v14-user-dashboard.md](./spec-v14-user-dashboard.md) | PRD for User Dashboard — My Comments with admin replies + Telegram channel link (backlog) |
 | [spec-v15-bookshelf.md](./spec-v15-bookshelf.md) | PRD for Bookshelf (قفسه کتاب) — personal reading list with statuses, social proof, admin save counts (backlog) |
+| [spec-v16-roadmap.md](./spec-v16-roadmap.md) | PRD for Roadmap — public learning path + admin CMS (shipped) |
+| [spec-v17-learning-enrollment.md](./spec-v17-learning-enrollment.md) | PRD for Learning Enrollment — enroll-only public page, panel tracker, progress statuses, badges (in development) |
+| [spec-v18-enrollment-admin.md](./spec-v18-enrollment-admin.md) | PRD for Enrollment Admin — statistics overview, enrollment list, read-only detail (in development) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
@@ -211,9 +217,19 @@ flowchart LR
 - **My Comments section:** all PostComments + BookComments posted by the logged-in user; shows content title (linked), comment text, Jalali date, status badge (در انتظار / تأیید شده / رد شده), and admin reply if one exists
 - Requires: `user_id` nullable FK added to `PostComment` + `BookComment` (new migration); new comments from logged-in users get `user_id` set automatically
 
-### Backlog — Roadmap epic
-- Browse Roadmap → View Path Steps (linked to books and posts)
-- Admin: Manage Path Steps
+### v16 — Roadmap (shipped)
+- Browse `/path/` → hiring track and level pages; resources link to books / external URLs
+- Admin: Manage RoadmapResource rows
+
+### v17 — Learning Enrollment (in development)
+- Enroll in a level from `/path/{slug}/` or `/dashboard/learning/{slug}/` (catalog + enroll only — no statuses on the public page)
+- After enroll (or Google login): redirect to `/dashboard/learning/{slug}/track/` in the user panel
+- Set per-resource status only in the panel; progress bar; multi-enrollment index; profile badges; public learner counts
+
+### v18 — Enrollment Admin (in development)
+- Dedicated `/admin/learning/` statistics: snapshot cards, period intake, per-level table, stalled enrollments
+- Filterable enrollment list + read-only detail (progress formula and resource statuses)
+- No admin edit of learner statuses; analytics keeps only a summary link
 
 See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 

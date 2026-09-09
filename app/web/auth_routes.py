@@ -55,10 +55,19 @@ async def _fetch_google_userinfo(request: Request, token: dict) -> dict:
 
 # ── Login page ────────────────────────────────────────────────────────────────
 
+def _safe_next(url: str | None) -> str | None:
+    if not url or not url.startswith("/") or url.startswith("//"):
+        return None
+    return url
+
+
 @router.get("/login/", name="login")
 async def login_page(request: Request):
+    next_url = _safe_next(request.query_params.get("next"))
+    if next_url:
+        request.session["next"] = next_url
     if get_current_user(request):
-        return RedirectResponse(url="/profile/", status_code=303)
+        return RedirectResponse(url=next_url or request.session.pop("next", None) or "/profile/", status_code=303)
     error = request.query_params.get("error")
     return templates.TemplateResponse(
         request,
@@ -136,6 +145,9 @@ async def profile(
     comments, total_comments = await user_service.get_user_comments(db, current_user.id, page=page)
     per_page = 10
     total_pages = max(1, -(-total_comments // per_page))  # ceiling division
+    from app.services import learning as learning_service
+
+    learning_cards = await learning_service.get_active_enrollments(db, current_user.id)
 
     return templates.TemplateResponse(
         request,
@@ -147,6 +159,7 @@ async def profile(
             "total_comments": total_comments,
             "page": page,
             "total_pages": total_pages,
+            "learning_cards": learning_cards,
         },
     )
 

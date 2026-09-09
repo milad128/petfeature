@@ -40,6 +40,7 @@ from app.services.media import delete_media_file, get_media_files, human_size, u
 from app.services import newsletters as newsletter_service
 from app.services import newsletter_ai
 from app.services import users as user_service
+from app.services import learning as learning_service
 from app.services import roadmap_service
 from app.services.roadmap_data import (
     LEVELS,
@@ -1908,6 +1909,7 @@ async def admin_analytics(
     refs         = await analytics_service.top_referrers(db, period)
     roadmap_lvls = await analytics_service.top_roadmap_levels(db, period)
     rm_summary   = await analytics_service.roadmap_summary(db, period)
+    enroll_headline = await learning_service.admin_headline_counts(db)
 
     return templates.TemplateResponse(
         request,
@@ -1925,6 +1927,7 @@ async def admin_analytics(
             top_referrers=refs,
             roadmap_levels=roadmap_lvls,
             roadmap_summary=rm_summary,
+            enroll_headline=enroll_headline,
         ),
     )
 
@@ -2265,6 +2268,100 @@ async def admin_user_reactivate(
         return redirect
     await user_service.reactivate_user(db, user_id)
     return RedirectResponse("/admin/users/", status_code=303)
+
+
+# ── Learning enrollments admin (v18) ──────────────────────────────────────────
+
+LEARNING_ADMIN_PERIODS = set(learning_service.ADMIN_PERIODS)
+LEARNING_ADMIN_STATES = set(learning_service.ADMIN_STATES)
+
+
+@router.get("/learning/", name="admin_learning")
+async def admin_learning(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    period: str = "30",
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    if period not in LEARNING_ADMIN_PERIODS:
+        period = "30"
+    period_days = None if period == "all" else int(period)
+    overview = await learning_service.admin_overview(db, period_days)
+    return templates.TemplateResponse(
+        request,
+        "admin/learning_overview.html",
+        _admin_context(
+            request,
+            page_title="ثبت‌نام‌های یادگیری",
+            active_nav="learning",
+            period=period,
+            overview=overview,
+        ),
+    )
+
+
+@router.get("/learning/enrollments/", name="admin_learning_enrollments")
+async def admin_learning_enrollments(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    level: str = "",
+    state: str = "active",
+    q: str = "",
+    page: int = Query(1, ge=1),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    if state not in LEARNING_ADMIN_STATES:
+        state = "active"
+    listing = await learning_service.admin_list_enrollments(
+        db, level=level, state=state, q=q, page=page
+    )
+    qs = learning_service.admin_list_query_string(
+        level=listing["level"], state=listing["state"], q=listing["q"]
+    )
+    return templates.TemplateResponse(
+        request,
+        "admin/learning_enrollments.html",
+        _admin_context(
+            request,
+            page_title="فهرست ثبت‌نام‌ها",
+            active_nav="learning",
+            listing=listing,
+            levels=learning_service.enrollable_levels(),
+            states=learning_service.ADMIN_STATES,
+            state_labels=learning_service.STATE_LABELS,
+            query_suffix=f"&{qs}" if qs else "",
+        ),
+    )
+
+
+@router.get(
+    "/learning/enrollments/{enrollment_id}/",
+    name="admin_learning_enrollment_detail",
+)
+async def admin_learning_enrollment_detail(
+    request: Request,
+    enrollment_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    if redirect := _guard_admin(request):
+        return redirect
+    detail = await learning_service.admin_get_enrollment(db, enrollment_id)
+    if detail is None:
+        raise HTTPException(status_code=404)
+    return templates.TemplateResponse(
+        request,
+        "admin/learning_enrollment_detail.html",
+        _admin_context(
+            request,
+            page_title=f"ثبت‌نام — {detail['user'].name if detail['user'] else enrollment_id}",
+            active_nav="learning",
+            detail=detail,
+            status_labels=learning_service.STATUS_LABELS,
+            category_fa=learning_service.CATEGORY_FA,
+        ),
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

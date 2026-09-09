@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>داشبورد من — یادگیری | پت فیچر | دانشنامه یک مدیر محصول</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../app/static/css/main.css">
+  <link rel="stylesheet" href="learning.css">
+</head>
+<body data-state="enrolled" data-view="index">
+
+<div class="proto-bar">
+  <div class="proto-bar-inner">
+    <b>پیش‌نمایش v17 · پنل</b>
+    <span class="proto-bar-sep">·</span>
+    <label class="proto-toggle"><input type="radio" name="view" value="index" checked> مسیرهای من</label>
+    <label class="proto-toggle"><input type="radio" name="view" value="track"> پیگیری APM</label>
+    <span class="proto-bar-sep">·</span>
+    <label class="proto-toggle"><input type="checkbox" id="empty-toggle"> حالت خالی</label>
+    <span class="proto-bar-sep">·</span>
+    <a href="learning-level.html">صفحه عمومی یادگیری</a>
+    <a href="learning-path.html">صفحه عمومی سطح</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <button class="lamp-btn" type="button" aria-hidden="true">
+        <span class="lamp-shade-top"></span><span class="lamp-pole"></span><span class="lamp-base-bar"></span>
+      </button>
+      <a href="learning-dashboard.html" class="brand-name">پت فیچر</a>
+    </div>
+    <nav class="site-nav" aria-label="ناوبری اصلی">
+      <a href="#">کتابخانه</a>
+      <a href="#">یادداشت</a>
+      <a href="#">ابزارها</a>
+      <a href="#">درباره من</a>
+      <a href="#">تماس</a>
+      <a href="learning-path.html">مسیر یادگیری</a>
+      <div class="user-chip" style="display:flex;">
+        <span class="user-chip__avatar" aria-hidden="true">سا</span>
+        <span class="user-chip__name">سارا</span>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="profile-page">
+
+  <section class="profile-hero">
+    <div class="profile-hero__glow" aria-hidden="true"></div>
+    <div class="container profile-hero__inner">
+      <span class="section-kicker">داشبورد من</span>
+      <div class="profile-desk-layout">
+        <div class="profile-info">
+          <h1 class="profile-info__greeting">سلام سارا 👋</h1>
+          <div class="profile-info__meta">
+            <span>ایمیل: <span dir="ltr" class="profile-info__email">sara@example.com</span></span>
+            <span>عضو از: <span>۱۵ خرداد ۱۴۰۵</span></span>
+          </div>
+          <div class="badge-row" aria-label="نشان‌های یادگیری">
+            <span class="learn-badge learn-badge--progress">مبتدی (APM) · در حال یادگیری</span>
+            <span class="learn-badge learn-badge--enrolled">مدیر محصول · ثبت‌نام شده</span>
+          </div>
+          <div class="profile-info__actions">
+            <a href="#track" class="btn btn--primary">ادامه یادگیری</a>
+            <a href="#" class="btn btn--outline">قفسه کتاب من</a>
+          </div>
+        </div>
+        <div class="profile-desk">
+          <div class="profile-desk__scene">
+            <div class="profile-lamp" aria-hidden="true">
+              <span class="profile-lamp__cone"></span>
+              <span class="profile-lamp__shade"></span>
+              <span class="profile-lamp__pole"></span>
+              <span class="profile-lamp__foot"></span>
+            </div>
+            <div class="profile-desk__books" aria-hidden="true">
+              <span class="profile-desk__book" style="width:104px;height:11px;background:#4f3a26;"></span>
+              <span class="profile-desk__book" style="width:118px;height:13px;background:#3a2a1d;"></span>
+              <span class="profile-desk__book" style="width:96px;height:10px;background:#5c3f28;"></span>
+            </div>
+            <div class="profile-desk__mug" aria-hidden="true">
+              <span class="profile-desk__mug-body"></span>
+              <span class="profile-desk__mug-handle"></span>
+            </div>
+          </div>
+          <div class="profile-desk__surface" aria-hidden="true"></div>
+          <div class="profile-desk__edge" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="dash-tabs" aria-label="بخش‌های پنل">
+    <div class="dash-tabs-inner">
+      <button type="button" class="dash-tab" data-tab="learning" aria-current="true">یادگیری</button>
+      <button type="button" class="dash-tab" data-tab="comments">نظرات من</button>
+      <button type="button" class="dash-tab" data-tab="telegram">تلگرام</button>
+    </div>
+  </nav>
+
+  <section class="profile-section tab-panel" id="tab-learning">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">مسیرهای من</span>
+      </div>
+      <p style="font-size:.92rem; color:var(--muted); max-width:640px; line-height:2; margin-bottom:24px;">هر سطح ثبت‌نام‌شده داشبورد و پیشرفت جدا دارد. می‌توانید هم‌زمان چند سطح را دنبال کنید.</p>
+
+      <div class="dash-index enroll-populated">
+        <div class="learn-grid">
+          <a class="learn-card" href="#track">
+            <div class="learn-card-k">سطح ۱</div>
+            <h3>مبتدی (APM)</h3>
+            <p class="learn-card-date">ثبت‌نام: ۲ تیر ۱۴۰۵</p>
+            <div class="learn-bar" aria-hidden="true" style="margin-top:16px;"><i style="--p:53%"></i></div>
+            <div class="learn-card-foot">
+              <span class="learn-badge learn-badge--progress">در حال یادگیری</span>
+              <span class="learn-card-date">۸ از ۱۵ منبع الزامی</span>
+            </div>
+            <span class="learn-card-cta">ادامه یادگیری ←</span>
+          </a>
+
+          <a class="learn-card" href="#track">
+            <div class="learn-card-k">سطح ۲</div>
+            <h3>مدیر محصول</h3>
+            <p class="learn-card-date">ثبت‌نام: ۱۸ مرداد ۱۴۰۵</p>
+            <div class="learn-bar" aria-hidden="true" style="margin-top:16px;"><i style="--p:11%"></i></div>
+            <div class="learn-card-foot">
+              <span class="learn-badge learn-badge--enrolled">ثبت‌نام شده</span>
+              <span class="learn-card-date">۲ از ۱۸ منبع الزامی</span>
+            </div>
+            <span class="learn-card-cta">ادامه یادگیری ←</span>
+          </a>
+
+          <a class="learn-card learn-card--add" href="learning-path.html">
+            <div class="learn-card-k">مسیر دیگر</div>
+            <h3>سطح دیگری شروع کنید</h3>
+            <p class="learn-card-date" style="margin:0;">از نقشه راه یک سطح انتخاب کنید. پیش‌نیاز اجباری نیست.</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="dash-track" id="track">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+          <a href="#index" class="track-back" style="font-size:.82rem; color:var(--muted); text-decoration:none;">→ مسیرهای من</a>
+          <span style="color:var(--faint); font-size:.8rem;">/</span>
+          <b style="font-size:.82rem; color:var(--accent);">سطح ۱ — مبتدی (APM)</b>
+          <span class="learn-badge learn-badge--progress" id="level-badge">در حال یادگیری</span>
+        </div>
+        <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-bottom:22px;">
+          وضعیت منابع فقط اینجاست. <a href="learning-level.html">صفحه عمومی یادگیری</a> فقط فهرست و دکمه ثبت‌نام است.
+        </p>
+
+        <div class="learn-progress">
+          <div class="learn-progress-top">
+            <div class="learn-progress-pct" id="progress-pct">۵۳<span>٪</span></div>
+            <p class="learn-progress-note">پیشرفت = (خوندم + قبلاً می‌دونستم) ÷ منابع الزامی. اختیاری و «رد کردم» حساب نمی‌شوند.</p>
+          </div>
+          <div class="learn-bar" aria-hidden="true"><i id="progress-bar" style="--p:53%"></i></div>
+          <div class="learn-progress-facts">
+            <span>تمام‌شده: <b><span id="stat-done">۸</span> از <span id="stat-total">۱۵</span></b></span>
+            <span>دارم می‌خونم: <b id="stat-studying">۱</b></span>
+            <span>بدون وضعیت: <b id="stat-blank">۵</b></span>
+            <span>ثبت‌نام: <b>۲ تیر ۱۴۰۵</b></span>
+          </div>
+        </div>
+
+        <aside class="learn-now" id="now-card">
+          <div>
+            <div class="learn-now-k">الان کجا هستید</div>
+            <h2><a class="ra-res-link" id="now-title" href="https://petfeature.ir/library/writing-for-busy-readers/">Writing for Busy Readers — Rogers &amp; Levy</a></h2>
+            <p id="now-meta">هسته · ارتباط و نوشتن · ۴٫۵ ساعت</p>
+          </div>
+          <a class="btn btn--outline btn--sm" href="#station-3">برو به منبع</a>
+        </aside>
+        <p class="learn-hint" id="multi-studying" hidden>بیش از یک منبع روی «دارم می‌خونم» است. اجباری نیست — معمولاً یکی کافی است.</p>
+
+        <div class="ra-section-head" style="margin-top:36px;">
+          <span class="ra-section-badge" style="color:var(--sprout); background:color-mix(in srgb, var(--sprout) 13%, transparent);">ورود</span>
+          <b class="ra-section-title">آشنایی نقش و وظایف</b>
+        </div>
+        <div style="margin-top:8px; border-top:1px solid var(--border);">
+          <div class="ra-res" data-status="DONE" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/inspired/" dir="auto">Inspired — Marty Cagan، فصل‌های ۱ تا ۵</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳ ساعت</span>
+              <select class="learn-status" data-status="DONE" aria-label="وضعیت Inspired">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE" selected>خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res" data-status="DONE" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <span dir="auto" style="font-size:.96rem; font-weight:600;">The First 90 Days — Michael Watkins</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۶ ساعت</span>
+              <select class="learn-status" data-status="DONE" aria-label="وضعیت First 90 Days">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE" selected>خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ra-section-head" style="margin-top:36px;">
+          <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">هسته</span>
+          <b class="ra-section-title">کاری که روزانه شخصاً پاسخ‌گویش هستید</b>
+        </div>
+        <div id="station-3" style="margin-top:8px; border-top:1px solid var(--border);">
+          <div class="ra-res" data-status="DONE" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/agile-product-with-scrum/" dir="auto">Scrum — Jeff Sutherland</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۴ ساعت</span>
+              <select class="learn-status" data-status="DONE" aria-label="وضعیت Scrum">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE" selected>خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res is-optional" data-status="" data-required="0" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://basecamp.com/shapeup" target="_blank" rel="noopener noreferrer" dir="auto">Shape Up — Ryan Singer</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-opt">اختیاری</span>
+              <span class="ra-tag-meta">۵ ساعت</span>
+              <select class="learn-status" data-status="" aria-label="وضعیت Shape Up">
+                <option value="" selected>وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res" data-status="ALREADY_KNEW" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/mom-test/" dir="auto">The Mom Test — Rob Fitzpatrick</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳ ساعت</span>
+              <select class="learn-status" data-status="ALREADY_KNEW" aria-label="وضعیت The Mom Test">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW" selected>قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res" data-status="STUDYING" data-required="1" data-now-title="Writing for Busy Readers — Rogers &amp; Levy" data-now-meta="هسته · ارتباط و نوشتن · ۴٫۵ ساعت" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/library/writing-for-busy-readers/" dir="auto">Writing for Busy Readers — Rogers &amp; Levy</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۴ ساعت</span>
+              <select class="learn-status" data-status="STUDYING" aria-label="وضعیت Writing for Busy Readers">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING" selected>دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res" data-status="" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://petfeature.ir/tools/prd-template/" dir="auto">قالب‌های PRD — Lenny Rachitsky</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">راهنما</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۳۰ دقیقه</span>
+              <select class="learn-status" data-status="" aria-label="وضعیت قالب‌های PRD">
+                <option value="" selected>وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ra-section-head ra-section-head--plain" style="margin-top:36px;">
+          <span class="ra-section-badge" style="color:var(--muted); background:rgba(236,229,220,.06);">حمایتی</span>
+          <b class="ra-section-title">سهم دارید، اما مالکش کسِ دیگری است</b>
+        </div>
+        <div style="margin-top:8px; border-top:1px solid var(--border);">
+          <div class="ra-res" data-status="" data-required="1" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <a class="ra-res-link" href="https://www.khanacademy.org/computing/computer-science" target="_blank" rel="noopener noreferrer" dir="auto">Khan Academy: Computer Science</a>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">دوره</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۵ ساعت</span>
+              <select class="learn-status" data-status="" aria-label="وضعیت Khan Academy">
+                <option value="" selected>وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+          <div class="ra-res is-optional" data-status="SKIPPED" data-required="0" style="padding:14px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <span dir="auto" style="font-size:.96rem; font-weight:600;">Interviewing Users — Steve Portigal</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-opt">اختیاری</span>
+              <span class="ra-tag-meta">۶ ساعت</span>
+              <select class="learn-status" data-status="SKIPPED" aria-label="وضعیت Interviewing Users">
+                <option value="">وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED" selected>رد کردم</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ra-section-head" style="margin-top:36px;">
+          <span class="ra-section-badge" style="color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent);">پل</span>
+          <b class="ra-section-title">ماه ۱۵ تا ۱۸ — فقط خواندن</b>
+        </div>
+        <div style="margin-top:8px; border-top:1px solid var(--border);">
+          <div class="ra-res" data-status="" data-required="1" style="padding:15px 2px; border-bottom:1px solid var(--border);">
+            <div>
+              <span dir="auto" style="font-size:.98rem; font-weight:600;">The Lean Startup — Eric Ries</span>
+              <span class="ra-no-link">هنوز لینکی ندارد</span>
+              <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">کتاب · فارسی</div>
+            </div>
+            <div class="ra-res-meta">
+              <span class="ra-tag-req">اجباری</span>
+              <span class="ra-tag-meta">۷ ساعت</span>
+              <select class="learn-status" data-status="" aria-label="وضعیت The Lean Startup">
+                <option value="" selected>وضعیت ندارد</option>
+                <option value="STUDYING">دارم می‌خونم</option>
+                <option value="DONE">خوندم</option>
+                <option value="ALREADY_KNEW">قبلاً می‌دونستم</option>
+                <option value="SKIPPED">رد کردم</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:36px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+          <a href="learning-level.html" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ صفحه عمومی این سطح</a>
+          <button type="button" class="unenroll" id="unenroll">لغو ثبت‌نام از این سطح</button>
+        </div>
+      </div>
+
+      <div class="enroll-empty learn-empty">
+        <h2>هنوز در هیچ سطحی ثبت‌نام نکرده‌اید</h2>
+        <p>نقشه راه را ببینید، سطح فعلی یا هدف‌تان را انتخاب کنید، و یادگیری را شروع کنید.</p>
+        <a class="btn btn--primary" href="learning-path.html">دیدن مسیر یادگیری</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="profile-section tab-panel" id="tab-comments" hidden style="border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">نظرات من</span>
+        <span class="section-count">۲ نظر</span>
+      </div>
+      <article class="pcomment">
+        <div class="pcomment__header">
+          <span class="pcomment__badge pcomment__badge--book">کتاب</span>
+          <a href="#" class="pcomment__title">Inspired — Marty Cagan</a>
+          <span class="pcomment__date">۱۲ تیر ۱۴۰۵</span>
+          <span class="status-badge status-badge--ok">تأیید شده</span>
+        </div>
+        <div class="pcomment__body">
+          <p class="pcomment__text">فصل‌های اول برای کسی که تازه وارد محصول شده خیلی روشن‌تر از دوره‌های پراکنده است.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="profile-section tab-panel" id="tab-telegram" hidden style="border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">تلگرام</span>
+      </div>
+      <div class="profile-telegram">
+        <div class="profile-tg-card">
+          <div class="profile-tg-card__copy">
+            <b>کانال تلگرام پت فیچر</b>
+            <p>برای دریافت سریع‌تر محتوای جدید، کانال تلگرام ما رو دنبال کنید.</p>
+          </div>
+          <div class="profile-tg-card__action">
+            <a href="https://t.me/petfeature" target="_blank" rel="noopener noreferrer" class="tg-join-btn">عضویت در کانال تلگرام</a>
+            <span class="profile-tg-card__handle" dir="ltr">@petfeature</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <span class="footer-brand">پت فیچر — دفترچه‌ی عمومی یک مدیر محصول</span>
+    <span class="footer-domain">petfeature.ir</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var fa = "۰۱۲۳۴۵۶۷۸۹";
+  function toFa(n) { return String(n).replace(/\d/g, function (d) { return fa[d]; }); }
+
+  var tabs = document.querySelectorAll(".dash-tab");
+  var panels = {
+    learning: document.getElementById("tab-learning"),
+    comments: document.getElementById("tab-comments"),
+    telegram: document.getElementById("tab-telegram")
+  };
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var id = tab.getAttribute("data-tab");
+      tabs.forEach(function (t) {
+        if (t === tab) t.setAttribute("aria-current", "true");
+        else t.removeAttribute("aria-current");
+      });
+      Object.keys(panels).forEach(function (key) { panels[key].hidden = key !== id; });
+    });
+  });
+
+  function setView(view) {
+    document.body.setAttribute("data-view", view);
+    var radio = document.querySelector('input[name="view"][value="' + view + '"]');
+    if (radio) radio.checked = true;
+  }
+  function applyHash() {
+    setView(location.hash === "#track" ? "track" : "index");
+  }
+  document.querySelectorAll('input[name="view"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      location.hash = r.value === "track" ? "track" : "index";
+    });
+  });
+  window.addEventListener("hashchange", applyHash);
+
+  document.getElementById("empty-toggle").addEventListener("change", function (e) {
+    document.body.setAttribute("data-state", e.target.checked ? "empty" : "enrolled");
+    if (e.target.checked) {
+      setView("index");
+      if (location.hash === "#track") location.hash = "index";
+    }
+  });
+
+  function recount() {
+    var rows = document.querySelectorAll(".dash-track .ra-res[data-required]");
+    var done = 0, studying = 0, blank = 0, required = 0, studyingRow = null;
+    rows.forEach(function (row) {
+      var status = row.getAttribute("data-status") || "";
+      if (row.getAttribute("data-required") === "1") {
+        required += 1;
+        if (status === "DONE" || status === "ALREADY_KNEW") done += 1;
+        if (!status) blank += 1;
+      }
+      if (status === "STUDYING") {
+        studying += 1;
+        if (!studyingRow) studyingRow = row;
+      }
+    });
+    var pct = required ? Math.round((done / required) * 100) : 0;
+    document.getElementById("progress-pct").innerHTML = toFa(pct) + "<span>٪</span>";
+    document.getElementById("progress-bar").style.setProperty("--p", pct + "%");
+    document.getElementById("stat-done").textContent = toFa(done);
+    document.getElementById("stat-total").textContent = toFa(required);
+    document.getElementById("stat-studying").textContent = toFa(studying);
+    document.getElementById("stat-blank").textContent = toFa(blank);
+
+    var badge = document.getElementById("level-badge");
+    badge.className = "learn-badge";
+    if (pct >= 100) { badge.classList.add("learn-badge--done"); badge.textContent = "تکمیل‌شده"; }
+    else if (pct >= 50) { badge.classList.add("learn-badge--progress"); badge.textContent = "در حال یادگیری"; }
+    else { badge.classList.add("learn-badge--enrolled"); badge.textContent = "ثبت‌نام شده"; }
+
+    var now = document.getElementById("now-card");
+    if (studyingRow) {
+      now.hidden = false;
+      var nowTitle = document.getElementById("now-title");
+      var rowLink = studyingRow.querySelector("a.ra-res-link");
+      nowTitle.textContent = studyingRow.getAttribute("data-now-title") || (rowLink ? rowLink.textContent : studyingRow.querySelector("[dir]").textContent);
+      if (rowLink) {
+        nowTitle.href = rowLink.getAttribute("href");
+        if (rowLink.target) { nowTitle.target = rowLink.target; nowTitle.rel = rowLink.rel; }
+        else { nowTitle.removeAttribute("target"); nowTitle.removeAttribute("rel"); }
+      } else {
+        nowTitle.removeAttribute("href");
+        nowTitle.removeAttribute("target");
+        nowTitle.removeAttribute("rel");
+      }
+      document.getElementById("now-meta").textContent = studyingRow.getAttribute("data-now-meta") || "";
+    } else {
+      now.hidden = true;
+    }
+    document.getElementById("multi-studying").hidden = studying < 2;
+  }
+
+  document.querySelectorAll(".learn-status").forEach(function (sel) {
+    sel.addEventListener("change", function () {
+      var row = sel.closest(".ra-res");
+      sel.setAttribute("data-status", sel.value);
+      row.setAttribute("data-status", sel.value);
+      recount();
+    });
+  });
+
+  document.getElementById("unenroll").addEventListener("click", function () {
+    if (window.confirm("در محصول: POST unenroll — پیشرفت نگه داشته می‌شود.")) {
+      setView("index");
+      location.hash = "index";
+    }
+  });
+
+  applyHash();
+  recount();
+})();
+</script>
+</body>
+</html>

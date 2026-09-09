@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۶ — پله‌ها | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 16px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .step:hover { text-decoration: none; }
+    .step-rail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .step-rail::after {
+      content: "";
+      flex: 1;
+      width: 2px;
+      background: var(--border-2);
+      margin-top: 6px;
+    }
+    .step:last-child .step-rail::after { display: none; }
+    .step-index {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .85rem;
+      z-index: 1;
+    }
+    .step.is-core .step-index { background: var(--core-bg); color: var(--core); border: 1px solid var(--core-bd); }
+    .step.is-supp .step-index { background: var(--supp-bg); color: var(--supp); border: 1px solid var(--supp-bd); }
+    .step-card {
+      margin-bottom: 12px;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color .18s;
+    }
+    .step:hover .step-card { border-color: var(--border-2); }
+    .step-card h3 { margin: 6px 0 0; font-size: .95rem; font-weight: 700; }
+    .step-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: .74rem;
+      color: var(--faint);
+    }
+    .step-meta b { color: var(--muted); }
+    .phase-break {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0 18px 56px;
+      font-size: .78rem;
+      color: var(--faint);
+    }
+    .phase-break::before, .phase-break::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--border-2);
+    }
+  </style>
+</head>
+<body data-alt="6">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۶ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 6 · Numbered stepper</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">ترتیب خواندن از بالا به پایین. هر پله یک ایستگاه است؛ مرز هسته و حمایتی با یک خط جدا مشخص شده.</p>
+
+  <div class="steps">
+    <a class="step is-core" href="#station-1">
+      <div class="step-rail"><span class="step-index">۱</span></div>
+      <div class="step-card">
+        <span class="badge badge--core">هسته</span>
+        <h3>تحویل و اجرا</h3>
+        <div class="step-meta"><b>۶ هفته</b><span>هفته ۱–۶</span></div>
+      </div>
+    </a>
+    <a class="step is-core" href="#station-2">
+      <div class="step-rail"><span class="step-index">۲</span></div>
+      <div class="step-card">
+        <span class="badge badge--core">هسته</span>
+        <h3>کشف محصول</h3>
+        <div class="step-meta"><b>۸ هفته</b><span>هفته ۷–۱۴</span></div>
+      </div>
+    </a>
+    <a class="step is-core" href="#station-3">
+      <div class="step-rail"><span class="step-index">۳</span></div>
+      <div class="step-card">
+        <span class="badge badge--core">هسته</span>
+        <h3>ارتباط و نوشتن</h3>
+        <div class="step-meta"><b>۶ هفته</b><span>هفته ۱۵–۲۰</span></div>
+      </div>
+    </a>
+    <div class="phase-break">پایان هسته · شروع حمایتی</div>
+    <a class="step is-supp" href="#station-4">
+      <div class="step-rail"><span class="step-index">۴</span></div>
+      <div class="step-card">
+        <span class="badge badge--supp">حمایتی</span>
+        <h3>سواد فنی</h3>
+        <div class="step-meta"><b>۶ هفته</b><span>هفته ۲۱–۲۶</span></div>
+      </div>
+    </a>
+    <a class="step is-supp" href="#station-5">
+      <div class="step-rail"><span class="step-index">۵</span></div>
+      <div class="step-card">
+        <span class="badge badge--supp">حمایتی</span>
+        <h3>نفوذ بر ذی‌نفعان و مدیران</h3>
+        <div class="step-meta"><b>۳ هفته</b><span>هفته ۲۷–۲۹</span></div>
+      </div>
+    </a>
+    <a class="step is-supp" href="#station-6">
+      <div class="step-rail"><span class="step-index">۶</span></div>
+      <div class="step-card">
+        <span class="badge badge--supp">حمایتی</span>
+        <h3>اولویت‌بندی و موازنه</h3>
+        <div class="step-meta"><b>۲ هفته</b><span>هفته ۳۰–۳۱</span></div>
+      </div>
+    </a>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

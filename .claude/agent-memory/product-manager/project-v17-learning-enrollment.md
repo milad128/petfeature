@@ -13,12 +13,12 @@ v17 is a candidate feature for Learning Enrollment & Progress Tracking (ثبت�
 - Resources = existing `RoadmapResource` (v16) — no new content type
 - Timeline = order-only, no date math (user confirmed)
 - Multi-level enrollment allowed; separate dashboards per level, never merged
-- 5 resource statuses: WANT_TO_STUDY, STUDYING, DONE, ALREADY_KNEW, SKIPPED
+- Resource statuses: blank + STUDYING, DONE, ALREADY_KNEW, SKIPPED (no WANT_TO_STUDY — the path is the queue)
 - Badges on user profile (Enrolled → In Progress → Completed per level)
 - Aggregate counts on roadmap level pages ("X نفر در حال یادگیری")
 - Completion = 100% of required resources with DONE or ALREADY_KNEW
 
-**Open question:** Is ALREADY_KNEW vs DONE the right split for "already studied" vs "studied"? Needs Milad confirmation.
+**Resolved:** Keep ALREADY_KNEW vs DONE. Drop WANT_TO_STUDY.
 
 **Effort:** ~17h (~2.5 days)
 

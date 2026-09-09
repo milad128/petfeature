@@ -1,0 +1,93 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_learning') }}" class="btn btn-ghost">آمار ثبت‌نام</a>
+{% endblock %}
+
+{% block content %}
+<p class="admin-meta-line"><b>{{ listing.total | fa_digits }}</b> ثبت‌نام</p>
+
+<form method="get" action="{{ url_for('admin_learning_enrollments') }}" class="toolbar">
+  <input type="hidden" name="state" value="{{ listing.state }}">
+  <select class="form-control" name="level" style="width:auto;" aria-label="فیلتر سطح">
+    <option value="">همه سطح‌ها</option>
+    {% for lv in levels %}
+    <option value="{{ lv.slug }}" {% if listing.level == lv.slug %}selected{% endif %}>{{ lv.fa }}</option>
+    {% endfor %}
+  </select>
+  <input class="form-control toolbar-search" type="search" name="q" value="{{ listing.q }}"
+         placeholder="نام یا ایمیل" aria-label="جستجوی نام یا ایمیل">
+  <button type="submit" class="btn btn-ghost btn-sm">اعمال فیلتر</button>
+</form>
+
+<div class="filter-strip" style="margin-bottom:16px;">
+  {% for st in states %}
+  <a href="{{ url_for('admin_learning_enrollments') }}?state={{ st }}{% if listing.level %}&level={{ listing.level }}{% endif %}{% if listing.q %}&q={{ listing.q | urlencode }}{% endif %}"
+     class="filter-pill {% if listing.state == st %}active{% endif %}">{{ state_labels[st] }}</a>
+  {% endfor %}
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>نام</th>
+        <th>ایمیل</th>
+        <th>سطح</th>
+        <th>تاریخ ثبت‌نام</th>
+        <th>آخرین وضعیت</th>
+        <th>پیشرفت</th>
+        <th>نشان</th>
+        <th>وضعیت</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in listing.rows %}
+      <tr>
+        <td>
+          <a href="{{ url_for('admin_learning_enrollment_detail', enrollment_id=row.id) }}"><b>{{ row.user_name }}</b></a>
+        </td>
+        <td dir="ltr" style="text-align:left; color:var(--text);">{{ row.user_email }}</td>
+        <td>{{ row.level_fa }}</td>
+        <td class="muted">{{ row.enrolled_at | jalali }}</td>
+        <td class="muted">{% if row.last_progress_at %}{{ row.last_progress_at | jalali }}{% else %}—{% endif %}</td>
+        <td>
+          <div class="learn-admin-progress">
+            <span>{{ row.progress.pct | fa_digits }}٪</span>
+            <span class="learn-admin-bar" aria-hidden="true"><i style="width: {{ row.progress.pct }}%;"></i></span>
+          </div>
+        </td>
+        <td>
+          {% if row.badge_fa %}
+          <span class="learn-admin-badge {% if row.progress.badge == 'completed' %}learn-admin-badge--done{% elif row.progress.badge == 'in_progress' %}learn-admin-badge--progress{% else %}learn-admin-badge--enrolled{% endif %}">{{ row.badge_fa }}</span>
+          {% endif %}
+        </td>
+        <td>{{ row.state_fa }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="muted" style="text-align:center; padding:2rem;">ثبت‌نامی با این فیلتر نیست.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if listing.total_pages > 1 %}
+<nav class="admin-pagination" aria-label="صفحه‌بندی ثبت‌نام‌ها">
+  {% if listing.page > 1 %}
+  <a href="?page={{ listing.page - 1 }}{{ query_suffix }}" class="admin-pagination__btn">→ قبلی</a>
+  {% else %}
+  <span class="admin-pagination__btn admin-pagination__btn--disabled" aria-disabled="true">→ قبلی</span>
+  {% endif %}
+  <span class="admin-pagination__info">صفحه {{ listing.page | fa_digits }} از {{ listing.total_pages | fa_digits }}</span>
+  {% if listing.page < listing.total_pages %}
+  <a href="?page={{ listing.page + 1 }}{{ query_suffix }}" class="admin-pagination__btn">بعدی ←</a>
+  {% else %}
+  <span class="admin-pagination__btn admin-pagination__btn--disabled" aria-disabled="true">بعدی ←</span>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

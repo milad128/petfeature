@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+  .ra-pad { padding-left: 32px; padding-right: 32px; }
+  .ra-inner { max-width: 1120px; margin: 0 auto; }
+  .ra-hero-grid { display: grid; grid-template-columns: 1fr 330px; gap: 56px; align-items: start; }
+  .ra-section { border-top: 1px solid var(--border); }
+  @media (max-width: 1000px) { .ra-hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+  @media (max-width: 760px) { .ra-pad { padding-left: 18px; padding-right: 18px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--accent) 4%, transparent);">
+  <div class="ra-inner ra-pad" style="padding-top:13px; padding-bottom:13px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">{{ level.num }} — {{ level.fa }}</b>
+    {% if enrolled %}<span class="learn-badge learn-badge--progress">ثبت‌نام شده</span>{% endif %}
+  </div>
+</div>
+
+<section class="ra-pad" style="max-width:1120px; margin:0 auto; padding-top:64px; padding-bottom:32px;">
+  <div class="ra-hero-grid">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">{{ level.num }}</span>
+      </div>
+      <h1 style="font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25;">{{ level.fa }}</h1>
+      {% if level.en %}
+      <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:6px;">{{ level.en }}</p>
+      {% endif %}
+      {% if level.thesis %}
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); font-weight:500; max-width:640px; line-height:2.05;">{{ level.thesis }}</p>
+      {% endif %}
+      <p style="margin-top:14px; font-size:.88rem; color:var(--muted); max-width:640px; line-height:2;">
+        {% if level_slug == 'hiring' %}
+        <a href="{{ url_for('roadmap_hiring') }}">متن کامل این سطح در مسیر یادگیری ←</a>
+        {% else %}
+        <a href="{{ url_for('roadmap_level', level_slug=level_slug) }}">متن کامل این سطح در مسیر یادگیری ←</a>
+        {% endif %}
+      </p>
+    </div>
+    <aside style="border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface);">
+      {% if enrolled %}
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+        <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">ثبت‌نام شده‌اید</span>
+      </div>
+      <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">پیگیری منابع در پنل شماست.</b>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">وضعیت خواندن را اینجا عوض نکنید — در داشبورد من.</p>
+      {% else %}
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
+        <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شروع مسیر</span>
+      </div>
+      <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک کلیک — بعد پیشرفت شخصی.</b>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">مشاهده صفحه ثبت‌نام نمی‌سازد. بعد از شروع، به پنل خودتان می‌روید و آنجا وضعیت منابع را می‌زنید.</p>
+      {% endif %}
+      <div style="margin-top:18px;">
+        {% include "partials/learn_enroll_cta.html" %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% for g in groups %}
+<section class="ra-section">
+  <div class="ra-inner ra-pad" style="padding-top:40px; padding-bottom:40px;">
+    <div class="ra-section-head" style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:14px; border-bottom:2px solid color-mix(in srgb, var(--accent) 30%, transparent);">
+      <span class="learn-badge learn-badge--progress">{{ g.title }}</span>
+    </div>
+    <div style="margin-top:8px; border-top:1px solid var(--border);">
+      {% for r in g.resources %}
+        {% set track = false %}
+        {% include "partials/learn_resource_row.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="ra-section">
+  <div class="ra-inner ra-pad" style="padding:48px 32px;">
+    <p style="color:var(--muted);">هنوز منبعی برای این سطح ثبت نشده است.</p>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

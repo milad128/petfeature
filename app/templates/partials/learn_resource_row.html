@@ -1,0 +1,30 @@
+<div class="ra-res{% if not r.is_required %} is-optional{% endif %}" data-status="{{ r._status if track else '' }}" data-required="{{ 1 if r.is_required else 0 }}" data-resource-id="{{ r.id }}">
+  <div>
+    {% if r.is_linked %}
+    <a class="ra-res-link" href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %} dir="auto">{{ r.title }}</a>
+    {% else %}
+    <span dir="auto" class="ra-res-title">{{ r.title }}</span>
+    <span class="ra-no-link">هنوز لینکی ندارد</span>
+    {% endif %}
+    <div class="ra-res-sub">
+      {{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}{% if r.has_persian %} · فارسی{% endif %}
+    </div>
+  </div>
+  <div class="ra-res-meta">
+    <span class="{{ 'ra-tag-req' if r.is_required else 'ra-tag-opt' }}">{{ 'اجباری' if r.is_required else 'اختیاری' }}</span>
+    {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+    {% if r.difficulty %}<span class="ra-tag-meta">{{ r.difficulty_stars }}</span>{% endif %}
+    {% if track %}
+    <form method="post" action="{{ url_for('learning_progress', level_slug=level_slug) }}" class="learn-status-form">
+      <input type="hidden" name="resource_id" value="{{ r.id }}">
+      <select class="learn-status" name="status" aria-label="وضعیت {{ r.title }}" data-status="{{ r._status }}" onchange="this.form.requestSubmit()">
+        <option value="" {% if not r._status %}selected{% endif %}>وضعیت ندارد</option>
+        <option value="STUDYING" {% if r._status == 'STUDYING' %}selected{% endif %}>دارم می‌خونم</option>
+        <option value="DONE" {% if r._status == 'DONE' %}selected{% endif %}>خوندم</option>
+        <option value="ALREADY_KNEW" {% if r._status == 'ALREADY_KNEW' %}selected{% endif %}>قبلاً می‌دونستم</option>
+        <option value="SKIPPED" {% if r._status == 'SKIPPED' %}selected{% endif %}>رد کردم</option>
+      </select>
+    </form>
+    {% endif %}
+  </div>
+</div>

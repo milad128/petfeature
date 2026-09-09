@@ -88,9 +88,11 @@ app/
 | v14 | User Dashboard (My Comments with admin replies + Telegram channel link; expands v12 profile page; requires v12) | **Backlog** |
 | v15 | Bookshelf / Reading List (قفسه کتاب — 3 statuses; private; social proof count; requires v12) | **Backlog** |
 | v16 | Roadmap (مسیر یادگیری — L0 hiring + L1 APM full pages; L2–L6 stub; RoadmapResource + ImmigrationVideo admin CMS) | **Shipped** |
+| v17 | Learning Enrollment (enroll-only public catalog, panel tracker, resource statuses, profile badges) | **In development** |
+| v18 | Enrollment Admin (statistics overview, filterable list, read-only learner detail) | **In development** |
 | Backlog | L2–L6 full Roadmap pages | Unscheduled — see `docs/product backlog.md` |
 
-Product specs: `docs/spec.md` (index), `docs/spec-v1-library.md` through `docs/spec-v16-roadmap.md`.
+Product specs: `docs/spec.md` (index), `docs/spec-v1-library.md` through `docs/spec-v18-enrollment-admin.md`.
 
 > **Email newsletter removed (July 2026).** No `Subscriber` model, no `/admin/subscribers/` page, no email collection. Telegram (`@petfeature`) is the only subscription channel.
 

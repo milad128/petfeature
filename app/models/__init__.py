@@ -2,6 +2,7 @@
 
 from app.models.about import AboutPage
 from app.models.reading_list import ReadingListItem
+from app.models.learning import Enrollment, ResourceProgress
 from app.models.user import User
 from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, MediaLinkType, book_references
 from app.models.category import Category, book_categories
@@ -14,6 +15,8 @@ from app.models.tool import Tool, ToolFile, ToolStatus, tool_books, tool_posts
 __all__ = [
     "AboutPage",
     "ReadingListItem",
+    "Enrollment",
+    "ResourceProgress",
     "User",
     "Book",
     "BookComment",

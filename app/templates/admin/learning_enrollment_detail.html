@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+
+{% block content_width %}wide{% endblock %}
+
+{% block content %}
+{% set enr = detail.enrollment %}
+{% set user = detail.user %}
+{% set progress = detail.progress %}
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section" style="display:flex; flex-direction:column; gap:10px;">
+    <div>
+      <b style="font-size:1.15rem;">{{ user.name if user else "—" }}</b>
+      {% if user %}
+      <div dir="ltr" style="text-align:left; color:var(--muted); font-size:.88rem; margin-top:4px;">{{ user.email }}</div>
+      {% endif %}
+    </div>
+    <p style="margin:0;">
+      {% if detail.level_num %}{{ detail.level_num }} — {% endif %}{{ detail.level_fa }}
+      · <a href="{{ detail.public_path }}" target="_blank" rel="noopener">صفحه عمومی ↗</a>
+      · {{ detail.state_fa }}
+      {% if detail.badge_fa %}
+      · <span class="learn-admin-badge {% if progress.badge == 'completed' %}learn-admin-badge--done{% elif progress.badge == 'in_progress' %}learn-admin-badge--progress{% else %}learn-admin-badge--enrolled{% endif %}">{{ detail.badge_fa }}</span>
+      {% endif %}
+    </p>
+    <p class="muted" style="margin:0; font-size:.88rem;">
+      ثبت‌نام: {{ enr.enrolled_at | jalali }}
+      · تکمیل: {% if enr.completed_at %}{{ enr.completed_at | jalali }}{% else %}هنوز تکمیل نشده{% endif %}
+      {% if enr.unenrolled_at %} · لغو: {{ enr.unenrolled_at | jalali }}{% endif %}
+    </p>
+    <div class="learn-admin-progress" style="max-width:280px;">
+      <span>{{ progress.pct | fa_digits }}٪</span>
+      <span class="learn-admin-bar" aria-hidden="true"><i style="width: {{ progress.pct }}%;"></i></span>
+    </div>
+    <p class="muted" style="margin:0; font-size:.82rem;">پیشرفت = (خوندم + قبلاً می‌دونستم) ÷ منابع الزامی</p>
+    <p style="margin:0; font-size:.88rem;">
+      تمام‌شده: <b>{{ progress.done | fa_digits }}</b> از <b>{{ progress.required | fa_digits }}</b>
+      · دارم می‌خونم: <b>{{ progress.studying | fa_digits }}</b>
+      · بدون وضعیت: <b>{{ progress.blank | fa_digits }}</b>
+      · رد کردم: <b>{{ progress.skipped | fa_digits }}</b>
+    </p>
+  </div>
+</div>
+
+{% for g in detail.groups %}
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">{{ g.title }}</div>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>عنوان</th>
+        <th>دسته</th>
+        <th>الزام</th>
+        <th>وضعیت</th>
+        <th>آخرین تغییر</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in g.resources %}
+      <tr>
+        <td>{{ r.title }}</td>
+        <td class="muted">{{ category_fa.get(r.category, g.title) if r.category else g.title }}</td>
+        <td>{% if r.is_required %}الزامی{% else %}اختیاری{% endif %}</td>
+        <td>
+          {% if r._status %}{{ status_labels.get(r._status, r._status) }}{% else %}وضعیت ندارد{% endif %}
+        </td>
+        <td class="muted">{% if r._status_updated_at %}{{ r._status_updated_at | jalali }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="admin-empty"><p>منبعی برای این سطح ثبت نشده است.</p></div>
+{% endfor %}
+
+<p style="margin-top:8px;">
+  <a href="{{ url_for('admin_learning_enrollments') }}">بازگشت به فهرست</a>
+</p>
+{% endblock %}

@@ -151,6 +151,17 @@
   {% endif %}
 </div>
 
+{# ── Learning enrollments (v18 summary) ────────────────── #}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-section-title" style="padding:18px 20px 0;">مسیر یادگیری — ثبت‌نام‌ها</div>
+  <p class="an-learn-summary">
+    فعال <b>{{ enroll_headline.active | fa_digits }}</b>
+    · تکمیل‌شده <b>{{ enroll_headline.completed | fa_digits }}</b>
+    · یادگیرنده یکتا <b>{{ enroll_headline.unique_learners | fa_digits }}</b>
+    <a href="{{ url_for('admin_learning') }}">آمار ثبت‌نام یادگیری ←</a>
+  </p>
+</div>
+
 {# ── Daily traffic + Referrers ─────────────────────────── #}
 <div class="an-bottom-row">
 

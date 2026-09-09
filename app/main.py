@@ -13,6 +13,7 @@ from app.core.analytics import AnalyticsMiddleware
 from app.core.auth import UserAuthMiddleware
 from app.core.config import settings
 from app.web.auth_routes import router as auth_router
+from app.web.learning_routes import router as learning_router
 from app.web.routes import router as web_router
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -29,17 +30,24 @@ async def lifespan(app: FastAPI):
         from app.models import (  # noqa: F401
             AboutPage,
             Book,
+            BookComment,
             BookMediaLink,
+            BookRating,
             Category,
             ContactMessage,
+            MediaFile,
             PageView,
             Post,
             PostComment,
             PostRating,
+            ReadingListItem,
             Tool,
             ToolFile,
             User,
         )
+        from app.models.learning import Enrollment, ResourceProgress  # noqa: F401
+        from app.models.newsletter import NewsletterCampaign  # noqa: F401
+        from app.models.roadmap import ImmigrationVideo, RoadmapResource  # noqa: F401
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
@@ -68,6 +76,7 @@ app.add_middleware(AnalyticsMiddleware)                                   # oute
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.include_router(auth_router)
+app.include_router(learning_router)
 app.include_router(web_router)
 app.include_router(
     admin_router,

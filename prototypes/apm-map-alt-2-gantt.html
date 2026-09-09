@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APM نقشه · جایگزین ۲ — گانت | پت فیچر</title>
+  <link rel="stylesheet" href="apm-map-alternatives.css">
+  <style>
+    .gantt-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 18px 16px;
+      overflow-x: auto;
+    }
+    .gantt-axis {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      min-width: 640px;
+    }
+    .gantt-axis-label { font-size: .72rem; color: var(--faint); }
+    .gantt-weeks {
+      display: grid;
+      grid-template-columns: repeat(31, 1fr);
+      gap: 0;
+      font-size: .62rem;
+      color: var(--faint);
+      text-align: center;
+    }
+    .gantt-weeks span:nth-child(5n) { color: var(--muted); font-weight: 600; }
+    .gantt-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-width: 640px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .gantt-row:last-child { border-bottom: 0; }
+    .gantt-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    .gantt-track {
+      position: relative;
+      height: 28px;
+      background: rgba(236,229,220,.04);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .gantt-track::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(100% / 31 - 1px),
+        rgba(236,229,220,.06) calc(100% / 31 - 1px),
+        rgba(236,229,220,.06) calc(100% / 31)
+      );
+    }
+    .gantt-bar {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .68rem;
+      font-weight: 700;
+      color: #171210;
+      white-space: nowrap;
+      padding: 0 6px;
+    }
+    .gantt-bar--core { background: var(--core); }
+    .gantt-bar--supp { background: var(--supp); }
+    .gantt-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .gantt-legend i {
+      display: inline-block;
+      width: 14px;
+      height: 8px;
+      border-radius: 4px;
+      margin-inline-end: 6px;
+      vertical-align: middle;
+    }
+    .gantt-band-markers {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      min-width: 640px;
+      margin-bottom: 8px;
+    }
+    .gantt-bands {
+      position: relative;
+      height: 22px;
+    }
+    .gantt-band {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 6px;
+      font-size: .68rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      padding-inline: 8px;
+      white-space: nowrap;
+    }
+    .gantt-band--core {
+      inset-inline-start: 0;
+      width: calc(100% * 20 / 31);
+      background: var(--core-bg);
+      color: var(--core);
+      border: 1px solid var(--core-bd);
+    }
+    .gantt-band--supp {
+      inset-inline-start: calc(100% * 20 / 31);
+      width: calc(100% * 11 / 31);
+      background: var(--supp-bg);
+      color: var(--supp);
+      border: 1px solid var(--supp-bd);
+    }
+  </style>
+</head>
+<body data-alt="2">
+
+<nav class="proto-index" aria-label="پیش‌نمایش جایگزین‌ها">
+  <div class="proto-index-inner">
+    <b>APM · ۳۱ هفته، شش ایستگاه</b>
+    <span style="color:var(--faint)">جایگزین ۲ از ۱۰</span>
+  </div>
+</nav>
+
+<section class="map-section">
+  <p class="alt-label">Alternative 2 · Gantt chart</p>
+  <div class="map-head">
+    <h1>سی و یک هفته، شش ایستگاه</h1>
+    <span>۳۱ هفته اسپرینت · مابقی بلوغ</span>
+  </div>
+  <p class="map-note">محور افقی = هفته. هر ردیف یک شایستگی است؛ طول نوار = مدت اسپرینت. بدون اسکرول افقی در موبایل — جدول قابل کشیدن است.</p>
+
+  <div class="gantt-wrap">
+    <div class="gantt-band-markers">
+      <div></div>
+      <div class="gantt-bands">
+        <div class="gantt-band gantt-band--core">هسته · ۲۰ هفته</div>
+        <div class="gantt-band gantt-band--supp">حمایتی · ۱۱</div>
+      </div>
+    </div>
+    <div class="gantt-axis">
+      <div class="gantt-axis-label">شایستگی</div>
+      <div class="gantt-weeks" aria-hidden="true">
+        <!-- weeks 1-31 -->
+        <span>۱</span><span>۲</span><span>۳</span><span>۴</span><span>۵</span>
+        <span>۶</span><span>۷</span><span>۸</span><span>۹</span><span>۱۰</span>
+        <span>۱۱</span><span>۱۲</span><span>۱۳</span><span>۱۴</span><span>۱۵</span>
+        <span>۱۶</span><span>۱۷</span><span>۱۸</span><span>۱۹</span><span>۲۰</span>
+        <span>۲۱</span><span>۲۲</span><span>۲۳</span><span>۲۴</span><span>۲۵</span>
+        <span>۲۶</span><span>۲۷</span><span>۲۸</span><span>۲۹</span><span>۳۰</span><span>۳۱</span>
+      </div>
+    </div>
+
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--core">۱</span>تحویل و اجرا</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--core" style="inset-inline-start:0; width:calc(100% * 6 / 31);">۶w</div></div>
+    </div>
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--core">۲</span>کشف محصول</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--core" style="inset-inline-start:calc(100% * 6 / 31); width:calc(100% * 8 / 31);">۸w</div></div>
+    </div>
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--core">۳</span>ارتباط و نوشتن</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--core" style="inset-inline-start:calc(100% * 14 / 31); width:calc(100% * 6 / 31);">۶w</div></div>
+    </div>
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--supp">۴</span>سواد فنی</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--supp" style="inset-inline-start:calc(100% * 20 / 31); width:calc(100% * 6 / 31);">۶w</div></div>
+    </div>
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--supp">۵</span>نفوذ بر ذی‌نفعان</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--supp" style="inset-inline-start:calc(100% * 26 / 31); width:calc(100% * 3 / 31);">۳w</div></div>
+    </div>
+    <div class="gantt-row">
+      <div class="gantt-name"><span class="station-num station-num--supp">۶</span>اولویت‌بندی</div>
+      <div class="gantt-track"><div class="gantt-bar gantt-bar--supp" style="inset-inline-start:calc(100% * 29 / 31); width:calc(100% * 2 / 31);">۲w</div></div>
+    </div>
+
+    <div class="gantt-legend">
+      <span><i style="background:var(--core)"></i>هسته — ۲۰ هفته</span>
+      <span><i style="background:var(--supp)"></i>حمایتی — ۱۱ هفته</span>
+    </div>
+  </div>
+</section>
+<script src="apm-map-nav.js"></script>
+</body>
+</html>

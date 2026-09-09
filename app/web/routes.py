@@ -25,6 +25,7 @@ from app.services import contact as contact_service
 from app.services import posts as post_service
 from app.services import tools as tool_service
 from app.services import users as user_service
+from app.services import learning as learning_service
 from app.services import roadmap_service
 from app.services.roadmap_data import LEVEL_BY_SLUG, FULL_PAGE_SLUGS, STUB_SLUGS, LEVELS
 
@@ -383,10 +384,21 @@ async def roadmap_landing(request: Request, db: AsyncSession = Depends(get_db)):
     return templates.TemplateResponse(request, "pages/roadmap.html", ctx)
 
 
+async def _attach_learning_cta(request: Request, db: AsyncSession, ctx: dict, level_slug: str) -> None:
+    user = get_current_user(request)
+    ctx["level_slug"] = level_slug
+    ctx["enrolled"] = False
+    if user:
+        row = await learning_service.get_enrollment(db, user.id, level_slug)
+        ctx["enrolled"] = row is not None
+    ctx["social"] = await learning_service.level_social_counts(db, level_slug)
+
+
 @router.get("/path/hiring/", name="roadmap_hiring")
 async def roadmap_hiring(request: Request, db: AsyncSession = Depends(get_db)):
     ctx = await roadmap_service.get_hiring_context(db)
     ctx["page_title"] = "مسیر استخدام | مسیر یادگیری"
+    await _attach_learning_cta(request, db, ctx, "hiring")
     return templates.TemplateResponse(request, "pages/roadmap_hiring.html", ctx)
 
 
@@ -418,7 +430,7 @@ async def roadmap_level(
         )
     lv = ctx["level"]
     ctx["page_title"] = f"{lv.num} — {lv.fa} | مسیر یادگیری"
-    if level_slug == "apm" and "stats" not in ctx:
+    if level_slug in FULL_PAGE_SLUGS and "stats" not in ctx:
         result = await db.execute(
             select(RoadmapResource)
             .where(RoadmapResource.level_slug == level_slug)
@@ -427,5 +439,6 @@ async def roadmap_level(
         ctx["stats"] = roadmap_service.build_level_display_stats(
             list(result.scalars().all())
         )
-    template = "pages/roadmap_apm.html" if level_slug == "apm" else "pages/roadmap_level.html"
+    template = "pages/roadmap_apm.html" if level_slug in FULL_PAGE_SLUGS else "pages/roadmap_level.html"
+    await _attach_learning_cta(request, db, ctx, level_slug)
     return templates.TemplateResponse(request, template, ctx)

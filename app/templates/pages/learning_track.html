@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+  .ra-pad { padding-left: 32px; padding-right: 32px; }
+  .ra-inner { max-width: 1120px; margin: 0 auto; }
+  @media (max-width: 760px) { .ra-pad { padding-left: 18px; padding-right: 18px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <section class="profile-section" style="padding-top:48px;">
+    <div class="container" id="track">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+        <a href="{{ url_for('learning_index') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">→ مسیرهای من</a>
+        <span style="color:var(--faint); font-size:.8rem;">/</span>
+        <b style="font-size:.82rem; color:var(--accent);">{{ level.num }} — {{ level.fa }}</b>
+        <span class="learn-badge {% if progress.badge == 'completed' %}learn-badge--done{% elif progress.badge == 'in_progress' %}learn-badge--progress{% else %}learn-badge--enrolled{% endif %}" id="level-badge">{{ progress.badge_fa }}</span>
+      </div>
+      <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-bottom:22px;">
+        وضعیت منابع فقط اینجاست.
+        <a href="{{ url_for('learning_catalog', level_slug=level_slug) }}">صفحه عمومی یادگیری</a>
+        فقط فهرست و دکمه ثبت‌نام است.
+      </p>
+
+      <div class="learn-progress">
+        <div class="learn-progress-top">
+          <div class="learn-progress-pct" id="progress-pct">{{ progress.pct | fa_digits }}<span>٪</span></div>
+          <p class="learn-progress-note">پیشرفت = (خوندم + قبلاً می‌دونستم) ÷ منابع الزامی. اختیاری و «رد کردم» حساب نمی‌شوند.</p>
+        </div>
+        <div class="learn-bar" aria-hidden="true"><i id="progress-bar" style="--p:{{ progress.pct }}%"></i></div>
+        <div class="learn-progress-facts">
+          <span>تمام‌شده: <b><span id="stat-done">{{ progress.done | fa_digits }}</span> از <span id="stat-total">{{ progress.required | fa_digits }}</span></b></span>
+          <span>دارم می‌خونم: <b id="stat-studying">{{ progress.studying | fa_digits }}</b></span>
+          <span>بدون وضعیت: <b id="stat-blank">{{ progress.blank | fa_digits }}</b></span>
+          <span>ثبت‌نام: <b>{{ enrollment.enrolled_at | jalali }}</b></span>
+        </div>
+      </div>
+
+      <aside class="learn-now" id="now-card" {% if not studying %}hidden{% endif %}>
+        <div>
+          <div class="learn-now-k">الان کجا هستید</div>
+          <h2>{% if studying %}<a class="ra-res-link" id="now-title" href="{{ studying.link_url or '#' }}">{{ studying.title }}</a>{% else %}<a class="ra-res-link" id="now-title" href="#"></a>{% endif %}</h2>
+          <p id="now-meta">{% if studying %}{{ studying.resource_type_fa }} · {{ studying.reading_time_display }}{% endif %}</p>
+        </div>
+        {% if studying and studying.is_linked %}
+        <a class="btn btn--outline btn--sm" href="{{ studying.link_url }}" {% if studying.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}>برو به منبع</a>
+        {% endif %}
+      </aside>
+      <p class="learn-hint" id="multi-studying" {% if not multi_studying %}hidden{% endif %}>بیش از یک منبع روی «دارم می‌خونم» است. اجباری نیست — معمولاً یکی کافی است.</p>
+
+      {% for g in groups %}
+      <div class="ra-section-head" style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:36px; padding-bottom:14px; border-bottom:2px solid color-mix(in srgb, var(--accent) 30%, transparent);">
+        <span class="learn-badge learn-badge--progress">{{ g.title }}</span>
+      </div>
+      <div style="margin-top:8px; border-top:1px solid var(--border);">
+        {% for r in g.resources %}
+          {% set track = true %}
+          {% include "partials/learn_resource_row.html" %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div style="margin-top:36px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+        <a href="{{ url_for('learning_catalog', level_slug=level_slug) }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ صفحه عمومی این سطح</a>
+        <form method="post" action="{{ url_for('learning_unenroll', level_slug=level_slug) }}" onsubmit="return confirm('ثبت‌نام این سطح لغو می‌شود. پیشرفت نگه داشته می‌شود.');">
+          <button type="submit" class="unenroll">لغو ثبت‌نام از این سطح</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+<script src="{{ asset_url(request, 'js/learning.js') }}" defer></script>
+{% endblock %}
