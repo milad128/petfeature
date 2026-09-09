@@ -77,7 +77,7 @@
       {% for lv in main_levels %}
       {% set step = n_main - 1 - loop.index0 %}
       {% set indent = step * 44 %}
-      {% set is_built = lv.slug == 'apm' %}
+      {% set is_built = lv.slug in full_page_slugs %}
 
       <div class="home-ladder-rung" style="padding-inline-end:{{ indent }}px;">
         <span class="home-ladder-tick" style="width:{{ indent }}px;"></span>

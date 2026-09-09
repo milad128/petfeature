@@ -28,3 +28,14 @@ async def test_public_page_renders(client, path):
 async def test_home_is_html(client):
     resp = await client.get("/")
     assert resp.headers["content-type"].startswith("text/html")
+
+
+async def test_home_ladder_links_shipped_levels(client):
+    resp = await client.get("/")
+    assert resp.status_code == 200
+    assert 'href="/path/pm/"' in resp.text
+    assert 'href="/path/apm/"' in resp.text
+    assert "مدیر محصول" in resp.text
+    # PM is a full page — not a coming-soon card.
+    assert resp.text.count("به‌زودی") >= 1
+    assert 'href="/path/senior-pm/"' not in resp.text
