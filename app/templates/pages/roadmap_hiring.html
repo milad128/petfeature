@@ -1,299 +1,292 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
+{% include "partials/roadmap_level_styles.html" %}
 <style>
-/* ── Hiring page v2 ─────────────────────────────── */
-.h2-pad { padding-left:32px; padding-right:32px; }
-.h2-inner { max-width:1120px; margin:0 auto; padding:48px 32px; }
-.h2-section { border-top:1px solid var(--border); }
-
-/* Breadcrumb */
-.h2-breadcrumb { border-bottom:1px solid var(--border); background:rgba(143,191,134,.045); }
-.h2-breadcrumb-inner { max-width:1120px; margin:0 auto; padding:13px 32px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-
-/* Hero */
-.h2-hero { display:grid; grid-template-columns:1fr 330px; gap:56px; align-items:start; }
-.h2-hero h1 { font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25; }
-.h2-aside { border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface); }
-.h2-facts { display:grid; gap:1px; background:var(--border); margin-top:20px; border-radius:10px; overflow:hidden; }
-.h2-fact { background:var(--raise); padding:12px 14px; display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
-
-/* Map */
-.h2-scroll { overflow-x:auto; padding-bottom:6px; }
-.h2-scroll::-webkit-scrollbar { height:8px; }
-.h2-scroll::-webkit-scrollbar-thumb { background:rgba(236,229,220,.16); border-radius:8px; }
-.h2-map-phases { display:flex; gap:6px; margin-bottom:8px; }
-.h2-map-areas  { display:flex; gap:6px; }
-.h2-map-weeks  { display:flex; gap:6px; margin-top:8px; }
-.h2-seg {
-  display:block; text-decoration:none; color:inherit;
-  border-radius:12px; padding:14px 16px 16px; transition:border-color .18s;
-  background:var(--surface); border:1px solid var(--border);
+.ra-play-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 88%, transparent);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.h2-seg:hover { color:inherit; text-decoration:none; border-color:color-mix(in srgb, var(--accent) 55%, transparent); }
-.h2-seg-n { width:22px; height:22px; border-radius:7px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; }
-.h2-phase-rule { height:3px; border-radius:2px; background:color-mix(in srgb, #8fbf86 45%, transparent); }
-.h2-week-label { border-top:1px solid var(--border); padding-top:6px; }
-
-/* Audience rows */
-.h2-aud { display:grid; grid-template-columns:210px 1fr 190px; gap:24px; align-items:start; padding:20px 2px; border-bottom:1px solid var(--border); }
-
-/* Stations */
-.h2-station { display:grid; grid-template-columns:280px 1fr; gap:40px; padding:34px 0; border-bottom:1px solid var(--border); scroll-margin-top:20px; }
-.h2-station-rail { position:sticky; top:24px; align-self:start; }
-.h2-rail-n { width:30px; height:30px; border-radius:9px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700; }
-.h2-chip-read   { font-size:.78rem; color:var(--muted); background:rgba(236,229,220,.05); border-inline-start:3px solid var(--muted); border-radius:0 6px 6px 0; padding:3px 10px; white-space:nowrap; }
-.h2-chip-sprint { font-size:.78rem; color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent); border-inline-start:3px solid var(--accent); border-radius:0 6px 6px 0; padding:3px 10px; white-space:nowrap; }
-
-/* Resources */
-.h2-res { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; padding:14px 2px; border-bottom:1px solid var(--border); }
-.h2-res-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-.h2-req-req { font-size:.72rem; font-weight:700; color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent); border-radius:6px; padding:3px 9px; white-space:nowrap; }
-.h2-req-opt { font-size:.72rem; font-weight:600; color:var(--faint); border:1px solid var(--border); border-radius:6px; padding:3px 9px; white-space:nowrap; }
-.h2-meta-tag { font-size:.74rem; color:var(--muted); background:rgba(236,229,220,.05); border-radius:6px; padding:3px 9px; white-space:nowrap; }
-.h2-no-link { font-size:.68rem; color:var(--faint); border:1px dashed var(--border-2); border-radius:5px; padding:2px 8px; margin-inline-start:8px; white-space:nowrap; }
-
-/* Immigration */
-.h2-branch { display:grid; grid-template-columns:280px 1fr; gap:40px; align-items:start; }
-.h2-branch-rail { border-inline-start:1px dashed var(--border-2); padding-inline-start:32px; }
-.h2-video-row { display:flex; align-items:center; gap:18px; text-decoration:none; color:inherit; padding:16px 4px; border-top:1px solid var(--border); transition:color .15s; }
-.h2-video-row:hover { color:inherit; text-decoration:none; }
-.h2-play-btn { width:38px; height:38px; border-radius:50%; background:color-mix(in srgb, var(--accent) 88%, transparent); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.h2-play-arrow { width:0; height:0; border-block:7px solid transparent; border-inline-end:11px solid #171210; margin-inline-end:2px; display:block; }
-
-/* Terminus */
-.h2-levels { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
-.h2-level-card { display:block; text-decoration:none; color:inherit; background:var(--surface); border:1px solid rgba(217,160,95,.2); border-radius:12px; padding:16px 16px 18px; transition:border-color .18s; }
-.h2-level-card:hover { border-color:rgba(217,160,95,.6); color:inherit; text-decoration:none; }
-
-/* Phase header */
-.h2-phase-hd { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding:26px 0 14px; border-bottom:2px solid rgba(143,191,134,.3); }
-
-/* Responsive */
-@media (max-width:1000px) {
-  .h2-hero { grid-template-columns:1fr; gap:36px; }
-  .h2-station { grid-template-columns:1fr; gap:18px; }
-  .h2-station-rail { position:static; }
-  .h2-aud { grid-template-columns:1fr; gap:8px; }
-  .h2-branch { grid-template-columns:1fr; }
-  .h2-branch-rail { border-inline-start:none; padding-inline-start:0; }
+.ra-play-arrow {
+  width: 0; height: 0;
+  border-block: 7px solid transparent;
+  border-inline-end: 11px solid #171210;
+  margin-inline-end: 2px; display: block;
 }
-@media (max-width:760px) {
-  .h2-pad { padding-left:18px; padding-right:18px; }
-  .h2-inner { padding-left:18px; padding-right:18px; }
-  .h2-hero h1 { font-size:2.2rem; }
-  .h2-facts { grid-template-columns:1fr; }
-  .h2-levels { grid-template-columns:1fr 1fr; }
-  .h2-res { grid-template-columns:1fr; gap:8px; }
-  .h2-res-meta { justify-content:flex-start; }
-  .h2-breadcrumb-inner { padding-inline:18px; }
+.ra-video-row {
+  display: flex; align-items: center; gap: 18px;
+  text-decoration: none; color: inherit;
+  padding: 16px 4px; border-top: 1px solid var(--border);
 }
-@media (max-width:480px) {
-  .h2-levels { grid-template-columns:1fr; }
-}
+.ra-video-row:hover { color: inherit; text-decoration: none; }
 </style>
 {% endblock %}
 
 {% block content %}
+{% set lv = level %}
 
-<!-- Breadcrumb -->
-<div class="h2-breadcrumb">
-  <div class="h2-breadcrumb-inner">
-    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
-    <span style="color:var(--faint); font-size:.8rem;">/</span>
-    <b style="font-size:.82rem; color:var(--accent);">مسیر ۰ — مسیر استخدام</b>
+{# ── Level strip ─────────────────────────────────────────────── #}
+<div class="ra-strip-wrap">
+  <div class="ra-strip" role="navigation" aria-label="سطوح مسیر">
+    <span class="ra-strip-btn" aria-current="true">مسیر ۰</span>
+    {% for l in levels %}
+    {% if l.slug != 'hiring' %}
+    {% if l.slug in full_page_slugs %}
+    <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}" class="ra-strip-btn">{{ l.en.split(' ')[0] }}</a>
+    {% else %}
+    <span class="ra-strip-btn" aria-disabled="true" title="به زودی">{{ l.en.split(' ')[0] }} <span style="font-size:.65rem; opacity:.6;">به زودی</span></span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
   </div>
 </div>
 
-<!-- HERO -->
-<section class="h2-pad" style="max-width:1120px; margin:0 auto; padding:64px 32px 0;">
-  <div class="h2-hero">
+{# ── Breadcrumb ───────────────────────────────────────────────── #}
+<div style="border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--accent) 4%, transparent);">
+  <div class="ra-inner ra-pad" style="padding-top:13px; padding-bottom:13px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <a href="{{ url_for('roadmap_landing') }}" style="font-size:.82rem; color:var(--muted); text-decoration:none;">مسیر یادگیری</a>
+    <span style="color:var(--faint); font-size:.8rem;">/</span>
+    <b style="font-size:.82rem; color:var(--accent);">{{ lv.num }} — {{ lv.fa }}</b>
+    <span style="font-size:.72rem; color:var(--faint); border:1px solid var(--border-2); border-radius:6px; padding:3px 10px; margin-inline-start:6px;">کمپین است، نه سطح</span>
+  </div>
+</div>
+
+{# ── HERO ─────────────────────────────────────────────────────── #}
+<section class="ra-pad" style="max-width:1120px; margin:0 auto; padding-top:64px;">
+  <div class="ra-hero-grid">
     <div>
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
         <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
-        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">مسیر ۰</span>
+        <span style="font-size:12px; font-weight:600; letter-spacing:.1em; color:var(--accent);">{{ lv.num }}</span>
       </div>
-      <h1>مسیر استخدام</h1>
-      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); line-height:2.05; font-weight:500; max-width:640px;">
+      <h1 style="font-size:3.1rem; font-weight:800; letter-spacing:-.02em; line-height:1.25;">{{ lv.fa }}</h1>
+      <p dir="ltr" style="font-size:.86rem; color:var(--faint); unicode-bidi:embed; text-align:start; margin-top:6px;">{{ lv.en }}</p>
+      <p style="margin-top:22px; font-size:1.1rem; color:var(--text); font-weight:500; max-width:640px; line-height:2.05;">
         این یک مسیر موقت است که سه تا شش ماه طول می‌کشد و <b style="color:var(--accent); font-weight:700;">روزی که آفر کار را قبول کنید تمام می‌شود</b> — و همان روز، مسیر یادگیری شروع می‌شود.
       </p>
-      <p style="margin-top:18px; font-size:.95rem; color:var(--muted); line-height:2.1; max-width:640px;">
+      <p style="margin-top:18px; font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1;">
         هر مسیر دیگری در این سایت به یک سؤال جواب می‌دهد: «چطور در این کار خوب شوم؟» این یکی به سؤال دیگری جواب می‌دهد: «چطور این کار را بگیرم؟» در هر سطحی که باشید برای استخدام به این مسیر نیاز پیدا خواهید کرد.
       </p>
     </div>
 
-    <aside class="h2-aside">
+    <aside style="border:1px solid var(--border-2); border-radius:16px; padding:24px 26px; background:var(--surface);">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
         <span style="width:10px; height:10px; background:var(--accent); display:block; clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);"></span>
         <span style="font-size:.7rem; font-weight:700; letter-spacing:.06em; color:var(--accent);">شرط پایان</span>
       </div>
       <b style="display:block; font-size:1.15rem; font-weight:800; line-height:1.7;">یک آفر کاری را قبول کرده‌اید.</b>
       <p style="font-size:.85rem; color:var(--muted); line-height:2; margin-top:10px;">برای رسیدن به کیفیت لازم برای مصاحبه به زمان‌های زیر نیاز خواهید داشت.</p>
-      <div class="h2-facts">
-        {% for f in facts %}
-        <div class="h2-fact">
-          <span style="font-size:.76rem; color:var(--faint);">{{ f.label }}</span>
-          <b style="font-size:.98rem; font-weight:700; color:{% if f.accent %}var(--accent){% else %}var(--text){% endif %};">{{ f.value }}</b>
+      <div class="ra-facts" style="margin-top:20px;">
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">منابع اجباری</span>
+          <b class="ra-fact-val">{{ stats.required }}</b>
         </div>
-        {% endfor %}
-      </div>
-      <div style="margin-top:18px;">
-        {% include "partials/learn_enroll_cta.html" %}
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">مطالعه</span>
+          <b class="ra-fact-val">{{ stats.reading }}</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">اسپرینت</span>
+          <b class="ra-fact-val" style="color:var(--accent);">{{ stats.sprint }}</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">طول مسیر</span>
+          <b class="ra-fact-val" style="color:var(--sprout);">{{ stats.tenure }}</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">در حال یادگیری</span>
+          <b class="ra-fact-val">{{ (social.learning if social else 0) | fa_digits }} نفر</b>
+        </div>
+        <div class="ra-fact">
+          <span class="ra-fact-lbl">تمام‌کرده</span>
+          <b class="ra-fact-val" style="color:var(--sprout);">{{ (social.completed if social else 0) | fa_digits }} نفر</b>
+        </div>
       </div>
     </aside>
   </div>
 </section>
 
-<!-- MAP: دوازده هفته، پنج ایستگاه -->
-<section class="h2-section" style="margin-top:64px;">
-  <div class="h2-inner">
+{# ── Enroll CTA ──────────────────────────────────────────────── #}
+<section class="learn-enroll-band">
+  <div class="ra-inner ra-pad">
+    {% set enroll_layout = 'banner' %}
+    {% include "partials/learn_enroll_cta.html" %}
+  </div>
+</section>
+
+{# ── MAP ──────────────────────────────────────────────────────── #}
+<section style="margin-top:64px; border-top:1px solid var(--border);">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
     <div style="display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:8px;">
       <h2 style="font-size:1.7rem; font-weight:800;">دوازده هفته، پنج ایستگاه</h2>
+      <span style="font-size:.8rem; color:var(--faint);">{{ map_total_weeks | fa_digits }} هفته اسپرینت</span>
     </div>
-    <p style="font-size:.95rem; color:var(--muted); max-width:700px; line-height:2.1; margin-bottom:28px;">منتظر آمادگی کامل نمانید — اولین مصاحبه‌های واقعی تنها بازخورد صادقانه‌ای هستند که گیرتان می‌آید، و چند تای اول بد خواهند بود، هرقدر هم آماده شوید.</p>
+    <p class="ra-note" style="margin-top:12px; margin-bottom:28px;">منتظر آمادگی کامل نمانید — اولین مصاحبه‌های واقعی تنها بازخورد صادقانه‌ای هستند که گیرتان می‌آید، و چند تای اول بد خواهند بود، هرقدر هم آماده شوید.</p>
 
-    <div class="h2-scroll">
-      <div style="min-width:640px;">
-        <!-- Phase headers -->
-        <div class="h2-map-phases">
-          {% for p in map_phases %}
-          <div style="flex:{{ p.weeks }} 1 0; min-width:0;">
-            <div style="display:flex; align-items:center; gap:10px; padding-bottom:8px;">
-              <b style="font-size:.9rem; font-weight:700;">فاز {{ p.n }} — {{ p.fa }}</b>
-              <span style="font-size:.75rem; color:var(--faint);">{{ p.sprint }}</span>
-            </div>
-            <div class="h2-phase-rule"></div>
-          </div>
-          {% endfor %}
+    <div class="gantt-wrap" style="--gantt-weeks: {{ map_total_weeks }};">
+      <div class="gantt-band-markers">
+        <div></div>
+        <div class="gantt-bands">
+          {% set core_weeks = map_bands[0].weeks %}
+          <div class="gantt-band gantt-band--core" style="width: calc(100% * {{ core_weeks }} / {{ map_total_weeks }});">{{ map_bands[0].fa }} · {{ core_weeks | fa_digits }} هفته</div>
+          <div class="gantt-band gantt-band--supp" style="inset-inline-start: calc(100% * {{ core_weeks }} / {{ map_total_weeks }}); width: calc(100% * {{ map_bands[1].weeks }} / {{ map_total_weeks }});">{{ map_bands[1].fa }} · {{ map_bands[1].weeks | fa_digits }} هفته</div>
         </div>
-
-        <!-- Area segments -->
-        <div class="h2-map-areas">
-          {% for a in map_areas %}
-          <a href="#{{ a.anchor_id }}" class="h2-seg"
-             style="flex:{{ a.weeks }} 1 0; min-width:0;">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <span class="h2-seg-n">{{ a.n }}</span>
-              <span style="font-size:.72rem; color:var(--faint);">{{ a.sprint }}</span>
-            </span>
-            <span style="display:block; font-size:.85rem; font-weight:600; line-height:1.7; margin-top:8px;">{{ a.short }}</span>
-          </a>
-          {% endfor %}
-        </div>
-
-        <!-- Week labels -->
-        <div class="h2-map-weeks">
-          {% for a in map_areas %}
-          <div class="h2-week-label" style="flex:{{ a.weeks }} 1 0; min-width:0;">
-            <span style="font-size:.68rem; color:var(--faint);">{{ a.week_range }}</span>
-          </div>
+      </div>
+      <div class="gantt-axis">
+        <div class="gantt-axis-label">حوزه</div>
+        <div class="gantt-weeks" style="grid-template-columns: repeat({{ map_total_weeks }}, 1fr);" aria-hidden="true">
+          {% for w in range(1, map_total_weeks + 1) %}
+          <span>{{ w | fa_digits }}</span>
           {% endfor %}
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- AUDIENCE rows -->
-<section class="h2-section">
-  <div class="h2-inner">
-    <h2 style="font-size:1.35rem; font-weight:700; margin-bottom:8px;">چه مقدار از مسیر را لازم دارید</h2>
-    <p style="font-size:.92rem; color:var(--muted); max-width:660px; margin-bottom:24px;">هرچه سابقه‌ی محصولی‌تان بیشتر باشد، بخش کمتری از فاز یک به کارتان می‌آید — اما فاز دو برای همه یکسان است.</p>
-    <div style="border-top:1px solid var(--border);">
-      {% for a in audience %}
-      <div class="h2-aud">
-        <b style="font-size:1rem; font-weight:700; line-height:1.7;">{{ a.title }}</b>
-        <p style="font-size:.88rem; color:var(--muted); line-height:2;">{{ a.body }}</p>
-        <span style="display:inline-block; font-size:.72rem; font-weight:600; color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); border-radius:6px; padding:4px 10px; white-space:nowrap;">{{ a.tag }}</span>
+      {% for s in map_stations %}
+      <div class="gantt-row">
+        <a href="{{ s.href }}" class="gantt-name">
+          <span class="gantt-station-num gantt-station-num--{% if s.category == 'core' %}core{% else %}supp{% endif %}">{{ s.n }}</span>
+          {{ s.name }}
+        </a>
+        <div class="gantt-track">
+          <a href="{{ s.href }}" class="gantt-bar gantt-bar--{% if s.category == 'core' %}core{% else %}supp{% endif %}"
+             style="inset-inline-start: calc(100% * {{ s.from_week - 1 }} / {{ map_total_weeks }}); width: calc(100% * {{ s.weeks }} / {{ map_total_weeks }});"
+             title="{{ s.week_range }}">{{ s.sprint }}</a>
+        </div>
       </div>
       {% endfor %}
+
+      <div class="gantt-legend">
+        <span><i style="background:var(--accent)"></i>{{ map_bands[0].fa }} — {{ map_bands[0].weeks | fa_digits }} هفته</span>
+        <span><i style="background:var(--gantt-supp)"></i>{{ map_bands[1].fa }} — {{ map_bands[1].weeks | fa_digits }} هفته</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- STATIONS -->
-<section class="h2-section">
-  <div class="h2-pad" style="max-width:1120px; margin:0 auto; padding:48px 32px 8px;">
+{# ── WHAT THIS PATH ASKS ──────────────────────────────────────── #}
+<section class="ra-section">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <h2 style="font-size:1.35rem; font-weight:700; margin-bottom:8px;">چه مقدار از مسیر را لازم دارید</h2>
+    <p style="font-size:.92rem; color:var(--muted); max-width:660px; margin-bottom:24px;">هرچه سابقه‌ی محصولی‌تان بیشتر باشد، بخش کمتری از فاز یک به کارتان می‌آید — اما فاز دو برای همه یکسان است.</p>
+    <div class="ra-asks-scroll" style="border-top:1px solid var(--border);">
+      <table class="ra-asks-table">
+        <thead>
+          <tr>
+            <th scope="col">مخاطب</th>
+            <th scope="col">چه کار کنید</th>
+            <th scope="col">پوشش</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in audience %}
+          <tr>
+            <th scope="row" style="text-align:start; padding:12px 14px; border-bottom:1px solid var(--border); font-size:.88rem; font-weight:600; color:var(--text); line-height:1.7;">{{ a.title }}</th>
+            <td style="line-height:2;">{{ a.body }}</td>
+            <td>
+              <span style="font-size:.74rem; font-weight:600; color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); border-radius:6px; padding:3px 10px; white-space:nowrap;">{{ a.tag }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{# ── Sticky phase nav ─────────────────────────────────────────── #}
+<div class="ra-phase-nav">
+  <div class="ra-phase-nav-inner">
     {% for group in phase_area_groups %}
-    {% set ph = group.phase %}
-    <div style="margin-bottom:8px;">
-      <div class="h2-phase-hd">
-        <span style="font-size:.72rem; font-weight:700; color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, transparent); border-radius:6px; padding:3px 10px;">فاز {{ ph.n }}</span>
-        <b style="font-size:1.45rem; font-weight:800;">{{ ph.fa }}</b>
-        <span style="font-size:.8rem; color:var(--muted); margin-inline-start:auto;">{{ ph.sprint }}</span>
-      </div>
-      {% if ph.note %}
-      <p style="font-size:.92rem; color:var(--muted); line-height:2.05; max-width:720px; margin-top:20px;">{{ ph.note }}</p>
-      {% endif %}
+    <a href="#phase-{{ group.phase.slug }}" class="ra-phase-link">فاز {{ group.phase.n }} — {{ group.phase.fa }}</a>
+    {% endfor %}
+    {% if immigration_videos %}
+    <a href="#immigration" class="ra-phase-link">مهاجرت</a>
+    {% endif %}
+    <a href="#ready" class="ra-phase-link">پایان مسیر</a>
+  </div>
+</div>
 
-      {% for item in group.areas %}
-      {% set area = item.area %}
-      {% set resources = item.resources %}
-      <div id="station-{{ area.n }}" class="h2-station">
-        <!-- Left rail (sticky) -->
-        <div class="h2-station-rail">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-            <span class="h2-rail-n">{{ area.n }}</span>
-          </div>
-          <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75;">{{ area.name }}</b>
-          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
-            <span class="h2-chip-read">مطالعه {{ item.reading_display }}</span>
-            <span class="h2-chip-sprint">زمان {{ area.sprint_weeks }} هفته</span>
-          </div>
+{# ── PHASE STATIONS ───────────────────────────────────────────── #}
+{% for group in phase_area_groups %}
+{% set ph = group.phase %}
+<section class="ra-section" id="phase-{{ ph.slug }}">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:8px;">
+    <div class="ra-section-head{% if ph.n != '۱' %} ra-section-head--plain{% endif %}">
+      <span class="ra-section-badge" style="color:{% if ph.n == '۱' %}var(--accent){% else %}var(--muted){% endif %}; background:{% if ph.n == '۱' %}color-mix(in srgb, var(--accent) 13%, transparent){% else %}rgba(236,229,220,.06){% endif %};">فاز {{ ph.n }}</span>
+      <b class="ra-section-title">{{ ph.fa }}</b>
+      <span class="ra-section-meta">{{ ph.sprint }}</span>
+    </div>
+    {% if ph.note %}
+    <p class="ra-note">{{ ph.note }}</p>
+    {% endif %}
+
+    {% for item in group.areas %}
+    {% set area = item.area %}
+    {% set resources = item.resources %}
+    <div id="station-{{ area.n }}" class="ra-station" style="{% if loop.last %}border-bottom:none;{% endif %}">
+      <div class="ra-rail">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <span class="ra-rail-n">{{ area.n }}</span>
         </div>
+        <b style="display:block; font-size:1.1rem; font-weight:700; line-height:1.75;">{{ area.name }}</b>
+        <div class="ra-chips" style="margin-top:14px;">
+          <span class="ra-chip-read">مطالعه {{ item.reading_display }}</span>
+          <span class="ra-chip-sprint">اسپرینت {{ area.sprint_weeks | fa_digits }} هفته</span>
+          {% if area.maturation and area.maturation != '—' %}
+          <span class="ra-chip-mat">{{ area.maturation }}</span>
+          {% endif %}
+        </div>
+      </div>
 
-        <!-- Right content -->
-        <div>
-          <p style="font-size:.98rem; color:var(--text); line-height:2.15;">{{ area.body }}</p>
-
-          <div style="margin-top:22px; border-top:1px solid var(--border);">
-            {% for r in resources %}
-            <div class="h2-res">
+      <div>
+        <p style="font-size:.98rem; color:var(--text); line-height:2.15;">{{ area.body }}</p>
+        <div style="margin-top:22px; border-top:1px solid var(--border);">
+          {% for r in resources %}
+          <div style="border-bottom:1px solid var(--border); padding:14px 2px;">
+            <div class="ra-res">
               <div>
                 {% if r.is_linked %}
                 <a href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %}
-                   dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; text-decoration:none; border-bottom:1px solid rgba(143,191,134,.45); display:inline-block; color:inherit;">{{ r.title }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</a>
+                   dir="auto" style="font-size:.96rem; font-weight:600; text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent); display:inline-block;">{{ r.title }}</a>
                 {% else %}
-                <span dir="ltr" style="font-size:.96rem; font-weight:600; unicode-bidi:embed; display:inline-block;">{{ r.title }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</span>
-                <span class="h2-no-link">هنوز لینکی ندارد</span>
+                <span dir="auto" style="font-size:.96rem; font-weight:600; display:inline-block;">{{ r.title }}</span>
+                <span class="ra-no-link">هنوز لینکی ندارد</span>
                 {% endif %}
-                <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}</div>
+                <div style="font-size:.76rem; color:var(--faint); margin-top:3px;">{{ r.resource_type_fa }}{% if r.subtitle %} ({{ r.subtitle }}){% endif %}</div>
               </div>
-              <div class="h2-res-meta">
-                <span class="{% if r.is_required %}h2-req-req{% else %}h2-req-opt{% endif %}">{% if r.is_required %}اجباری{% else %}اختیاری{% endif %}</span>
-                {% if r.reading_time %}<span class="h2-meta-tag">{{ r.reading_time_display }}</span>{% endif %}
-                {% if r.difficulty %}
-                <span class="h2-meta-tag">{% if r.difficulty == 1 %}ساده{% elif r.difficulty == 2 %}متوسط{% else %}سخت{% endif %}</span>
-                {% endif %}
+              <div class="ra-res-meta">
+                <span class="{{ 'ra-tag-req' if r.is_required else 'ra-tag-opt' }}">{{ 'اجباری' if r.is_required else 'اختیاری' }}</span>
+                {% if r.reading_time %}<span class="ra-tag-meta">{{ r.reading_time_display }}</span>{% endif %}
+                {% if r.difficulty %}<span class="ra-tag-meta">{{ r.difficulty_stars }}</span>{% endif %}
               </div>
             </div>
-            {% endfor %}
           </div>
+          {% endfor %}
         </div>
       </div>
-      {% endfor %}
     </div>
     {% endfor %}
   </div>
 </section>
+{% endfor %}
 
-<!-- IMMIGRATION -->
+{# ── IMMIGRATION ──────────────────────────────────────────────── #}
 {% if immigration_videos %}
-<section class="h2-section">
-  <div class="h2-inner">
-    <div class="h2-branch">
+<section class="ra-section" id="immigration">
+  <div class="ra-inner ra-pad" style="padding-top:48px; padding-bottom:48px;">
+    <div class="ra-split">
       <div>
+        <span style="display:inline-block; font-size:.7rem; font-weight:700; color:var(--sprout); border:1px dashed color-mix(in srgb, var(--sprout) 45%, transparent); border-radius:6px; padding:4px 11px; margin-bottom:14px;">اختیاری</span>
         <h2 style="font-size:1.45rem; font-weight:800; line-height:1.6;">تجربه مهاجرت مدیر محصول</h2>
         <p style="font-size:.8rem; color:var(--faint); line-height:2; margin-top:10px;">تجربه‌های موفق مهاجرت با مدیریت محصول</p>
       </div>
-      <div class="h2-branch-rail">
+      <div class="ra-split-body">
         <p style="font-size:.95rem; color:var(--muted); max-width:640px; line-height:2.1; margin-bottom:24px;">گفت‌وگو با مدیران محصولی که پیش از این مهاجرت کرده‌اند. اگر هدفتان نقشی بیرون از ایران است، همان دو فاز بالا برایتان کافی است اما همه را باید به زبان انگلیسی تمرین کنید.</p>
         <div style="display:flex; flex-direction:column;">
           {% for v in immigration_videos %}
-          <a href="{{ v.url }}" class="h2-video-row">
-            <span class="h2-play-btn">
-              <span class="h2-play-arrow"></span>
-            </span>
+          <a href="{{ v.url }}" class="ra-video-row" target="_blank" rel="noopener noreferrer">
+            <span class="ra-play-btn" aria-hidden="true"><span class="ra-play-arrow"></span></span>
             <span style="flex:1;">
               <b style="display:block; font-size:.98rem; font-weight:700; line-height:1.7;">{{ v.title }}</b>
               <span style="display:block; font-size:.78rem; color:var(--faint); margin-top:2px;">{{ v.where }}</span>
@@ -308,9 +301,9 @@
 </section>
 {% endif %}
 
-<!-- TERMINUS -->
-<section class="h2-section" style="background:linear-gradient(180deg, rgba(143,191,134,.05), transparent 260px);">
-  <div class="h2-inner" style="padding-bottom:76px;">
+{# ── TERMINUS ─────────────────────────────────────────────────── #}
+<section class="ra-section" id="ready" style="background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 260px);">
+  <div class="ra-inner ra-pad" style="padding-top:56px; padding-bottom:76px;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
       <span style="width:24px; height:1px; background:var(--accent); display:block;"></span>
       <span style="font-size:.7rem; font-weight:700; color:var(--accent); letter-spacing:.06em;">پایان مسیر ۰</span>
@@ -322,19 +315,27 @@
         <b style="font-size:1.05rem; font-weight:700;">از کدام سطح شروع می‌کنید؟</b>
         <span style="font-size:.82rem; color:var(--faint);">این مسیر برای همه‌ی سطوح مشترک است — با هر عنوانی استخدام شوید، از همان‌جا ادامه می‌دهید.</span>
       </div>
-      <div class="h2-levels">
-        {% for lv in levels_grid %}
-        <a href="{{ url_for('roadmap_level', level_slug=lv.slug) }}" class="h2-level-card">
-          <span style="display:block; font-size:.7rem; color:var(--faint);">{{ lv.num }}</span>
-          <b style="display:block; font-size:.92rem; font-weight:700; color:#d9a05f; margin-top:4px; line-height:1.7;">{{ lv.fa }}</b>
-        </a>
+      <div class="ra-ladder">
+        {% for l in levels %}
+        {% if l.slug != 'hiring' %}
+        {% if l.slug in full_page_slugs %}
+        <a href="{{ url_for('roadmap_level', level_slug=l.slug) }}"
+           style="display:block; text-decoration:none; color:inherit; background:var(--surface); border:1px solid color-mix(in srgb, var(--accent) 20%, transparent); border-radius:12px; padding:16px 16px 18px;">
+        {% else %}
+        <span style="display:block; background:var(--surface); border:1px dashed var(--border-2); border-radius:12px; padding:16px 16px 18px; opacity:.5;">
+        {% endif %}
+          <span style="display:block; font-size:.7rem; color:var(--faint);">{{ l.num }}</span>
+          <b style="display:block; font-size:.92rem; font-weight:700; color:var(--muted); margin-top:4px; line-height:1.7;">{{ l.fa }}</b>
+          {% if l.slug not in full_page_slugs %}<span style="font-size:.65rem; color:var(--faint);">به زودی</span>{% endif %}
+        {% if l.slug in full_page_slugs %}</a>{% else %}</span>{% endif %}
+        {% endif %}
         {% endfor %}
       </div>
     </div>
 
     <div style="display:flex; justify-content:space-between; gap:14px; margin-top:36px; flex-wrap:wrap;">
       <a href="{{ url_for('roadmap_landing') }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">→ بازگشت به مسیر یادگیری</a>
-      <a href="{{ url_for('roadmap_level', level_slug='apm') }}" style="font-size:.9rem; color:#d9a05f; text-decoration:none;">دیدن ماتریس عمق شایستگی ←</a>
+      <a href="{{ url_for('roadmap_level', level_slug='apm') }}" style="font-size:.9rem; color:var(--accent); text-decoration:none;">مبتدی (APM) ←</a>
     </div>
   </div>
 </section>

@@ -3210,43 +3210,6 @@ main { padding: 0; }
   background: var(--accent);
 }
 
-.profile-tg-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 26px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-  flex-wrap: wrap;
-}
-.profile-tg-card__copy { max-width: 430px; }
-.profile-tg-card__copy b { display: block; font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-.profile-tg-card__copy p { font-size: .9rem; color: var(--muted); line-height: 2; margin: 0; }
-.profile-tg-card__action {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-.profile-tg-card__handle { font-size: .8rem; color: var(--faint); }
-
-.tg-join-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  background: #2aabee;
-  color: #fff !important;
-  font-weight: 700;
-  font-size: .9rem;
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none !important;
-  transition: transform .15s, opacity .15s;
-}
-.tg-join-btn:hover { opacity: .9; transform: translateY(-1px); text-decoration: none !important; }
-
 /* ── Placeholder (coming soon) ──── */
 .profile-placeholder {
   background: var(--surface);
@@ -3351,12 +3314,6 @@ main { padding: 0; }
 .admin-pagination__info { font-size: .85rem; color: var(--muted); }
 .admin-meta-line { font-size: .78rem; color: var(--muted); margin-bottom: 16px; }
 
-/* ── Telegram section (v14) ───────────────────────────────────────────── */
-.profile-telegram {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
 .btn--sm { font-size: .82rem; padding: 6px 14px; border-radius: 8px; }
 
 /* ── My Comments (v14) ────────────────────────────────────────────────── */
@@ -3752,7 +3709,6 @@ main { padding: 0; }
 @media (max-width: 860px) {
   .profile-desk-layout { flex-direction: column; align-items: flex-start; gap: 28px; }
   .profile-desk { width: 100%; }
-  .profile-tg-card { flex-direction: column; align-items: flex-start; }
     .bsp-card { flex-wrap: wrap; }
 }
 /* ─────────────────────────────────────────────

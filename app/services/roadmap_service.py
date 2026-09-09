@@ -321,8 +321,10 @@ async def get_hiring_context(db: AsyncSession) -> dict:
 
     cursor = 0
     map_areas = []
+    map_stations = []
     for group in phase_area_groups:
         is_phase2 = group["phase"].n == "۲"
+        category = "supporting" if is_phase2 else "core"
         for item in group["areas"]:
             area = item["area"]
             from_w = cursor + 1
@@ -332,16 +334,35 @@ async def get_hiring_context(db: AsyncSession) -> dict:
                 week_range = f"هفته {_fa(from_w)}"
             else:
                 week_range = f"هفته {_fa(from_w)}–{_fa(to_w)}"
+            sprint_label = f"{_fa(area.sprint_weeks)} هفته"
             map_areas.append({
                 "n": area.n,
                 "name": area.name,
                 "short": area.short,
-                "sprint": f"{area.sprint_weeks} هفته",
+                "sprint": sprint_label,
                 "weeks": area.sprint_weeks,
                 "week_range": week_range,
                 "is_phase2": is_phase2,
                 "anchor_id": f"station-{area.n}",
             })
+            map_stations.append({
+                "n": area.n,
+                "name": area.short,
+                "sprint": sprint_label,
+                "week_range": week_range,
+                "weeks": area.sprint_weeks,
+                "from_week": from_w,
+                "href": f"#station-{area.n}",
+                "category": category,
+            })
+
+    map_bands = []
+    for phase in L0_PHASES:
+        weeks = phase.end_week - phase.start_week + 1
+        map_bands.append({
+            "fa": phase.fa,
+            "weeks": weeks,
+        })
 
     # Stats for the hero aside
     stats = await _get_hiring_display_stats(db)
@@ -354,14 +375,21 @@ async def get_hiring_context(db: AsyncSession) -> dict:
 
     return {
         "level": hiring_lv,
+        "level_slug": "hiring",
         "phases": L0_PHASES,
         "phase_area_groups": phase_area_groups,
         "audience": L0_AUDIENCE,
         "immigration_videos": immigration_videos,
         "levels_grid": L0_LEVELS_GRID,
+        "levels": LEVELS,
+        "full_page_slugs": FULL_PAGE_SLUGS,
         "map_phases": map_phases,
         "map_areas": map_areas,
+        "map_stations": map_stations,
+        "map_bands": map_bands,
+        "map_total_weeks": sum(b["weeks"] for b in map_bands),
         "facts": facts,
+        "stats": stats,
     }
 
 

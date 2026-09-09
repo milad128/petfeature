@@ -247,8 +247,13 @@ async def test_pm_path_shows_enroll_banner(client):
 async def test_hiring_page_shows_enroll_cta(client):
     resp = await client.get("/path/hiring/")
     assert resp.status_code == 200
-    assert "شروع یادگیری" in resp.text
+    assert "learn-enroll-card" in resp.text
+    assert "شروع یادگیری این سطح" in resp.text
+    assert "در حال یادگیری" in resp.text
+    assert "تمام‌کرده" in resp.text
     assert "learn-status" not in resp.text
+    assert "gantt-wrap" in resp.text
+    assert "ra-strip" in resp.text
 
 
 async def test_stub_path_has_no_enroll_button(client):
@@ -291,3 +296,4 @@ async def test_profile_shows_learning_badges(client, db_session):
     assert resp.status_code == 200
     assert "ثبت‌نام شده" in resp.text
     assert "ادامه یادگیری" in resp.text
+    assert "کانال تلگرام پت فیچر" not in resp.text
