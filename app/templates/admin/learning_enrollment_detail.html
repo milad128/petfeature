@@ -52,6 +52,7 @@
         <th>دسته</th>
         <th>الزام</th>
         <th>وضعیت</th>
+        <th>امتیاز این کاربر</th>
         <th>آخرین تغییر</th>
       </tr>
     </thead>
@@ -63,6 +64,9 @@
         <td>{% if r.is_required %}الزامی{% else %}اختیاری{% endif %}</td>
         <td>
           {% if r._status %}{{ status_labels.get(r._status, r._status) }}{% else %}وضعیت ندارد{% endif %}
+        </td>
+        <td>
+          {% if r._stars %}{{ r._stars | fa_digits }} از ۵{% else %}—{% endif %}
         </td>
         <td class="muted">{% if r._status_updated_at %}{{ r._status_updated_at | jalali }}{% else %}—{% endif %}</td>
       </tr>

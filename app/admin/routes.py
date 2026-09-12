@@ -2379,6 +2379,12 @@ def _competency_choices_for_level(level_slug: str) -> list[tuple[str, str]]:
     return [(s, COMPETENCY_BY_SLUG[s].fa) for s in slugs if s in COMPETENCY_BY_SLUG]
 
 
+async def _resource_rating_context(db: AsyncSession, resource_id: int) -> dict:
+    stats = await learning_service.rating_stats_by_resource_ids(db, [resource_id])
+    avg, count = stats.get(resource_id, (None, 0))
+    return {"rating_avg": avg, "rating_count": count}
+
+
 @router.get("/roadmap/", name="admin_roadmap_resources")
 async def admin_roadmap_list(
     request: Request,
@@ -2388,6 +2394,10 @@ async def admin_roadmap_list(
     if redirect := _guard_admin(request):
         return redirect
     resources = await roadmap_service.get_roadmap_resources(db, level_slug=level or None)
+    stats = await learning_service.rating_stats_by_resource_ids(
+        db, [r.id for r in resources]
+    )
+    learning_service.apply_rating_stats(resources, stats)
     return templates.TemplateResponse(
         request,
         "admin/roadmap_list.html",
@@ -2562,6 +2572,7 @@ async def admin_roadmap_edit_get(
         return redirect
     resource = await roadmap_service.get_resource(db, resource_id)
     all_books = await book_service.list_books_for_select(db)
+    rating = await _resource_rating_context(db, resource_id)
     return templates.TemplateResponse(
         request,
         "admin/roadmap_form.html",
@@ -2579,6 +2590,7 @@ async def admin_roadmap_edit_get(
             "all_books": all_books,
             "form_error": None,
             "saved": request.query_params.get("saved") == "1",
+            **rating,
         },
     )
 
@@ -2612,6 +2624,7 @@ async def admin_roadmap_edit_post(
     if ext_url and bk_id:
         resource = await roadmap_service.get_resource(db, resource_id)
         all_books = await book_service.list_books_for_select(db)
+        rating = await _resource_rating_context(db, resource_id)
         return templates.TemplateResponse(
             request,
             "admin/roadmap_form.html",
@@ -2629,6 +2642,7 @@ async def admin_roadmap_edit_post(
                 "all_books": all_books,
                 "form_error": "یا لینک خارجی یا کتاب از کتابخانه — نه هر دو.",
                 "saved": False,
+                **rating,
             },
             status_code=422,
         )

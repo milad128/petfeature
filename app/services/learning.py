@@ -22,6 +22,7 @@ from app.models.learning import (
     VALID_STATUSES,
     Enrollment,
     ResourceProgress,
+    ResourceRating,
 )
 from app.models.page_view import PageView
 from app.models.roadmap import RoadmapResource
@@ -104,6 +105,13 @@ class Progress:
             "skipped_fa": to_fa(self.skipped),
             "pct_fa": to_fa(self.pct),
         }
+
+
+@dataclass
+class StatusUpdate:
+    row: ResourceProgress | None
+    prompt_rating: bool
+    resource_id: int
 
 
 @dataclass
@@ -237,12 +245,111 @@ async def _maybe_complete(db: AsyncSession, enrollment: Enrollment) -> None:
         await db.commit()
 
 
+async def _user_stars_map(
+    db: AsyncSession, user_id: int, resource_ids: list[int]
+) -> dict[int, int]:
+    if not resource_ids:
+        return {}
+    result = await db.execute(
+        select(ResourceRating).where(
+            ResourceRating.user_id == user_id,
+            ResourceRating.roadmap_resource_id.in_(resource_ids),
+        )
+    )
+    return {row.roadmap_resource_id: row.stars for row in result.scalars().all()}
+
+
+async def _has_rating(db: AsyncSession, user_id: int, resource_id: int) -> bool:
+    row_id = await db.scalar(
+        select(ResourceRating.id).where(
+            ResourceRating.user_id == user_id,
+            ResourceRating.roadmap_resource_id == resource_id,
+        )
+    )
+    return row_id is not None
+
+
+async def rating_stats_by_resource_ids(
+    db: AsyncSession, resource_ids: list[int]
+) -> dict[int, tuple[float, int]]:
+    """Return {resource_id: (avg rounded to 1 decimal, vote count)}."""
+    if not resource_ids:
+        return {}
+    result = await db.execute(
+        select(
+            ResourceRating.roadmap_resource_id,
+            func.avg(ResourceRating.stars),
+            func.count(),
+        )
+        .where(ResourceRating.roadmap_resource_id.in_(resource_ids))
+        .group_by(ResourceRating.roadmap_resource_id)
+    )
+    stats: dict[int, tuple[float, int]] = {}
+    for resource_id, avg, count in result.all():
+        stats[int(resource_id)] = (round(float(avg), 1), int(count))
+    return stats
+
+
+def apply_rating_stats(
+    resources: list[RoadmapResource],
+    stats: dict[int, tuple[float, int]],
+) -> None:
+    for resource in resources:
+        pair = stats.get(resource.id)
+        resource._avg_stars = pair[0] if pair else None  # type: ignore[attr-defined]
+        resource._rating_count = pair[1] if pair else 0  # type: ignore[attr-defined]
+
+
+async def upsert_resource_rating(
+    db: AsyncSession,
+    user_id: int,
+    level_slug: str,
+    resource_id: int,
+    stars: int,
+) -> ResourceRating:
+    if stars not in (1, 2, 3, 4, 5):
+        raise ValueError("invalid_stars")
+    if not is_enrollable(level_slug):
+        raise ValueError("bad_resource")
+
+    enrollment = await get_enrollment(db, user_id, level_slug)
+    if enrollment is None:
+        raise ValueError("not_enrolled")
+
+    resource = await db.get(RoadmapResource, resource_id)
+    if resource is None or resource.level_slug != enrollment.level_slug:
+        raise ValueError("bad_resource")
+
+    row = await db.scalar(
+        select(ResourceRating).where(
+            ResourceRating.user_id == user_id,
+            ResourceRating.roadmap_resource_id == resource_id,
+        )
+    )
+    now = _utcnow()
+    if row is None:
+        row = ResourceRating(
+            user_id=user_id,
+            roadmap_resource_id=resource_id,
+            stars=stars,
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(row)
+    else:
+        row.stars = stars
+        row.updated_at = now
+    await db.commit()
+    await db.refresh(row)
+    return row
+
+
 async def set_resource_status(
     db: AsyncSession,
     enrollment_id: int,
     resource_id: int,
     status: str,
-) -> ResourceProgress | None:
+) -> StatusUpdate:
     status = (status or "").strip()
     if status and status not in VALID_STATUSES:
         raise ValueError("invalid_status")
@@ -261,12 +368,13 @@ async def set_resource_status(
             ResourceProgress.roadmap_resource_id == resource_id,
         )
     )
+    previous = row.status if row is not None else ""
     if not status:
         if row is not None:
             await db.delete(row)
             await db.commit()
         await _maybe_complete(db, enrollment)
-        return None
+        return StatusUpdate(row=None, prompt_rating=False, resource_id=resource_id)
 
     if row is None:
         row = ResourceProgress(
@@ -281,7 +389,15 @@ async def set_resource_status(
     await db.refresh(row)
     await db.refresh(enrollment)
     await _maybe_complete(db, enrollment)
-    return row
+
+    prompt_rating = False
+    if status in PROGRESS_STATUSES and previous != status:
+        prompt_rating = not await _has_rating(
+            db, enrollment.user_id, resource_id
+        )
+    return StatusUpdate(
+        row=row, prompt_rating=prompt_rating, resource_id=resource_id
+    )
 
 
 async def list_resources_with_status(
@@ -292,12 +408,17 @@ async def list_resources_with_status(
     """Return v16-ordered resources. Status is attached as `_status` when enrolled."""
     resources = await _resources_for_level(db, level_slug)
     row_map: dict[int, ResourceProgress] = {}
+    stars_map: dict[int, int] = {}
     if enrollment is not None:
         row_map = await _progress_row_map(db, enrollment.id)
+        stars_map = await _user_stars_map(
+            db, enrollment.user_id, [r.id for r in resources]
+        )
     for r in resources:
         row = row_map.get(r.id)
         r._status = row.status if row else ""  # type: ignore[attr-defined]
         r._status_updated_at = row.updated_at if row else None  # type: ignore[attr-defined]
+        r._stars = stars_map.get(r.id)  # type: ignore[attr-defined]
     return resources
 
 

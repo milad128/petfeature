@@ -182,6 +182,16 @@
         </div>
       </div>
 
+      {% if resource %}
+      <p class="form-hint" style="margin-top:8px;">
+        {% if rating_count %}
+        امتیاز یادگیرنده‌ها: میانگین {{ "%.1f"|format(rating_avg) | fa_digits }} از ۵ · {{ rating_count | fa_digits }} رای
+        {% else %}
+        هنوز امتیازی ثبت نشده.
+        {% endif %}
+      </p>
+      {% endif %}
+
       <div class="form-row">
         {# Persian flag #}
         <div class="form-group">

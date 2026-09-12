@@ -50,6 +50,10 @@
       </aside>
       <p class="learn-hint" id="multi-studying" {% if not multi_studying %}hidden{% endif %}>بیش از یک منبع روی «دارم می‌خونم» است. اجباری نیست — معمولاً یکی کافی است.</p>
 
+      {% if rate_error %}
+      <p class="learn-rate-error" role="alert">{{ rate_error }}</p>
+      {% endif %}
+
       {% for g in groups %}
       <div class="ra-section-head" style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:36px; padding-bottom:14px; border-bottom:2px solid color-mix(in srgb, var(--accent) 30%, transparent);">
         <span class="learn-badge learn-badge--progress">{{ g.title }}</span>
@@ -70,6 +74,25 @@
       </div>
     </div>
   </section>
+</div>
+
+<div class="review-modal-overlay" id="learn-rate-overlay" role="dialog" aria-modal="true" aria-labelledby="learn-rate-heading" {% if not rate_resource %}hidden{% endif %}>
+  <div class="review-modal">
+    <a class="review-modal__close" href="{{ url_for('learning_track', level_slug=level_slug) }}" id="learn-rate-close" aria-label="بستن">✕</a>
+    <h2 class="review-modal__title" id="learn-rate-heading">این منبع چقدر به‌دردت خورد؟</h2>
+    <p class="learn-rate-help">از ۱ تا ۵ ستاره — اختیاری است.</p>
+    <p class="review-modal__book-title" id="learn-rate-title">{% if rate_resource %}{{ rate_resource.title }}{% endif %}</p>
+    <form method="post" action="{{ url_for('learning_rate', level_slug=level_slug) }}" class="learn-rate-form learn-rate-form--dialog" id="learn-rate-dialog-form">
+      <input type="hidden" name="resource_id" id="learn-rate-resource-id" value="{{ rate_resource.id if rate_resource else '' }}">
+      <fieldset class="learn-rate-stars bd2-stars review-modal__stars">
+        <legend class="visually-hidden">امتیاز از ۱ تا ۵</legend>
+        {% for n in range(1, 6) %}
+        <button type="submit" name="stars" value="{{ n }}" class="bd2-star-btn" aria-label="{{ n }} ستاره">★</button>
+        {% endfor %}
+      </fieldset>
+    </form>
+    <a class="review-modal__skip" href="{{ url_for('learning_track', level_slug=level_slug) }}" id="learn-rate-skip">بعداً</a>
+  </div>
 </div>
 <script src="{{ asset_url(request, 'js/learning.js') }}" defer></script>
 {% endblock %}

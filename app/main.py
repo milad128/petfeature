@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
             ToolFile,
             User,
         )
-        from app.models.learning import Enrollment, ResourceProgress  # noqa: F401
+        from app.models.learning import Enrollment, ResourceProgress, ResourceRating  # noqa: F401
         from app.models.newsletter import NewsletterCampaign  # noqa: F401
         from app.models.roadmap import ImmigrationVideo, RoadmapResource  # noqa: F401
 

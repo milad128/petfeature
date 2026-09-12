@@ -41,6 +41,7 @@
         <th>دسته / حوزه</th>
         <th>لینک</th>
         <th>اجباری</th>
+        <th>امتیاز</th>
         <th></th>
       </tr>
     </thead>
@@ -77,6 +78,17 @@
           <span style="font-size:.78rem; color:var(--accent);">اجباری</span>
           {% else %}
           <span style="font-size:.78rem; color:var(--text-muted);">اختیاری</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if r._rating_count %}
+          <span title="میانگین امتیاز یادگیرنده‌ها" style="font-size:.82rem; white-space:nowrap;">
+            <span class="visually-hidden">میانگین امتیاز یادگیرنده‌ها </span>
+            {{ "%.1f"|format(r._avg_stars) | fa_digits }} ★
+            · {{ r._rating_count | fa_digits }} رای
+          </span>
+          {% else %}
+          <span style="font-size:.78rem; color:var(--text-muted);">—</span>
           {% endif %}
         </td>
         <td class="row-actions">

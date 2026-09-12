@@ -375,4 +375,6 @@ Ship v18 after v17 is usable in production (at least one real enrollment is enou
 
 ---
 
+See also: [v18.1 Resource Ratings](./spec-v18.1-resource-ratings.md) (in development) — learner 1–5 stars on «خوندم» / «قبلاً می‌دونستم»; admin mean + per-learner stars.
+
 *September 2026 — v18 in development. Statistics and inspection only; learners still own their statuses on `/dashboard/learning/{slug}/track/`.*

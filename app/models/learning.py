@@ -5,7 +5,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    SmallInteger,
+    String,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -89,4 +97,38 @@ class ResourceProgress(Base):
 
     enrollment: Mapped[Enrollment] = relationship(
         "Enrollment", back_populates="progress_rows"
+    )
+
+
+class ResourceRating(Base):
+    """One 1–5 score per user per roadmap resource (v18.1)."""
+
+    __tablename__ = "resource_ratings"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "roadmap_resource_id",
+            name="uq_resource_rating_user_resource",
+        ),
+        CheckConstraint(
+            "stars >= 1 AND stars <= 5",
+            name="ck_resource_ratings_stars",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    roadmap_resource_id: Mapped[int] = mapped_column(
+        ForeignKey("roadmap_resources.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    stars: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

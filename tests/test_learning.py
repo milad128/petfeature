@@ -222,6 +222,7 @@ async def test_progress_form_updates_status(client, db_session):
         follow_redirects=False,
     )
     assert resp.status_code == 303
+    assert f"rate={resource.id}" in resp.headers["location"]
     row = (await db_session.execute(select(ResourceProgress))).scalar_one()
     assert row.status == "DONE"
 

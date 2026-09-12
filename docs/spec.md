@@ -82,6 +82,7 @@ flowchart LR
 | **v16** | [Product Spec v16](./spec-v16-roadmap.md) | Roadmap | Public PM learning path — `/path/`, L0 hiring, L1 APM, admin resource CMS | **Shipped** |
 | **v17** | [Product Spec v17](./spec-v17-learning-enrollment.md) | Roadmap | Enroll in a level (register first if needed), per-level learning dashboard, progress statuses, badges | **In development** |
 | **v18** | [Product Spec v18](./spec-v18-enrollment-admin.md) | Roadmap | Admin enrollment page: statistics, enrollment list, read-only learner detail | **In development** |
+| **v18.1** | [Product Spec v18.1](./spec-v18.1-resource-ratings.md) | Roadmap | Learner 1–5 star rating when a resource is marked studied; admin mean + count | **In development** |
 
 ---
 
@@ -118,6 +119,7 @@ flowchart LR
 | [spec-v16-roadmap.md](./spec-v16-roadmap.md) | PRD for Roadmap — public learning path + admin CMS (shipped) |
 | [spec-v17-learning-enrollment.md](./spec-v17-learning-enrollment.md) | PRD for Learning Enrollment — enroll-only public page, panel tracker, progress statuses, badges (in development) |
 | [spec-v18-enrollment-admin.md](./spec-v18-enrollment-admin.md) | PRD for Enrollment Admin — statistics overview, enrollment list, read-only detail (in development) |
+| [spec-v18.1-resource-ratings.md](./spec-v18.1-resource-ratings.md) | PRD for Resource Ratings — 1–5 stars on «خوندم» / «قبلاً می‌دونستم», optional prompt, admin aggregates (in development) |
 | [product backlog.md](./product%20backlog.md) | Unscheduled ideas: Roadmap |
 | [use-case-diagram.md](./use-case-diagram.md) | UML use cases (v1–v8) |
 | [use-case-diagram.puml](./use-case-diagram.puml) | PlantUML source |
@@ -230,6 +232,11 @@ flowchart LR
 - Dedicated `/admin/learning/` statistics: snapshot cards, period intake, per-level table, stalled enrollments
 - Filterable enrollment list + read-only detail (progress formula and resource statuses)
 - No admin edit of learner statuses; analytics keeps only a summary link
+
+### v18.1 — Resource Ratings (in development)
+- After «خوندم» or «قبلاً می‌دونستم» on the tracker: optional 1–5 star prompt (skip does not block status)
+- One vote per user per resource; admin sees mean + count on `/admin/roadmap/` and that learner’s stars on enrollment detail
+- No public averages on `/path/` or catalog
 
 See [use-case-diagram.md](./use-case-diagram.md) for full UML detail.
 

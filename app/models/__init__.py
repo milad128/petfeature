@@ -2,7 +2,7 @@
 
 from app.models.about import AboutPage
 from app.models.reading_list import ReadingListItem
-from app.models.learning import Enrollment, ResourceProgress
+from app.models.learning import Enrollment, ResourceProgress, ResourceRating
 from app.models.user import User
 from app.models.book import Book, BookComment, BookCommentStatus, BookMediaLink, BookRating, BookStatus, MediaLinkType, book_references
 from app.models.category import Category, book_categories
@@ -17,6 +17,7 @@ __all__ = [
     "ReadingListItem",
     "Enrollment",
     "ResourceProgress",
+    "ResourceRating",
     "User",
     "Book",
     "BookComment",

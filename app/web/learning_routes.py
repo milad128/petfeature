@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.core.templates import templates
-from app.models.learning import STATUS_LABELS
+from app.models.learning import PROGRESS_STATUSES, STATUS_LABELS
 from app.services import learning as learning_service
 from app.services.roadmap_data import LEVEL_BY_SLUG
 
@@ -81,6 +81,38 @@ async def learning_track(
     level_slug: str,
     db: AsyncSession = Depends(get_db),
 ):
+    return await _render_tracker(request, level_slug, db)
+
+
+def _parse_rate_id(request: Request) -> int | None:
+    raw = request.query_params.get("rate")
+    if raw and raw.isdigit():
+        return int(raw)
+    return None
+
+
+def _rate_resource(resources, rate_id: int | None):
+    if not rate_id:
+        return None
+    resource = next((r for r in resources if r.id == rate_id), None)
+    if resource is None:
+        return None
+    stars = getattr(resource, "_stars", None)
+    status = getattr(resource, "_status", "")
+    if stars is None and status not in PROGRESS_STATUSES:
+        return None
+    return resource
+
+
+async def _render_tracker(
+    request: Request,
+    level_slug: str,
+    db,
+    *,
+    status_code: int = 200,
+    rate_error: str | None = None,
+    rate_id: int | None = None,
+):
     lv = _level_or_404(level_slug)
     user = _require_user(request, f"/dashboard/learning/{level_slug}/track/")
     if user is None:
@@ -100,6 +132,9 @@ async def learning_track(
     progress = await learning_service.compute_progress(db, enrollment)
     studying = next((r for r in resources if getattr(r, "_status", "") == "STUDYING"), None)
     studying_count = sum(1 for r in resources if getattr(r, "_status", "") == "STUDYING")
+    if rate_id is None:
+        rate_id = _parse_rate_id(request)
+    rate_resource = _rate_resource(resources, rate_id)
     return templates.TemplateResponse(
         request,
         "pages/learning_track.html",
@@ -114,7 +149,10 @@ async def learning_track(
             "studying": studying,
             "multi_studying": studying_count > 1,
             "status_labels": STATUS_LABELS,
+            "rate_resource": rate_resource,
+            "rate_error": rate_error,
         },
+        status_code=status_code,
     )
 
 
@@ -192,11 +230,51 @@ async def learning_progress(
             url=f"/dashboard/learning/{level_slug}/", status_code=303
         )
     try:
-        await learning_service.set_resource_status(
+        update = await learning_service.set_resource_status(
             db, enrollment.id, resource_id, status
         )
     except ValueError:
         raise HTTPException(status_code=400, detail="وضعیت نامعتبر است")
+    url = f"/dashboard/learning/{level_slug}/track/"
+    if update.prompt_rating:
+        url += f"?rate={resource_id}"
+    return RedirectResponse(url=url, status_code=303)
+
+
+@router.post("/dashboard/learning/{level_slug}/rate/", name="learning_rate")
+async def learning_rate(
+    request: Request,
+    level_slug: str,
+    db: AsyncSession = Depends(get_db),
+    resource_id: int = Form(...),
+    stars: str = Form(""),
+):
+    _level_or_404(level_slug)
+    user = get_current_user(request)
+    if user is None:
+        return RedirectResponse(url="/login/", status_code=303)
+    try:
+        stars_int = int(stars)
+    except (TypeError, ValueError):
+        stars_int = 0
+    try:
+        await learning_service.upsert_resource_rating(
+            db, user.id, level_slug, resource_id, stars_int
+        )
+    except ValueError as exc:
+        code = str(exc)
+        if code == "not_enrolled":
+            raise HTTPException(status_code=403, detail="not_enrolled")
+        if code == "bad_resource":
+            raise HTTPException(status_code=404, detail="bad_resource")
+        return await _render_tracker(
+            request,
+            level_slug,
+            db,
+            status_code=422,
+            rate_error="امتیاز نامعتبر است",
+            rate_id=resource_id,
+        )
     return RedirectResponse(
         url=f"/dashboard/learning/{level_slug}/track/", status_code=303
     )

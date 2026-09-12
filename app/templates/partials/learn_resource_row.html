@@ -1,4 +1,5 @@
-<div class="ra-res{% if not r.is_required %} is-optional{% endif %}" data-status="{{ r._status if track else '' }}" data-required="{{ 1 if r.is_required else 0 }}" data-resource-id="{{ r.id }}">
+{% set current_stars = r._stars if r._stars is defined else none %}
+<div class="ra-res{% if not r.is_required %} is-optional{% endif %}" id="resource-{{ r.id }}" data-status="{{ r._status if track else '' }}" data-required="{{ 1 if r.is_required else 0 }}" data-resource-id="{{ r.id }}" data-stars="{{ current_stars if current_stars else '' }}" data-title="{{ r.title }}">
   <div>
     {% if r.is_linked %}
     <a class="ra-res-link" href="{{ r.link_url }}" {% if r.link_type == 'external' %}target="_blank" rel="noopener noreferrer"{% endif %} dir="auto">{{ r.title }}</a>
@@ -24,6 +25,16 @@
         <option value="ALREADY_KNEW" {% if r._status == 'ALREADY_KNEW' %}selected{% endif %}>قبلاً می‌دونستم</option>
         <option value="SKIPPED" {% if r._status == 'SKIPPED' %}selected{% endif %}>رد کردم</option>
       </select>
+    </form>
+    <a class="learn-rate-cta" href="{{ url_for('learning_track', level_slug=level_slug) }}?rate={{ r.id }}#resource-{{ r.id }}" {% if current_stars or r._status not in ['DONE', 'ALREADY_KNEW'] %}hidden{% endif %}>امتیاز بده</a>
+    <form method="post" action="{{ url_for('learning_rate', level_slug=level_slug) }}" class="learn-rate-form" {% if not current_stars %}hidden{% endif %}>
+      <input type="hidden" name="resource_id" value="{{ r.id }}">
+      <fieldset class="learn-rate-stars bd2-stars">
+        <legend class="visually-hidden">{% if current_stars %}امتیاز شما: {{ current_stars | fa_digits }} از ۵{% else %}امتیاز از ۱ تا ۵{% endif %}</legend>
+        {% for n in range(1, 6) %}
+        <button type="submit" name="stars" value="{{ n }}" class="bd2-star-btn{% if current_stars and n <= current_stars %} filled{% endif %}" aria-label="{{ n }} ستاره">★</button>
+        {% endfor %}
+      </fieldset>
     </form>
     {% endif %}
   </div>
