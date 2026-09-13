@@ -107,6 +107,10 @@
           </a>
           <a href="{{ url_for('admin_contact') }}" class="admin-nav-sub {% if active_nav == 'contact' %}active{% endif %}">
             پیام‌های تماس
+            {% set unread_contacts = request.state | attr('unread_contact_count') %}
+            {% if unread_contacts %}
+            <span class="nav-badge">{{ unread_contacts }}</span>
+            {% endif %}
           </a>
           <a href="{{ url_for('admin_analytics') }}" class="admin-nav-sub {% if active_nav == 'analytics' %}active{% endif %}">
             آنالیتیکس

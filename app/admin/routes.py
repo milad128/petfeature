@@ -64,10 +64,12 @@ async def _inject_comment_badges(request: Request, db: AsyncSession = Depends(ge
         request.state.pending_post_comments = 0
         request.state.pending_book_comments = 0
         request.state.missing_links_count = 0
+        request.state.unread_contact_count = 0
         return
     request.state.pending_post_comments = await post_service.count_pending_comments(db)
     request.state.pending_book_comments = await book_service.count_pending_book_comments(db)
     request.state.missing_links_count = await roadmap_service.count_missing_links(db)
+    request.state.unread_contact_count = await contact_service.unread_count(db)
 
 
 def _admin_context(request: Request, **extra):
@@ -1861,15 +1863,42 @@ async def admin_contact_list(request: Request, db: AsyncSession = Depends(get_db
     )
 
 
+@router.get("/contact/{message_id}/", name="admin_contact_detail")
+async def admin_contact_detail(
+    request: Request, message_id: int, db: AsyncSession = Depends(get_db)
+):
+    if not is_admin_authenticated(request):
+        return RedirectResponse(url="/admin/login/", status_code=303)
+    msg = await contact_service.get_message(db, message_id)
+    if msg is None:
+        raise HTTPException(status_code=404)
+    await contact_service.mark_read(db, msg)
+    return templates.TemplateResponse(
+        request,
+        "admin/contact_detail.html",
+        _admin_context(
+            request,
+            page_title=msg.subject or "پیام تماس",
+            active_nav="contact",
+            msg=msg,
+        ),
+    )
+
+
 @router.post("/contact/{message_id}/read/", name="admin_contact_toggle_read")
 async def admin_contact_toggle_read(
-    request: Request, message_id: int, db: AsyncSession = Depends(get_db)
+    request: Request,
+    message_id: int,
+    db: AsyncSession = Depends(get_db),
+    next: str = Form(""),
 ):
     if not is_admin_authenticated(request):
         return RedirectResponse(url="/admin/login/", status_code=303)
     msg = await contact_service.get_message(db, message_id)
     if msg:
         await contact_service.toggle_read(db, msg)
+    if next == "detail" and msg is not None and msg.is_read:
+        return RedirectResponse(url=f"/admin/contact/{message_id}/", status_code=303)
     return RedirectResponse(url="/admin/contact/", status_code=303)
 
 

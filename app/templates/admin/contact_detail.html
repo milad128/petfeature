@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_contact') }}" class="btn btn-ghost">بازگشت به فهرست</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-section contact-detail">
+    <div class="contact-detail-head">
+      <div>
+        <h2 class="contact-detail-name">{{ msg.name or 'بدون نام' }}</h2>
+        <a class="contact-detail-email" href="mailto:{{ msg.email }}" dir="ltr">{{ msg.email }}</a>
+      </div>
+      <div class="contact-detail-meta">
+        <span>{{ msg.created_at | jalali }}</span>
+        {% if msg.is_read %}
+        <span class="badge badge-muted">خوانده‌شده</span>
+        {% else %}
+        <span class="badge badge-accent">جدید</span>
+        {% endif %}
+      </div>
+    </div>
+    <p class="contact-detail-subject">{{ msg.subject or 'بدون موضوع' }}</p>
+    <div class="contact-detail-body">{{ msg.message }}</div>
+    <div class="row-actions" style="margin-top:20px;">
+      <form method="post" action="{{ url_for('admin_contact_toggle_read', message_id=msg.id) }}" style="display:inline">
+        <input type="hidden" name="next" value="detail">
+        <button type="submit" class="btn btn-ghost btn-sm">
+          {% if msg.is_read %}خوانده‌نشده{% else %}خوانده‌شد{% endif %}
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('admin_contact_delete', message_id=msg.id) }}"
+            data-delete-form data-confirm="این پیام حذف شود؟" style="display:inline">
+        <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

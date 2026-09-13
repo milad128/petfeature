@@ -5,7 +5,7 @@
 {% block content %}
 
 {% if unread_count %}
-<p class="form-hint" style="margin-bottom:16px;">{{ unread_count }} پیام خوانده‌نشده</p>
+<p class="form-hint" style="margin-bottom:16px;">{{ unread_count | fa_digits }} پیام خوانده‌نشده</p>
 {% endif %}
 
 <div class="card">
@@ -25,11 +25,23 @@
     <tbody>
       {% for msg in messages %}
       <tr class="{% if not msg.is_read %}ct-row-unread{% endif %}">
-        <td style="white-space:nowrap;">{{ msg.created_at | jalali }}</td>
-        <td>{{ msg.name or '—' }}</td>
-        <td dir="ltr" style="font-size:.85rem;">{{ msg.email }}</td>
-        <td>{{ msg.subject or '—' }}</td>
-        <td>{{ msg.message[:100] }}{% if msg.message | length > 100 %}…{% endif %}</td>
+        <td style="white-space:nowrap;">
+          <a href="/admin/contact/{{ msg.id }}/">{{ msg.created_at | jalali }}</a>
+        </td>
+        <td>
+          <a href="/admin/contact/{{ msg.id }}/">{{ msg.name or '—' }}</a>
+        </td>
+        <td dir="ltr" style="font-size:.85rem;">
+          <a href="/admin/contact/{{ msg.id }}/" dir="ltr">{{ msg.email }}</a>
+        </td>
+        <td>
+          <a href="/admin/contact/{{ msg.id }}/">{{ msg.subject or '—' }}</a>
+        </td>
+        <td>
+          <a href="/admin/contact/{{ msg.id }}/" class="ct-msg-link">
+            {{ msg.message[:100] }}{% if msg.message | length > 100 %}…{% endif %}
+          </a>
+        </td>
         <td>
           {% if msg.is_read %}
           <span class="badge badge-muted">خوانده‌شده</span>
@@ -39,6 +51,7 @@
         </td>
         <td>
           <div class="row-actions">
+            <a href="/admin/contact/{{ msg.id }}/" class="btn btn-ghost btn-sm">مشاهده</a>
             <form method="post" action="{{ url_for('admin_contact_toggle_read', message_id=msg.id) }}" style="display:inline">
               <button type="submit" class="btn btn-ghost btn-sm">
                 {% if msg.is_read %}خوانده‌نشده{% else %}خوانده‌شد{% endif %}

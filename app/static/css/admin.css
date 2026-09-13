@@ -303,6 +303,47 @@ body.admin-nav-open { overflow: hidden; }
 .badge-draft      { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
 .badge-library    { background: var(--accent-bg); color: var(--accent); }
 .badge-hidden     { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.badge-muted      { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.badge-accent     { background: var(--accent-bg); color: var(--accent); }
+
+.ct-row-unread td { font-weight: 600; }
+.ct-row-unread a { color: inherit; }
+.admin-table a.ct-msg-link,
+.admin-table td a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.admin-table td a:hover { border-bottom-color: var(--accent); color: var(--accent); }
+
+.contact-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.contact-detail-name { font-size: 1.15rem; font-weight: 700; margin: 0 0 6px; }
+.contact-detail-email { font-size: .9rem; color: var(--accent); }
+.contact-detail-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-size: .85rem;
+  color: var(--muted);
+}
+.contact-detail-subject {
+  margin: 18px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.contact-detail-body {
+  margin-top: 16px;
+  white-space: pre-wrap;
+  line-height: 2;
+  font-size: .95rem;
+}
 
 .badge-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 

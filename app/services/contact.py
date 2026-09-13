@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.contact import ContactMessage
@@ -43,13 +43,23 @@ async def toggle_read(session: AsyncSession, msg: ContactMessage) -> ContactMess
     return msg
 
 
+async def mark_read(session: AsyncSession, msg: ContactMessage) -> ContactMessage:
+    if not msg.is_read:
+        msg.is_read = True
+        await session.commit()
+        await session.refresh(msg)
+    return msg
+
+
 async def delete_message(session: AsyncSession, msg: ContactMessage) -> None:
     await session.delete(msg)
     await session.commit()
 
 
 async def unread_count(session: AsyncSession) -> int:
-    result = await session.execute(
-        select(ContactMessage).where(ContactMessage.is_read.is_(False))
+    result = await session.scalar(
+        select(func.count())
+        .select_from(ContactMessage)
+        .where(ContactMessage.is_read.is_(False))
     )
-    return len(result.scalars().all())
+    return int(result or 0)
